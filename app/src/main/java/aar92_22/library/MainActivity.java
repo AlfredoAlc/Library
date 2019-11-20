@@ -1,243 +1,188 @@
 package aar92_22.library;
 
-import android.content.ClipData;
+
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.os.TransactionTooLargeException;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
-import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
-import aar92_22.library.BaseDeDatos.Libro;
-import aar92_22.library.BaseDeDatos.Master;
-import aar92_22.library.BaseDeDatos.Session;
-import aar92_22.library.Fragments.Agregar;
-import aar92_22.library.Fragments.Editar;
-import aar92_22.library.Fragments.Ver;
-import aar92_22.library.Fragments.VerCompleto;
-import aar92_22.library.Utilities.Holder;
-import aar92_22.library.Utilities.Navigator;
+import java.util.List;
 
+import aar92_22.library.Database.AppDataBase;
+import aar92_22.library.Database.BookEntry;
+import aar92_22.library.ViewModel.MainViewModel;
+
+import static com.google.android.gms.ads.AdSize.SMART_BANNER;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, Navigator, Agregar.BookConsumer, Ver.ChoosenBook  {
+        implements BookListAdapter.ListBookClickListener, BookListAdapter.BookLongClickListener {
 
 
-    //Variables base de datos
-    private SQLiteDatabase db;
-    private Master master;
-    public Session session;
 
+    private int bookId;
 
-    public MenuItem botonEliminar, botonEditar;
-
-
-    //Variable anuncios
+    private AppDataBase mDb;
     private AdView mAdView;
 
-    private Libro libro;
-
-    FloatingActionButton fab;
-
-
+    RecyclerView bookList;
+    BookListAdapter mAdapter;
+    FloatingActionButton addBookFab;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
 
-        //Cargar anuncios
+        //Load ad
         mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.setAdSize(SMART_BANNER);
+        mAdView.setAdUnitId(String.valueOf(R.string.banner_ad_unit_id));
         mAdView.loadAd(adRequest);
 
-        //Conexión base de datos
-        try {
-            Master.DevOpenHelper openHelper = new Master.DevOpenHelper(this, "mimDb14", null);
-            db = openHelper.getWritableDatabase();
-            master = new Master(db);
-            session = master.newSession();
-        } catch (Exception e) {
-            Log.d("Errores: ", e.getMessage());
-        }
+
+        addBookFab = findViewById(R.id.add_book_fab);
 
 
+        mDb = AppDataBase.getsInstance(getApplicationContext());
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        bookList = findViewById(R.id.list_books_recycler_view);
+
+        LinearLayoutManager linearLayout = new LinearLayoutManager(this);
+        bookList.setLayoutManager(linearLayout);
+        bookList.setHasFixedSize(true);
+
+        mAdapter = new BookListAdapter(this, this, this);
+
+        bookList.setAdapter(mAdapter);
+
+        setupViewModel();
+
+    }
+
+
+    private void setupViewModel() {
+        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        viewModel.getBooks().observe(this, new Observer<List<BookEntry>>() {
             @Override
-            public void onClick(View view) {
-                FragmentManager manager = getSupportFragmentManager();
-
-                manager.beginTransaction().replace(R.id.main,
-                        Agregar.newInstance(null, null), "asd").commit();
-                fab.setVisibility(View.INVISIBLE);
+            public void onChanged(@Nullable List<BookEntry> bookEntries) {
+                Log.d("Main view model:", "Updating list of tasks from LiveData in ViewModel");
+                mAdapter.setBookEntry(bookEntries);
             }
+        });
+    }
+
+    public void addBookOnClick(View view) {
+
+        Intent intent = new Intent (MainActivity.this, AddBookActivity.class);
+        startActivity(intent);
+
+
+    }
+
+    @Override
+    public void onListBookClick(final int id) {
+
+
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+
+            @Override
+            public void run() {
+                BookEntry bookEntry = mDb.bookDao().loadBookByIdIndividual(id);
+                Intent detailIntent = new Intent (MainActivity.this, BookDetailActivity.class);
+                detailIntent.putExtra(BookDetailActivity.EXTRA_BOOK_TITLE, bookEntry.getTitle());
+                detailIntent.putExtra(BookDetailActivity.EXTRA_BOOK_AUTHOR, bookEntry.getAuthor());
+                startActivity(detailIntent);
+
+            }
+
+
+
         });
 
 
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-
-
-        launchMenuFragment();
-    }
-
-    private void launchMenuFragment() {
-        FragmentManager manager = getSupportFragmentManager();
-        Holder holder = new Holder();
-        holder.setBookList(session.getLibroDao().loadAll());
-        manager.beginTransaction().replace(R.id.main, Ver.newInstance(holder, null)).commit();
     }
 
     @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-           // super.onBackPressed();
-            navigate("sdfsd");
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        botonEliminar = menu.findItem(R.id.accionEliminar);
-        botonEditar = menu.findItem(R.id.accionEditar);
-        botonEditar.setVisible(false);
-        botonEliminar.setVisible(false);
-        return true;
-    }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.accionEliminar) {
-
-            final CharSequence[] options = {"Delete", "Cancel"};
-
-
-            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setItems(options, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int item) {
-                    if (options[item].equals("Delete")) {
-                        try {
-                            libro.delete();
-                        }catch (Exception e){
-                            builder.setMessage("Select a book");
-                            builder.show();
-                        }
-                        navigate("vsdfsder");
-                    }
-                    else if (options[item].equals("Cancel")) {
-                        dialog.dismiss();
-                    }
-                }
-            });
-            builder.show();
-
-        }
-
-        if(id == R.id.accionEditar){
-            FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction().replace(R.id.main,
-                    Editar.newInstance(libro, null)).commit();
-            fab.setVisibility(View.INVISIBLE);
-        }
-
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.agregar) {
-            navigate("agregar");
-        } else if (id == R.id.libreria) {
-            navigate("dfsd");
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
+    public boolean onContextItemSelected(MenuItem item) {
 
 
 
-    public void consumeBook(Libro libro) {
-        session.getLibroDao().insert(libro);
-    }
-
-    public void sendBook(Libro libro) {
-        FragmentManager manager = getSupportFragmentManager();
-        manager.beginTransaction().replace(R.id.main,
-                VerCompleto.newInstance(libro, null)).commit();
-        VerCompleto.menuVisible(botonEliminar, botonEditar);
-        this.libro = libro;
-    }
-
-    public void navigate(String name) {
-        FragmentManager manager = getSupportFragmentManager();
-        switch (name) {
-            case "agregar":
-                manager.beginTransaction().replace(R.id.main,
-                        Agregar.newInstance(null, null), "asd").commit();
-                fab.setVisibility(View.INVISIBLE);
-                botonEditar.setVisible(false);
-                botonEliminar.setVisible(false);
+        switch (item.getItemId()){
+            case 1:
+                Intent intent = new Intent(MainActivity.this, AddBookActivity.class);
+                intent.putExtra(AddBookActivity.BOOK_ID, bookId );
+                startActivity(intent);
                 break;
 
-            default:
-                Holder h = new Holder();
-                h.setBookList(session.getLibroDao().loadAll());
-                manager.beginTransaction().replace(R.id.main,
-                        Ver.newInstance(h, null)).commit();
-                fab.setVisibility(View.VISIBLE);
-                botonEditar.setVisible(false);
-                botonEliminar.setVisible(false);
+            case 2:
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setMessage(R.string.delete_message);
+                builder.setCancelable(true);
+
+                builder.setPositiveButton(
+                        "Yes",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+
+                                        BookEntry book = mDb.bookDao().loadBookByIdIndividual(bookId);
+                                        mDb.bookDao().deleteBook(book);
+
+
+                                    }
+                                });
+
+                                dialog.cancel();
+                            }
+                        });
+
+                builder.setNegativeButton(
+                        "No",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
                 break;
+
         }
+
+        return true;
+
 
 
     }
+
+    @Override
+    public void onLongBookClick(int id) {
+        this.bookId = id;
+
+    }
+
 
 
 
