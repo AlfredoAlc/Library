@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="sort_by_list_entries">
+        <item> Alphabetical</item>
+        <item> Favourites </item>
+        <item> Last saved </item>
+    </array>
+
+    <array name="sort_by_list_values">
+        <item> alphabetical</item>
+        <item> favourites </item>
+        <item> last_saved</item>
+    </array>
+
+
+</resources>

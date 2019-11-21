@@ -1,8 +1,11 @@
 package aar92_22.library;
 
 import android.content.Intent;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -30,6 +33,11 @@ public class BookDetailActivity extends AppCompatActivity {
         bookAuthorTextView = findViewById(R.id.author_text_view);
         bookCoverImageView = findViewById(R.id.book_image_view);
 
+        ActionBar actionBar = getSupportActionBar();
+
+        if(actionBar != null ){
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         Intent intent = getIntent();
 
@@ -44,5 +52,14 @@ public class BookDetailActivity extends AppCompatActivity {
 
     }
 
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            NavUtils.navigateUpFromSameTask(this);
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 }
