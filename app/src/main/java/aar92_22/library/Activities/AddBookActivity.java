@@ -1,11 +1,15 @@
-package aar92_22.library;
+package aar92_22.library.Activities;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,8 +17,10 @@ import android.widget.EditText;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
+import aar92_22.library.AppExecutors;
 import aar92_22.library.Database.AppDataBase;
 import aar92_22.library.Database.BookEntry;
+import aar92_22.library.R;
 import aar92_22.library.ViewModel.AddBookFactoryModel;
 import aar92_22.library.ViewModel.AddBookViewModel;
 
@@ -53,6 +59,15 @@ public class AddBookActivity extends AppCompatActivity {
         mAdView.setAdUnitId(String.valueOf(R.string.banner_ad_unit_id));
         mAdView.loadAd(adRequest);
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+
+        if(actionBar != null ){
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         mBookTitle = findViewById(R.id.titleEditText);
         mBookAuthor = findViewById(R.id.authorEditText);
@@ -132,5 +147,14 @@ public class AddBookActivity extends AppCompatActivity {
             }
         });
         finish();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            NavUtils.navigateUpFromSameTask(this);
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

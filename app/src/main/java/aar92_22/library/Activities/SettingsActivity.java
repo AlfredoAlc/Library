@@ -1,4 +1,4 @@
-package aar92_22.library;
+package aar92_22.library.Activities;
 
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+
+import aar92_22.library.R;
 
 public class SettingsActivity extends AppCompatActivity {
 
