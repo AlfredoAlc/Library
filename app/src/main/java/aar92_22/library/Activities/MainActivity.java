@@ -17,6 +17,7 @@ import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -60,6 +61,8 @@ public class MainActivity extends AppCompatActivity
     DrawerLayout drawer;
     NavigationView navigationView;
     NavController navController;
+
+    private boolean listView = true;
 
 
     @Override
@@ -107,6 +110,14 @@ public class MainActivity extends AppCompatActivity
         mAdView.loadAd(adRequest);
 
 
+
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences.getString(getString(R.string.sort_by_key), null );
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+
+
+
         addBookFab = findViewById(R.id.add_book_fab);
 
         addBookFab.setOnClickListener(new View.OnClickListener() {
@@ -122,9 +133,7 @@ public class MainActivity extends AppCompatActivity
 
 
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        sharedPreferences.getString(getString(R.string.sort_by_key), null );
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+
 
 
     }
@@ -149,7 +158,17 @@ public class MainActivity extends AppCompatActivity
         switch (itemId){
             case R.id.change_view_menu:
 
+                if(listView){
+                    listView = false;
+                    item.setIcon(R.drawable.ic_view_list);
 
+
+                } else {
+                    item.setIcon(R.drawable.ic_view_module);
+                    listView = true;
+
+
+                }
 
                 Toast.makeText(this,"change view menu", Toast.LENGTH_LONG).show();
                 return true;
