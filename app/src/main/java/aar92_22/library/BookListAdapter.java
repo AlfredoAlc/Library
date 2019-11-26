@@ -2,6 +2,7 @@ package aar92_22.library;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.Layout;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,11 +28,18 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
 
 
 
+    private boolean listView;
+
+
+
+
+
     public BookListAdapter ( Context mContext, ListBookClickListener mOnClickListener,
-                             BookLongClickListener mOnLongClickListener ){
+                             BookLongClickListener mOnLongClickListener, boolean listView){
         this.mContext = mContext;
         this.mOnClickListener = mOnClickListener;
         this.mOnLongClickListener = mOnLongClickListener;
+        this.listView = listView;
     }
 
 
@@ -38,10 +47,12 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
     public BookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         int layoutIdForBookList = R.layout.individual_book_recycler_view;
+
+
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
 
         View view = layoutInflater.inflate(layoutIdForBookList,parent,false);
-        BookViewHolder bookViewHolder = new BookViewHolder(view);
+        BookViewHolder bookViewHolder  = new BookViewHolder(view);
 
         return bookViewHolder;
     }
@@ -52,8 +63,9 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
         String title = book.getTitle();
         String author = book.getAuthor();
 
-        holder.bookTitle.setText(title);
+        holder.bookTitleList.setText(title);
         holder.bookAuthor.setText(author);
+        holder.bookTitleModule.setText(title);
 
 
     }
@@ -82,15 +94,39 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
             View.OnLongClickListener, View.OnCreateContextMenuListener {
 
         ImageView bookImage;
-        TextView bookTitle;
+        TextView bookTitleList;
         TextView bookAuthor;
+
+        TextView bookTitleModule;
+
+        FrameLayout listViewFrame;
+        FrameLayout moduleViewFrame;
 
         public BookViewHolder(View itemView) {
             super(itemView);
 
-            bookImage = (ImageView) itemView.findViewById(R.id.book_image_view);
-            bookTitle = (TextView) itemView.findViewById(R.id.title_text_view);
-            bookAuthor = (TextView) itemView.findViewById(R.id.author_text_view);
+
+            bookImage = itemView.findViewById(R.id.book_image_view);
+            bookTitleList = itemView.findViewById(R.id.title_text_view_list);
+            bookAuthor = itemView.findViewById(R.id.author_text_view);
+
+            bookTitleModule = itemView.findViewById(R.id.title_text_view_module);
+
+            listViewFrame = itemView.findViewById(R.id.layout_list_view);
+            moduleViewFrame = itemView.findViewById(R.id.layout_module_view);
+
+
+            if(listView){
+                listViewFrame.setVisibility(View.VISIBLE);
+                moduleViewFrame.setVisibility(View.GONE);
+
+            }
+            else {
+
+                listViewFrame.setVisibility(View.GONE);
+                moduleViewFrame.setVisibility(View.VISIBLE);
+            }
+
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);

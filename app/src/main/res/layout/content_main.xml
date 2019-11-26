@@ -18,7 +18,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/adView"
-        android:longClickable="true"/>
+        android:clipToPadding="false"
+        android:padding="@dimen/module_padding"
+        android:longClickable="true" />
 
     <fragment
         android:id="@+id/nav_host_fragment"
@@ -42,7 +44,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:background="@color/colorAccent"
-        app:srcCompat="@drawable/addbook72" />
+        app:srcCompat="@drawable/add_book72" />
 
 
 

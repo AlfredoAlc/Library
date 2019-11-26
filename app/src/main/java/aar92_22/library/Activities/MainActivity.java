@@ -14,6 +14,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -22,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.GridView;
 import android.widget.Toast;
 
 import androidx.navigation.NavController;
@@ -38,6 +40,7 @@ import aar92_22.library.AppExecutors;
 import aar92_22.library.BookListAdapter;
 import aar92_22.library.Database.AppDataBase;
 import aar92_22.library.Database.BookEntry;
+import aar92_22.library.ModuleViewDecoration;
 import aar92_22.library.R;
 import aar92_22.library.ViewModel.MainViewModel;
 
@@ -48,21 +51,22 @@ public class MainActivity extends AppCompatActivity
         BookListAdapter.BookLongClickListener {
 
 
-    RecyclerView bookList;
-    BookListAdapter mAdapter;
+    private static final String EXTRA_CHANGE_VIEW_BOOLEAN = "change_view";
     private int bookId;
+    private boolean listView;
 
     private AppDataBase mDb;
+    private AppBarConfiguration mAppBarConfiguration;
 
+    RecyclerView bookList;
+    BookListAdapter mAdapter;
 
     FloatingActionButton addBookFab;
-    private AppBarConfiguration mAppBarConfiguration;
     Toolbar toolbar;
     DrawerLayout drawer;
     NavigationView navigationView;
     NavController navController;
 
-    private boolean listView = true;
 
 
     @Override
@@ -72,19 +76,7 @@ public class MainActivity extends AppCompatActivity
 
         bookList = findViewById(R.id.list_books_recycler_view);
 
-        LinearLayoutManager linearLayout = new LinearLayoutManager(this);
-        bookList.setLayoutManager(linearLayout);
-        bookList.setHasFixedSize(true);
-
-        mAdapter = new BookListAdapter(this, this, this);
-
-        bookList.setAdapter(mAdapter);
-
         mDb = AppDataBase.getsInstance(this);
-
-
-        setupViewModel();
-
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -131,14 +123,72 @@ public class MainActivity extends AppCompatActivity
 
 
 
+        if(savedInstanceState != null){
+            listView = savedInstanceState.getBoolean(EXTRA_CHANGE_VIEW_BOOLEAN);
+
+            if(listView){
+                setUpLinearLayout();
+            }else{
+                setUpGridLayout();
+            }
 
 
+            setUpViewModel();
 
+        }else {
+            listView = true;
+            LinearLayoutManager linearLayout = new LinearLayoutManager(this);
+            bookList.setLayoutManager(linearLayout);
+            bookList.setHasFixedSize(true);
+            mAdapter = new BookListAdapter(this, this,
+                    this, listView);
+
+            bookList.setAdapter(mAdapter);
+            setUpViewModel();
+
+        }
 
 
     }
 
 
+
+    private void setUpLinearLayout (){
+
+        LinearLayoutManager linearLayout = new LinearLayoutManager(this);
+        bookList.setLayoutManager(linearLayout);
+        bookList.setHasFixedSize(true);
+        mAdapter = new BookListAdapter(this, this,
+                this, listView);
+
+        bookList.setAdapter(mAdapter);
+
+    }
+
+    private void setUpGridLayout (){
+
+        GridLayoutManager gridLayout = new GridLayoutManager(this, 3);
+        bookList.setLayoutManager(gridLayout);
+        ModuleViewDecoration moduleViewDecoration = new ModuleViewDecoration(this, R.dimen.module_padding);
+        bookList.addItemDecoration(moduleViewDecoration);
+        bookList.setHasFixedSize(true);
+        mAdapter = new BookListAdapter(this, this,
+                this, listView);
+
+        bookList.setAdapter(mAdapter);
+
+    }
+
+    private void setUpViewModel(){
+        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        viewModel.getBooks().observe(this, new Observer<List<BookEntry>>() {
+            @Override
+            public void onChanged(@Nullable List<BookEntry> bookEntries) {
+                mAdapter.setBookEntry(bookEntries);
+            }
+        });
+
+    }
 
 
     @Override
@@ -161,16 +211,15 @@ public class MainActivity extends AppCompatActivity
                 if(listView){
                     listView = false;
                     item.setIcon(R.drawable.ic_view_list);
-
-
+                    setUpGridLayout();
+                    setUpViewModel();
                 } else {
-                    item.setIcon(R.drawable.ic_view_module);
                     listView = true;
-
-
+                    item.setIcon(R.drawable.ic_view_module);
+                    setUpLinearLayout();
+                    setUpViewModel();
                 }
 
-                Toast.makeText(this,"change view menu", Toast.LENGTH_LONG).show();
                 return true;
 
             case R.id.search_menu:
@@ -202,7 +251,6 @@ public class MainActivity extends AppCompatActivity
         PreferenceManager.getDefaultSharedPreferences(this).
                 unregisterOnSharedPreferenceChangeListener(this);
 
-
         super.onDestroy();
     }
     @Override
@@ -211,23 +259,6 @@ public class MainActivity extends AppCompatActivity
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
-
-
-
-
-    private void setupViewModel() {
-        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
-        viewModel.getBooks().observe(this, new Observer<List<BookEntry>>() {
-            @Override
-            public void onChanged(@Nullable List<BookEntry> bookEntries) {
-                mAdapter.setBookEntry(bookEntries);
-            }
-        });
-    }
-
-
-
-
 
 
     @Override
@@ -313,10 +344,9 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
-
-
-
-
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
 }
 
