@@ -30,32 +30,20 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Activities.MainActivity" />
         </activity>
-
-
         <activity
             android:name=".Activities.BookDetailActivity"
             android:parentActivityName=".Activities.MainActivity">
-
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Activities.MainActivity"/>
-
-
+                android:value=".Activities.MainActivity" />
         </activity>
-
-
         <activity
             android:name=".Activities.AddBookActivity"
             android:parentActivityName=".Activities.MainActivity">
-
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Activities.MainActivity"/>
-
-
+                android:value=".Activities.MainActivity" />
         </activity>
-
-
         <activity
             android:name=".Activities.MainActivity"
             android:launchMode="singleTop">

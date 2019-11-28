@@ -11,14 +11,14 @@
     <string name="delete_message">You want to delete this book?</string>
     <string name="book_detail_title">Book detail</string>
     <string name="add_book_title">Add new book</string>
-
+    <string name="search_edit_text_hint">Title, Author</string>
 
 
     <string name="sort_by_key" translatable="false">sort_by</string>
     <string name="sort_by_title">Sort by</string>
     <string name="action_change_view" translatable="false">Change View</string>
     <string name="action_search" translatable="false">Search</string>
-    <string name="action_sort" translatable="false">Sort</string>
+    <string name="action_filter" translatable="false">Sort</string>
 
 
     <string name="navigation_drawer_open">Open navigation drawer</string>

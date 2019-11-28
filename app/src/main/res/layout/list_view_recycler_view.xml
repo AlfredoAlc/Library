@@ -8,12 +8,12 @@
 
     <ImageView
         android:id="@+id/book_image_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="80dp"
+        android:layout_height="120dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:padding="16dp"
-        android:src="@drawable/add_book72"/>
+        android:src="@drawable/ic_add_book"/>
 
 
     <LinearLayout

@@ -7,7 +7,8 @@
         <item
             android:id="@+id/nav_main"
             android:icon="@drawable/ic_menu_camera"
-            android:title="@string/menu_main" />
+            android:title="@string/menu_main"
+            android:visible="false"/>
         <item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/ic_menu_gallery"

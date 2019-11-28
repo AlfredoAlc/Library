@@ -17,13 +17,13 @@ import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.GridView;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
 import androidx.navigation.NavController;
@@ -81,17 +81,21 @@ public class MainActivity extends AppCompatActivity
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
         drawer = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
+
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_main, R.id.nav_gallery, R.id.nav_slideshow,
                 R.id.nav_tools, R.id.nav_share, R.id.nav_send)
                 .setDrawerLayout(drawer)
                 .build();
+
+
+
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-
 
 
         //Load ad
@@ -197,6 +201,22 @@ public class MainActivity extends AppCompatActivity
 
         menuInflater.inflate(R.menu.menu_main_activity,menu);
 
+        MenuItem searchItem = menu.findItem(R.id.search_menu);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                mAdapter.getFilter().filter(s);
+                return false;
+            }
+        });
         return true;
     }
 
@@ -222,11 +242,12 @@ public class MainActivity extends AppCompatActivity
 
                 return true;
 
-            case R.id.search_menu:
-                Toast.makeText(this,"search menu", Toast.LENGTH_LONG).show();
-                return true;
+            case R.id.filter_menu:
 
-            case R.id.sort_menu:
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
+
+
                 Toast.makeText(this,"sort_menu", Toast.LENGTH_LONG).show();
                 return true;
 
@@ -253,6 +274,8 @@ public class MainActivity extends AppCompatActivity
 
         super.onDestroy();
     }
+
+
     @Override
     public boolean onSupportNavigateUp() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);

@@ -10,18 +10,23 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import aar92_22.library.Database.BookEntry;
 
-public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookViewHolder> {
+public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookViewHolder>
+        implements Filterable {
 
 
     private List<BookEntry> mBookEntry;
+    private List<BookEntry> mBookEntryFull;
     private Context mContext;
     final private ListBookClickListener mOnClickListener ;
     final private BookLongClickListener mOnLongClickListener;
@@ -81,6 +86,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
 
     public void setBookEntry ( List<BookEntry> bookEntry){
         mBookEntry = bookEntry;
+        mBookEntryFull = new ArrayList<>(mBookEntry);
         notifyDataSetChanged();
 
     }
@@ -88,6 +94,8 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
     public List<BookEntry> getBooks ( ){
         return mBookEntry;
     }
+
+
 
 
     class BookViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
@@ -179,4 +187,48 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
         void onLongBookClick (int id);
 
     }
+
+
+    @Override
+    public Filter getFilter() {
+        return searchFilter;
+    }
+
+    private Filter searchFilter =  new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            List<BookEntry> filteredList = new ArrayList<>();
+
+
+            if(constraint != null || constraint.length() != 0){
+                String filterPattern = constraint.toString().toLowerCase().trim();
+
+                for(BookEntry item : mBookEntryFull){
+                    if(item.getTitle().toLowerCase().contains(filterPattern) ||
+                        item.getAuthor().toLowerCase().contains(filterPattern)){
+                        filteredList.add(item);
+                    }
+                }
+
+            }else{
+                filteredList.addAll(mBookEntryFull);
+            }
+
+
+            FilterResults results = new FilterResults();
+            results.values = filteredList;
+
+            return results;
+
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            mBookEntry.clear();
+            mBookEntry.addAll((List) results.values);
+            notifyDataSetChanged();
+        }
+    };
+
+
 }

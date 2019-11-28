@@ -44,7 +44,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:background="@color/colorAccent"
-        app:srcCompat="@drawable/add_book72" />
+        app:srcCompat="@drawable/ic_add_book" />
 
 
 
