@@ -22,6 +22,7 @@
     <string name="action_change_view" translatable="false">Change View</string>
     <string name="action_search" translatable="false">Search</string>
     <string name="action_filter" translatable="false">Sort</string>
+    <string name="action_refresh" translatable="false">Refresh</string>
 
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
