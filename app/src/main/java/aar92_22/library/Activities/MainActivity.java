@@ -1,6 +1,7 @@
 package aar92_22.library.Activities;
 
 
+import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
@@ -19,6 +20,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -54,6 +56,8 @@ public class MainActivity extends AppCompatActivity
     private static final String EXTRA_CHANGE_VIEW_BOOLEAN = "change_view";
     private int bookId;
     private boolean listView;
+    private boolean filterActivated;
+    private String authorFilter;
 
     private AppDataBase mDb;
     private AppBarConfiguration mAppBarConfiguration;
@@ -128,6 +132,7 @@ public class MainActivity extends AppCompatActivity
 
 
         if(savedInstanceState != null){
+
             listView = savedInstanceState.getBoolean(EXTRA_CHANGE_VIEW_BOOLEAN);
 
             if(listView){
@@ -244,11 +249,18 @@ public class MainActivity extends AppCompatActivity
 
             case R.id.filter_menu:
 
-                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(intent);
+                if(filterActivated){
+                    Intent intent = new Intent(MainActivity.this, FilterActivity.class);
+                    intent.putExtra(FilterActivity.AUTHOR_FILTER,authorFilter);
+                    startActivityForResult(intent,100);
+
+                }else{
+                    Intent intent = new Intent(MainActivity.this, FilterActivity.class);
+                    startActivityForResult(intent,100);
+                }
 
 
-                Toast.makeText(this,"sort_menu", Toast.LENGTH_LONG).show();
+
                 return true;
 
             default: return super.onOptionsItemSelected(item);
@@ -370,6 +382,30 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 100) {
+
+            if(resultCode == RESULT_OK) {
+
+                if(data != null) {
+                    filterActivated = true;
+                    authorFilter = data.getStringExtra(FilterActivity.AUTHOR_FILTER);
+                    mAdapter.setFiltered(filterActivated);
+                    mAdapter.getFilter().filter(authorFilter);
+                }
+            }
+            if(resultCode == RESULT_CANCELED){
+                filterActivated = false;
+                mAdapter.setFiltered(false);
+                mAdapter.getFilter().filter("");
+            }
+        }
+
     }
 }
 

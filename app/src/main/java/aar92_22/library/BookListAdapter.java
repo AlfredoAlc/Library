@@ -34,6 +34,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
 
 
     private boolean listView;
+    private boolean filterActivity;
 
 
 
@@ -201,17 +202,31 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
 
 
             if(constraint != null || constraint.length() != 0){
-                String filterPattern = constraint.toString().toLowerCase().trim();
 
-                for(BookEntry item : mBookEntryFull){
-                    if(item.getTitle().toLowerCase().contains(filterPattern) ||
-                        item.getAuthor().toLowerCase().contains(filterPattern)){
-                        filteredList.add(item);
+                if(filterActivity) {
+                    Log.d("CHECKING...", "yes");
+                    for (BookEntry item : mBookEntryFull) {
+                        if (item.getAuthor().contains(constraint)) {
+                            filteredList.add(item);
+                        }
+
                     }
+                }else {
+
+                    String filterPattern = constraint.toString().toLowerCase().trim();
+
+                    for (BookEntry item : mBookEntryFull) {
+                        if (item.getTitle().toLowerCase().contains(filterPattern) ||
+                                item.getAuthor().toLowerCase().contains(filterPattern)) {
+                            filteredList.add(item);
+                        }
+                    }
+
                 }
 
             }else{
                 filteredList.addAll(mBookEntryFull);
+
             }
 
 
@@ -229,6 +244,11 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
             notifyDataSetChanged();
         }
     };
+
+
+    public void setFiltered (boolean filterActivity){
+        this.filterActivity = filterActivity;
+    }
 
 
 }

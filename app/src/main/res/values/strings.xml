@@ -6,11 +6,14 @@
     <string name="save_button">Save</string>
     <string name="update_string">Update</string>
     <string name="delete_string">Delete</string>
-    <string name="title_string_text_view">Book Name:</string>
-    <string name="author_string_text_view">Author:</string>
+    <string name="title_string_tag">Book Name:</string>
+    <string name="author_string_tag">Author:</string>
+    <string name="category_string_tag">Category:</string>
+    <string name="series_string_tag">Series:</string>
     <string name="delete_message">You want to delete this book?</string>
     <string name="book_detail_title">Book detail</string>
     <string name="add_book_title">Add new book</string>
+    <string name="filter_book_title">Filter Books</string>
     <string name="search_edit_text_hint">Title, Author</string>
 
 

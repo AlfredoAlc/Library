@@ -4,6 +4,7 @@ package aar92_22.library.Database;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
 @Entity(tableName = "books")
 public class BookEntry {
@@ -76,4 +77,5 @@ public class BookEntry {
     public void setSynopsis(String synopsis) {
         this.synopsis = synopsis;
     }
+
 }
