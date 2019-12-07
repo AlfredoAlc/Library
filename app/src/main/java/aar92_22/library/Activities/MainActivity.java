@@ -1,47 +1,48 @@
 package aar92_22.library.Activities;
 
 
-import android.app.Activity;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.preference.PreferenceManager;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Toast;
 
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import aar92_22.library.AppExecutors;
 import aar92_22.library.BookListAdapter;
 import aar92_22.library.Database.AppDataBase;
 import aar92_22.library.Database.BookEntry;
+import aar92_22.library.Database.CategoryDataBase;
+import aar92_22.library.Database.CategoryEntry;
 import aar92_22.library.ModuleViewDecoration;
 import aar92_22.library.R;
 import aar92_22.library.ViewModel.MainViewModel;
@@ -60,6 +61,8 @@ public class MainActivity extends AppCompatActivity
     private String authorFilter;
 
     private AppDataBase mDb;
+    private CategoryDataBase categoryDataBase;
+
     private AppBarConfiguration mAppBarConfiguration;
 
     RecyclerView bookList;
@@ -71,6 +74,9 @@ public class MainActivity extends AppCompatActivity
     NavigationView navigationView;
     NavController navController;
 
+    boolean first;
+
+
 
 
     @Override
@@ -81,6 +87,17 @@ public class MainActivity extends AppCompatActivity
         bookList = findViewById(R.id.list_books_recycler_view);
 
         mDb = AppDataBase.getsInstance(this);
+        categoryDataBase = CategoryDataBase.getsInstance(this);
+
+        addBookFab = findViewById(R.id.add_book_fab);
+
+        addBookFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent (MainActivity.this, AddBookActivity.class);
+                startActivity(intent);
+            }
+        });
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -110,25 +127,10 @@ public class MainActivity extends AppCompatActivity
         mAdView.loadAd(adRequest);
 
 
-
-
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        sharedPreferences.getString(getString(R.string.sort_by_key), null );
+
+        sharedPreferences.getString(getString(R.string.sort_by_key), "" );
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
-
-
-
-        addBookFab = findViewById(R.id.add_book_fab);
-
-        addBookFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent (MainActivity.this, AddBookActivity.class);
-                startActivity(intent);
-            }
-        });
-
-
 
 
         if(savedInstanceState != null){
@@ -154,6 +156,18 @@ public class MainActivity extends AppCompatActivity
 
             bookList.setAdapter(mAdapter);
             setUpViewModel();
+
+        }
+
+
+
+        first = sharedPreferences.getBoolean(getString(R.string.check_first_category_list_key), true);
+
+        if(first){
+            firstCategories();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean(getString(R.string.check_first_category_list_key), false);
+            editor.apply();
 
         }
 
@@ -197,6 +211,37 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+    }
+
+
+    private void firstCategories(){
+
+        final List<String> firstList = new ArrayList<>();
+
+        firstList.add("Others");
+        firstList.add("Art & Design");
+        firstList.add("Business & Financial");
+        firstList.add("Children's Books");
+        firstList.add("Comics & Graphic Novels");
+        firstList.add("Education & Engineering");
+        firstList.add("History");
+        firstList.add("Literature & Fiction");
+        firstList.add("Politics & Social Sciences");
+        firstList.add("Travel");
+
+
+        AppExecutors.getInstance().otherIO().execute(new Runnable() {
+
+            @Override
+            public void run() {
+
+                for(int i = 0; i<firstList.size(); i++) {
+                    CategoryEntry categoryEntry = new CategoryEntry(firstList.get(i));
+                    categoryDataBase.categoryDao().newCategory(categoryEntry);
+                }
+
+            }
+        });
     }
 
 
@@ -247,6 +292,8 @@ public class MainActivity extends AppCompatActivity
 
                 return true;
 
+
+
             case R.id.filter_menu:
 
                 if(filterActivated){
@@ -259,32 +306,18 @@ public class MainActivity extends AppCompatActivity
                     startActivityForResult(intent,100);
                 }
 
-
-
                 return true;
+
+
 
             default: return super.onOptionsItemSelected(item);
 
         }
 
-
-
-
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-
-
-
-    }
-
-    @Override
-    protected void onDestroy() {
-        PreferenceManager.getDefaultSharedPreferences(this).
-                unregisterOnSharedPreferenceChangeListener(this);
-
-        super.onDestroy();
     }
 
 
@@ -298,26 +331,22 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onListBookClick(final int id) {
-
-
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
-
-
             @Override
             public void run() {
                 BookEntry bookEntry = mDb.bookDao().loadBookByIdIndividual(id);
                 Intent intent = new Intent(MainActivity.this, BookDetailActivity.class);
                 intent.putExtra(BookDetailActivity.EXTRA_BOOK_TITLE,bookEntry.getTitle());
-                intent.putExtra(BookDetailActivity.EXTRA_BOOK_AUTHOR,bookEntry.getAuthor());
+                intent.putExtra(BookDetailActivity.EXTRA_BOOK_LAST_NAME,bookEntry.getLastName());
+                intent.putExtra(BookDetailActivity.EXTRA_CATEGORY, bookEntry.getCategory());
                 startActivity(intent);
-
-
             }
-
-
-
         });
+    }
 
+    @Override
+    public void onLongBookClick(int id) {
+        this.bookId = id;
 
     }
 
@@ -372,17 +401,6 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    @Override
-    public void onLongBookClick(int id) {
-        this.bookId = id;
-
-    }
-
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -407,5 +425,22 @@ public class MainActivity extends AppCompatActivity
         }
 
     }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        PreferenceManager.getDefaultSharedPreferences(this).
+                unregisterOnSharedPreferenceChangeListener(this);
+
+        super.onDestroy();
+    }
+
+
+
 }
 

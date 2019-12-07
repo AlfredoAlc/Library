@@ -1,16 +1,17 @@
 package aar92_22.library.Database;
 
 
-import android.arch.persistence.room.Database;
-import android.arch.persistence.room.Room;
-import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
+
+import androidx.room.Database;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
 
 @Database(entities = {BookEntry.class}, version = 1, exportSchema = false)
 public abstract class AppDataBase extends RoomDatabase {
 
-    public static final Object LOCK = new Object();
-    public static final String DATABASE_NAME = "library";
+    private static final Object LOCK = new Object();
+    private static final String DATABASE_NAME = "library";
     private static AppDataBase sInstance;
 
 

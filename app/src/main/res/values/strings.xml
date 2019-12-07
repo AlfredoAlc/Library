@@ -1,15 +1,11 @@
 <resources>
     <string name="app_name">My Library</string>
 
-    <string name="banner_ad_unit_id">ca-app-pub-4769341895289435/3740778936</string>
+    <string name="banner_ad_unit_id" translatable="false">ca-app-pub-4769341895289435/3740778936</string>
 
-    <string name="save_button">Save</string>
+    <string name="coma" translatable="false">,</string>
     <string name="update_string">Update</string>
     <string name="delete_string">Delete</string>
-    <string name="title_string_tag">Book Name:</string>
-    <string name="author_string_tag">Author:</string>
-    <string name="category_string_tag">Category:</string>
-    <string name="series_string_tag">Series:</string>
     <string name="delete_message">You want to delete this book?</string>
     <string name="book_detail_title">Book detail</string>
     <string name="add_book_title">Add new book</string>
@@ -17,12 +13,29 @@
     <string name="search_edit_text_hint">Title, Author</string>
 
 
+    <string name="title_tag">Title</string>
+    <string name="last_name_tag">Last name</string>
+    <string name="first_name_tag">First name</string>
+    <string name="publisher_tag">Publisher</string>
+    <string name="published_date_tag">Published Date:</string>
+    <string name="published_date_format_hint">dd/mm/yyyy</string>
+    <string name="number_page_tag">Number of pages:</string>
+    <string name="series_tag">Series:</string>
+    <string name="volume_tag">Vol:</string>
+    <string name="category_tag">Category:</string>
+    <string name="summary_tag">Summary</string>
+    <string name="summary_hint">Book summary here</string>
+
+
     <string name="sort_by_key" translatable="false">sort_by</string>
     <string name="sort_by_title">Sort by</string>
+    <string name="check_first_category_list_key">check_list</string>
+    <string name="check_first_category_list_title">Category</string>
     <string name="action_change_view" translatable="false">Change View</string>
     <string name="action_search" translatable="false">Search</string>
     <string name="action_filter" translatable="false">Sort</string>
     <string name="action_refresh" translatable="false">Refresh</string>
+    <string name="action_done" translatable="false">Done</string>
 
 
     <string name="navigation_drawer_open">Open navigation drawer</string>

@@ -1,11 +1,12 @@
 package aar92_22.library.Activities;
 
 import android.content.Intent;
-import android.support.v4.app.NavUtils;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NavUtils;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,14 +22,17 @@ import static com.google.android.gms.ads.AdSize.SMART_BANNER;
 public class BookDetailActivity extends AppCompatActivity {
 
     public static final String EXTRA_BOOK_TITLE = "book_title";
-    public static final String EXTRA_BOOK_AUTHOR = "book_author";
+    public static final String EXTRA_BOOK_LAST_NAME = "last_name";
+    public static final String EXTRA_CATEGORY = "category_extra";
 
     TextView bookTitleTextView;
     TextView bookAuthorTextView;
     ImageView bookCoverImageView;
+    TextView categoryTextView;
 
     String bookTitle;
     String bookAuthor;
+    String mCategory;
 
     private AdView mAdView;
 
@@ -52,6 +56,7 @@ public class BookDetailActivity extends AppCompatActivity {
         bookTitleTextView = findViewById(R.id.title_text_view);
         bookAuthorTextView = findViewById(R.id.author_text_view);
         bookCoverImageView = findViewById(R.id.book_image_view);
+        categoryTextView = findViewById(R.id.category_tv);
 
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -68,10 +73,14 @@ public class BookDetailActivity extends AppCompatActivity {
 
         if(intent != null){
             bookTitle = intent.getStringExtra(EXTRA_BOOK_TITLE);
-            bookAuthor = intent.getStringExtra(EXTRA_BOOK_AUTHOR);
+            bookAuthor = intent.getStringExtra(EXTRA_BOOK_LAST_NAME);
+            mCategory = intent.getStringExtra(EXTRA_CATEGORY);
+
+
 
             bookTitleTextView.setText(bookTitle);
             bookAuthorTextView.setText(bookAuthor);
+            categoryTextView.setText(mCategory);
 
         }
 

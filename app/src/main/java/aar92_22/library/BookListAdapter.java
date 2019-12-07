@@ -1,20 +1,17 @@
 package aar92_22.library;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,11 +64,18 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
     public void onBindViewHolder(BookViewHolder holder, int position) {
         BookEntry book = mBookEntry.get(position);
         String title = book.getTitle();
-        String author = book.getAuthor();
+        String lastName = book.getLastName();
+        String firstName = book.getFirstName();
+        String numberPages = book.getNumberPages();
 
-        holder.bookTitleList.setText(title);
-        holder.bookAuthor.setText(author);
-        holder.bookTitleModule.setText(title);
+        holder.mTitle.setText(title);
+        holder.mLastName.setText(lastName);
+        holder.mFirstName.setText(firstName);
+        if(holder.mNumberPages != null){
+            holder.mNumberPages.setText(numberPages + " pages");
+        }
+
+        holder.mTitleModule.setText(title);
 
 
     }
@@ -103,10 +107,12 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
             View.OnLongClickListener, View.OnCreateContextMenuListener {
 
         ImageView bookImage;
-        TextView bookTitleList;
-        TextView bookAuthor;
+        TextView mTitle;
+        TextView mLastName;
+        TextView mFirstName;
+        TextView mNumberPages;
 
-        TextView bookTitleModule;
+        TextView mTitleModule;
 
         FrameLayout listViewFrame;
         FrameLayout moduleViewFrame;
@@ -116,10 +122,13 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
 
 
             bookImage = itemView.findViewById(R.id.book_image_view);
-            bookTitleList = itemView.findViewById(R.id.title_text_view_list);
-            bookAuthor = itemView.findViewById(R.id.author_text_view);
+            mTitle = itemView.findViewById(R.id.title_tv);
+            mLastName = itemView.findViewById(R.id.last_name_tv);
+            mFirstName = itemView.findViewById(R.id.first_name_tv);
+            mNumberPages = itemView.findViewById(R.id.number_pages_tv);
 
-            bookTitleModule = itemView.findViewById(R.id.title_text_view_module);
+
+            mTitleModule = itemView.findViewById(R.id.title_tv_module);
 
             listViewFrame = itemView.findViewById(R.id.layout_list_view);
             moduleViewFrame = itemView.findViewById(R.id.layout_module_view);
@@ -204,9 +213,8 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
             if(constraint != null || constraint.length() != 0){
 
                 if(filterActivity) {
-                    Log.d("CHECKING...", "yes");
                     for (BookEntry item : mBookEntryFull) {
-                        if (item.getAuthor().contains(constraint)) {
+                        if (item.getLastName().contains(constraint) || item.getFirstName().contains(constraint)) {
                             filteredList.add(item);
                         }
 
@@ -217,7 +225,8 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
 
                     for (BookEntry item : mBookEntryFull) {
                         if (item.getTitle().toLowerCase().contains(filterPattern) ||
-                                item.getAuthor().toLowerCase().contains(filterPattern)) {
+                                item.getLastName().toLowerCase().contains(filterPattern) ||
+                                item.getFirstName().toLowerCase().contains(filterPattern)) {
                             filteredList.add(item);
                         }
                     }

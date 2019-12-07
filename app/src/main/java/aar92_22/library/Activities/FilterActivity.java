@@ -1,15 +1,16 @@
 package aar92_22.library.Activities;
 
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NavUtils;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NavUtils;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -95,10 +96,10 @@ public class FilterActivity extends AppCompatActivity implements AdapterView.OnI
                     for (int i = 0; i < bookEntries.size(); i++) {
                         BookEntry entry = bookEntries.get(i);
 
-                        authorList.add(entry.getAuthor());
+                        authorList.add(entry.getLastName());
 
 
-                        if(entry.getAuthor().equals(authorFilter)){
+                        if(entry.getLastName().equals(authorFilter)){
                             position = i + 1;
                         }
 
@@ -129,6 +130,15 @@ public class FilterActivity extends AppCompatActivity implements AdapterView.OnI
 
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+
+        menuInflater.inflate(R.menu.filter_activity_menu, menu);
+
+        return true;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -162,7 +172,6 @@ public class FilterActivity extends AppCompatActivity implements AdapterView.OnI
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
         if(position > 0) {
             filterActivated = true;
             authorFilter = parent.getItemAtPosition(position).toString();
@@ -191,14 +200,7 @@ public class FilterActivity extends AppCompatActivity implements AdapterView.OnI
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
 
-        menuInflater.inflate(R.menu.filter_activity_menu, menu);
-
-        return true;
-    }
 
 
 

@@ -2,11 +2,12 @@ package aar92_22.library.Fragments;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.preference.CheckBoxPreference;
-import android.support.v7.preference.ListPreference;
-import android.support.v7.preference.Preference;
-import android.support.v7.preference.PreferenceFragmentCompat;
-import android.support.v7.preference.PreferenceScreen;
+
+import androidx.preference.CheckBoxPreference;
+import androidx.preference.ListPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceScreen;
 
 import aar92_22.library.R;
 
@@ -25,19 +26,32 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
         addPreferencesFromResource(R.xml.pref_main_activity);
 
+        CheckBoxPreference category = (CheckBoxPreference)
+                findPreference(getString(R.string.check_first_category_list_key));
+        category.setVisible(false);
+
         SharedPreferences sharedPreferences = getPreferenceScreen().getSharedPreferences();
+
         PreferenceScreen preferenceScreen = getPreferenceScreen();
 
         int prefScreenCount = preferenceScreen.getPreferenceCount();
 
+
+
         for ( int i = 0; i < prefScreenCount; i++){
             Preference p = preferenceScreen.getPreference(i);
-            String value = sharedPreferences.getString(p.getKey(),"");
-            setPreferenceSummary(p,value);
+            if(!(p instanceof CheckBoxPreference)) {
+
+                String value = sharedPreferences.getString(p.getKey(), "");
+                setPreferenceSummary(p, value);
+
+            }
 
         }
 
     }
+
+
 
     private void setPreferenceSummary (Preference preference , String value){
 
@@ -63,8 +77,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
         Preference preference = findPreference(key);
         if (null != preference) {
-                String value = sharedPreferences.getString(preference.getKey(), "");
-                setPreferenceSummary(preference, value);
+
+                if(!(preference instanceof CheckBoxPreference)) {
+
+                    String value = sharedPreferences.getString(preference.getKey(), "");
+                    setPreferenceSummary(preference, value);
+
+                }
         }
     }
 }

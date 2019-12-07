@@ -4,6 +4,7 @@
 
 
 
+
     <ListPreference
         android:entries="@array/sort_by_list_entries"
         android:entryValues="@array/sort_by_list_values"
@@ -11,5 +12,8 @@
         android:title="@string/sort_by_title"/>
 
 
+    <CheckBoxPreference
+        android:key="@string/check_first_category_list_key"
+        android:title="@string/check_first_category_list_title" />
 
 </PreferenceScreen>

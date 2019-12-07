@@ -42,7 +42,7 @@
             android:layout_gravity="center"
             android:padding="@dimen/search_edit_text_padding"
             android:textSize="22sp"
-            android:text="@string/author_string_tag"/>
+            android:text="@string/last_name_tag"/>
 
         <Spinner
             android:id="@+id/author_spinner"
@@ -69,7 +69,7 @@
             android:layout_gravity="center"
             android:padding="@dimen/search_edit_text_padding"
             android:textSize="22sp"
-            android:text="@string/category_string_tag"/>
+            android:text="@string/category_tag"/>
 
         <Spinner
             android:id="@+id/category_spinner"
@@ -94,7 +94,7 @@
             android:layout_gravity="center"
             android:padding="@dimen/search_edit_text_padding"
             android:textSize="22sp"
-            android:text="@string/series_string_tag"/>
+            android:text="@string/series_tag"/>
 
         <Spinner
             android:id="@+id/series_spinner"
