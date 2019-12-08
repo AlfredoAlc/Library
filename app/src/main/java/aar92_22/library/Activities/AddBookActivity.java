@@ -10,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 
@@ -54,6 +55,10 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
     EditText mTitle;
     EditText mLastName;
     EditText mFirstName;
+    EditText mLastName2;
+    EditText mFirstName2;
+    EditText mLastName3;
+    EditText mFirstName3;
     EditText mPublisher;
     EditText mPublishedDate;
     EditText mNumberPages;
@@ -65,6 +70,8 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
 
     Button camera;
 
+    LinearLayout author2;
+    LinearLayout author3;
 
     AppDataBase mDb;
 
@@ -88,6 +95,10 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
         mTitle = findViewById(R.id.title_input);
         mLastName = findViewById(R.id.last_name_input);
         mFirstName = findViewById(R.id.first_name_input);
+        mLastName2 = findViewById(R.id.last_name_input2);
+        mFirstName2 = findViewById(R.id.first_name_input2);
+        mLastName3 = findViewById(R.id.last_name_input3);
+        mFirstName3 = findViewById(R.id.first_name_input3);
         mPublisher = findViewById(R.id.publisher_input);
         mPublishedDate = findViewById(R.id.published_date_input);
         mNumberPages = findViewById(R.id.number_pages_input);
@@ -96,6 +107,9 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
         mSummary = findViewById(R.id.summary_input);
 
         category = findViewById(R.id.category_spinner);
+
+        author2 = findViewById(R.id.author_layout2);
+        author3 = findViewById(R.id.author_layout3);
 
 
         camera = findViewById(R.id.take_photo);
@@ -237,16 +251,26 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
         String title = String.valueOf(mTitle.getText());
         String lastName = String.valueOf(mLastName.getText());
         String firstName = String.valueOf(mFirstName.getText());
+        String lastName2 = String.valueOf(mLastName2.getText());
+        String firstName2 = String.valueOf(mFirstName2.getText());
+        String lastName3 = String.valueOf(mLastName3.getText());
+        String firstName3 = String.valueOf(mFirstName3.getText());
         String publisher = String.valueOf(mPublisher.getText());
         String publishedDate = String.valueOf(mPublishedDate.getText());
-        String numberPages = String.valueOf(mNumberPages.getText());
+        int numberPages;
+        if(!(String.valueOf(mNumberPages.getText()).equals("")) ) {
+            numberPages = Integer.parseInt(String.valueOf(mNumberPages.getText()));
+        }else{
+            numberPages = 0;
+        }
         String series = String.valueOf(mSeries.getText());
         String volume = String.valueOf(mVolume.getText());
         String summary = String.valueOf(mSummary.getText());
 
 
-        final BookEntry bookEntry = new BookEntry(title,lastName, firstName, publisher,
-                publishedDate, numberPages, series, volume, mCategory, summary);
+        final BookEntry bookEntry = new BookEntry(title,lastName, firstName, lastName2, firstName2,
+                lastName3, firstName3, publisher, publishedDate, numberPages, series, volume,
+                mCategory, summary);
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
@@ -299,5 +323,27 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    public void clickAddAuthor(View view) {
+
+        if(author2.getVisibility() == View.GONE && author3.getVisibility() == View.GONE){
+            author2.setVisibility(View.VISIBLE);
+        } else if ( author2.getVisibility() == View.VISIBLE && author3.getVisibility() == View.GONE){
+            author3.setVisibility(View.VISIBLE);
+        }
+
+    }
+
+    public void clickRemoveAuthor2(View view) {
+        mLastName2.setText("");
+        mFirstName2.setText("");
+        author2.setVisibility(View.GONE);
+    }
+
+    public void clickRemoveAuthor3(View view) {
+        mLastName3.setText("");
+        mFirstName3.setText("");
+        author3.setVisibility(View.GONE);
     }
 }

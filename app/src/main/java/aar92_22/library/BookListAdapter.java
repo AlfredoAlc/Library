@@ -1,6 +1,7 @@
 package aar92_22.library;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,12 +12,14 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import aar92_22.library.Database.BookEntry;
+
 
 public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookViewHolder>
         implements Filterable {
@@ -55,9 +58,8 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
 
         View view = layoutInflater.inflate(layoutIdForBookList,parent,false);
-        BookViewHolder bookViewHolder  = new BookViewHolder(view);
 
-        return bookViewHolder;
+        return new BookViewHolder(view);
     }
 
     @Override
@@ -66,14 +68,20 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
         String title = book.getTitle();
         String lastName = book.getLastName();
         String firstName = book.getFirstName();
-        String numberPages = book.getNumberPages();
+        int numberPages = book.getNumberPages();
+
+
+
+        if(numberPages > 0){
+            String pages_string = mContext.getString(R.string.pages_string);
+            holder.mNumberPages.setText( numberPages + " " + pages_string);
+        }
+
 
         holder.mTitle.setText(title);
         holder.mLastName.setText(lastName);
         holder.mFirstName.setText(firstName);
-        if(holder.mNumberPages != null){
-            holder.mNumberPages.setText(numberPages + " pages");
-        }
+
 
         holder.mTitleModule.setText(title);
 

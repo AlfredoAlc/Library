@@ -10,7 +10,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Activities.AddBookActivity">
 
-        <android.support.design.widget.AppBarLayout
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/app_bar"
@@ -19,7 +19,7 @@
             app:layout_constraintTop_toTopOf="parent"
             android:theme="@style/AppTheme.AppBarOverlay">
 
-                <android.support.v7.widget.Toolbar
+                <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
@@ -29,7 +29,7 @@
                     app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
 
-        </android.support.design.widget.AppBarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
 
 
 
@@ -97,9 +97,102 @@
                                  android:layout_height="wrap_content"
                                  android:layout_weight="1"
                                  android:layout_gravity="center"
-                                 android:src="@drawable/ic_add"/>
+                                 android:src="@drawable/ic_add"
+                                 android:onClick="clickAddAuthor"/>
 
                      </LinearLayout>
+
+
+                     <LinearLayout
+                         android:id="@+id/author_layout2"
+                         android:layout_width="match_parent"
+                         android:layout_height="wrap_content"
+                         android:layout_marginStart="@dimen/left_right_margin"
+                         android:layout_marginLeft="@dimen/left_right_margin"
+                         android:layout_marginEnd="@dimen/left_right_margin"
+                         android:layout_marginRight="@dimen/left_right_margin"
+                         android:weightSum="10"
+                         android:orientation="horizontal"
+                         android:visibility="gone">
+
+                             <EditText
+                                 android:id="@+id/last_name_input2"
+                                 android:layout_weight="5"
+                                 android:layout_width="0dp"
+                                 android:layout_height="wrap_content"
+                                 android:layout_marginEnd="@dimen/left_right_margin"
+                                 android:layout_marginRight="@dimen/left_right_margin"
+                                 android:hint="@string/last_name_tag"
+                                 android:textSize="@dimen/text_size" />
+
+                             <EditText
+                                 android:id="@+id/first_name_input2"
+                                 android:layout_weight="4"
+                                 android:layout_width="0dp"
+                                 android:layout_height="wrap_content"
+                                 android:layout_marginEnd="@dimen/left_right_margin"
+                                 android:layout_marginRight="@dimen/left_right_margin"
+                                 android:hint="@string/first_name_tag"
+                                 android:textSize="@dimen/text_size" />
+
+                             <ImageView
+                                 android:id="@+id/remove_author2"
+                                 android:layout_width="0dp"
+                                 android:layout_height="wrap_content"
+                                 android:layout_weight="1"
+                                 android:layout_gravity="center"
+                                 android:src="@drawable/ic_remove"
+                                 android:onClick="clickRemoveAuthor2"/>
+
+                     </LinearLayout>
+
+
+
+                     <LinearLayout
+                         android:id="@+id/author_layout3"
+                         android:layout_width="match_parent"
+                         android:layout_height="wrap_content"
+                         android:layout_marginStart="@dimen/left_right_margin"
+                         android:layout_marginLeft="@dimen/left_right_margin"
+                         android:layout_marginEnd="@dimen/left_right_margin"
+                         android:layout_marginRight="@dimen/left_right_margin"
+                         android:weightSum="10"
+                         android:orientation="horizontal"
+                         android:visibility="gone">
+
+                             <EditText
+                                 android:id="@+id/last_name_input3"
+                                 android:layout_weight="5"
+                                 android:layout_width="0dp"
+                                 android:layout_height="wrap_content"
+                                 android:layout_marginEnd="@dimen/left_right_margin"
+                                 android:layout_marginRight="@dimen/left_right_margin"
+                                 android:hint="@string/last_name_tag"
+                                 android:textSize="@dimen/text_size" />
+
+                             <EditText
+                                 android:id="@+id/first_name_input3"
+                                 android:layout_weight="4"
+                                 android:layout_width="0dp"
+                                 android:layout_height="wrap_content"
+                                 android:layout_marginEnd="@dimen/left_right_margin"
+                                 android:layout_marginRight="@dimen/left_right_margin"
+                                 android:hint="@string/first_name_tag"
+                                 android:textSize="@dimen/text_size" />
+
+                             <ImageView
+                                 android:id="@+id/remove_author3"
+                                 android:layout_width="0dp"
+                                 android:layout_height="wrap_content"
+                                 android:layout_weight="1"
+                                 android:layout_gravity="center"
+                                 android:src="@drawable/ic_remove"
+                                 android:onClick="clickRemoveAuthor3"/>
+
+                     </LinearLayout>
+
+
+
 
                      <EditText
                          android:id="@+id/publisher_input"

@@ -25,6 +25,7 @@
     <string name="category_tag">Category:</string>
     <string name="summary_tag">Summary</string>
     <string name="summary_hint">Book summary here</string>
+    <string name="pages_string"> pages</string>
 
 
     <string name="sort_by_key" translatable="false">sort_by</string>
