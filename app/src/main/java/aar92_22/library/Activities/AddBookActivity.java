@@ -111,24 +111,7 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
         author2 = findViewById(R.id.author_layout2);
         author3 = findViewById(R.id.author_layout3);
 
-
         camera = findViewById(R.id.take_photo);
-        camera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AppExecutors.getInstance().otherIO().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        List<CategoryEntry> categoryList = categoryDataBase.categoryDao().loadAllCategories();
-                         for(int i = 0; i<categoryList.size(); i++){
-
-                             categoryDataBase.categoryDao().deleteCategory(categoryList.get(i));
-                         }
-
-                    }
-                });
-            }
-        });
 
         Toolbar toolbar = findViewById(R.id.toolbar);
 
@@ -211,24 +194,38 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
 
 
         });
+    }
 
 
+    public void clickAddAuthor(View view) {
 
+        if(author2.getVisibility() == View.GONE && author3.getVisibility() == View.GONE){
+            author2.setVisibility(View.VISIBLE);
+        } else if ( author2.getVisibility() == View.VISIBLE && author3.getVisibility() == View.GONE){
+            author3.setVisibility(View.VISIBLE);
+        }
 
+    }
+
+    public void clickRemoveAuthor2(View view) {
+        mLastName2.setText("");
+        mFirstName2.setText("");
+        author2.setVisibility(View.GONE);
+    }
+
+    public void clickRemoveAuthor3(View view) {
+        mLastName3.setText("");
+        mFirstName3.setText("");
+        author3.setVisibility(View.GONE);
+    }
+
+    public void clickTakePhoto(View view) {
 
 
     }
 
 
 
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt(INSTANCE_BOOK_ID, bookId);
-        super.onSaveInstanceState(outState);
-
-
-    }
 
 
     private void populateUI(BookEntry bookEntry){
@@ -239,9 +236,21 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
         mTitle.setText(bookEntry.getTitle());
         mLastName.setText(bookEntry.getLastName());
         mFirstName.setText(bookEntry.getFirstName());
+
+        if(!(bookEntry.getLastName2().equals("") && bookEntry.getFirstName2().equals(""))){
+            author2.setVisibility(View.VISIBLE);
+            mLastName2.setText(bookEntry.getLastName2());
+            mFirstName2.setText(bookEntry.getFirstName2());
+
+        }else if(!(bookEntry.getLastName3().equals("") && bookEntry.getFirstName2().equals("") )){
+            author3.setVisibility(View.VISIBLE);
+            mLastName3.setText(bookEntry.getLastName3());
+            mFirstName3.setText(bookEntry.getFirstName3());
+        }
+
         mPublisher.setText(bookEntry.getPublisher());
         mPublishedDate.setText(bookEntry.getPublishedDate());
-        mNumberPages.setText(bookEntry.getNumberPages());
+        mNumberPages.setText(String.valueOf(bookEntry.getNumberPages()));
         mSeries.setText(bookEntry.getSeries());
         mVolume.setText(bookEntry.getVolume());
         mSummary.setText(bookEntry.getSummary());
@@ -325,25 +334,14 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
 
     }
 
-    public void clickAddAuthor(View view) {
 
-        if(author2.getVisibility() == View.GONE && author3.getVisibility() == View.GONE){
-            author2.setVisibility(View.VISIBLE);
-        } else if ( author2.getVisibility() == View.VISIBLE && author3.getVisibility() == View.GONE){
-            author3.setVisibility(View.VISIBLE);
-        }
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(INSTANCE_BOOK_ID, bookId);
+        super.onSaveInstanceState(outState);
+
 
     }
 
-    public void clickRemoveAuthor2(View view) {
-        mLastName2.setText("");
-        mFirstName2.setText("");
-        author2.setVisibility(View.GONE);
-    }
 
-    public void clickRemoveAuthor3(View view) {
-        mLastName3.setText("");
-        mFirstName3.setText("");
-        author3.setVisibility(View.GONE);
-    }
 }
