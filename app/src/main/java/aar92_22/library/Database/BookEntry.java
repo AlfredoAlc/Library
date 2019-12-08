@@ -12,22 +12,30 @@ public class BookEntry {
     private String title;
     private String lastName;
     private String firstName;
+    private String lastName2;
+    private String firstName2;
+    private String lastName3;
+    private String firstName3;
     private String publisher;
     private String publishedDate;
-    private String numberPages;
+    private int numberPages;
     private String series;
     private String volume;
     private String category;
     private String summary;
 
     @Ignore
-    public BookEntry(String title, String lastName, String firstName,
-                     String publisher, String publishedDate, String numberPages,
-                     String series, String volume, String category, String summary) {
+    public BookEntry(String title, String lastName, String firstName, String lastName2, String firstName2,
+                     String lastName3, String firstName3, String publisher, String publishedDate,
+                     int numberPages, String series, String volume, String category, String summary) {
 
         this.title = title;
         this.lastName = lastName;
         this.firstName = firstName;
+        this.lastName2 = lastName2;
+        this.firstName2 = firstName2;
+        this.lastName3 = lastName3;
+        this.firstName3 = firstName3;
         this.publisher = publisher;
         this.publishedDate = publishedDate;
         this.numberPages = numberPages;
@@ -38,13 +46,18 @@ public class BookEntry {
     }
 
 
-    public BookEntry(int id, String title, String lastName, String firstName,
-                     String publisher, String publishedDate, String numberPages,
-                     String series, String volume, String category, String summary) {
+    public BookEntry(int id, String title, String lastName, String firstName, String lastName2,
+                     String firstName2, String lastName3, String firstName3, String publisher,
+                     String publishedDate, int numberPages, String series, String volume,
+                     String category, String summary) {
         this.id = id;
         this.title = title;
         this.lastName = lastName;
         this.firstName = firstName;
+        this.lastName2 = lastName2;
+        this.firstName2 = firstName2;
+        this.lastName3 = lastName3;
+        this.firstName3 = firstName3;
         this.publisher = publisher;
         this.publishedDate = publishedDate;
         this.numberPages = numberPages;
@@ -87,6 +100,38 @@ public class BookEntry {
         this.firstName = firstName;
     }
 
+    public String getLastName2() {
+        return lastName2;
+    }
+
+    public void setLastName2(String lastName2) {
+        this.lastName2 = lastName2;
+    }
+
+    public String getFirstName2() {
+        return firstName2;
+    }
+
+    public void setFirstName2(String firstName2) {
+        this.firstName2 = firstName2;
+    }
+
+    public String getLastName3() {
+        return lastName3;
+    }
+
+    public void setLastName3(String lastName3) {
+        this.lastName3 = lastName3;
+    }
+
+    public String getFirstName3() {
+        return firstName3;
+    }
+
+    public void setFirstName3(String firstName3) {
+        this.firstName3 = firstName3;
+    }
+
     public String getPublisher() {
         return publisher;
     }
@@ -103,11 +148,11 @@ public class BookEntry {
         this.publishedDate = publishedDate;
     }
 
-    public String getNumberPages() {
+    public int getNumberPages() {
         return numberPages;
     }
 
-    public void setNumberPages(String numberPages) {
+    public void setNumberPages(int numberPages) {
         this.numberPages = numberPages;
     }
 

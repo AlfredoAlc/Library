@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -25,7 +24,6 @@
         android:layout_marginTop="@dimen/top_margin"
         android:layout_marginStart="@dimen/left_right_margin"
         android:layout_marginLeft="@dimen/left_right_margin"
-        android:text="title"
         android:textColor="@color/primary_text"
         android:textSize="15sp"
         app:layout_constraintStart_toEndOf="@+id/book_image_view"
@@ -39,7 +37,6 @@
         android:layout_marginBottom="@dimen/top_margin"
         android:layout_marginStart="@dimen/left_right_margin"
         android:layout_marginLeft="@dimen/left_right_margin"
-        android:text="last name"
         android:textColor="@color/secondary_text"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -65,7 +62,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/space_margin"
         android:layout_marginLeft="@dimen/space_margin"
-        android:text="first name"
         android:textColor="@color/secondary_text"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/coma_tv"
@@ -78,7 +74,6 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/number_page_margin"
         android:layout_marginRight="@dimen/number_page_margin"
-        android:text="110"
         android:textColor="@color/primary_text"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -97,4 +92,4 @@
 
 
 
-</androidx.constraintlayout.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
