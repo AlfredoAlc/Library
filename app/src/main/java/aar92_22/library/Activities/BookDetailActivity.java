@@ -9,6 +9,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NavUtils;
+import androidx.core.app.ShareCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -16,6 +17,7 @@ import androidx.lifecycle.ViewModelProviders;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -74,6 +76,10 @@ public class BookDetailActivity extends AppCompatActivity {
     AppDataBase mDb;
 
     int bookId;
+
+    String titleShare;
+    String lastNameShare;
+    String firstNameShare;
 
 
     private AdView mAdView;
@@ -162,9 +168,13 @@ public class BookDetailActivity extends AppCompatActivity {
             return;
         }
 
-        titleTv.setText(bookEntry.getTitle());
-        lastNameTv.setText(bookEntry.getLastName());
-        firstNameTv.setText(bookEntry.getFirstName());
+        titleShare = bookEntry.getTitle();
+        lastNameShare = bookEntry.getLastName();
+        firstNameShare = bookEntry.getFirstName();
+
+        titleTv.setText(titleShare);
+        lastNameTv.setText(lastNameShare);
+        firstNameTv.setText(firstNameShare);
 
         if(!(bookEntry.getLastName2().equals("") && bookEntry.getFirstName2().equals(""))){
             lastNameTv2.setVisibility(View.VISIBLE);
@@ -233,6 +243,19 @@ public class BookDetailActivity extends AppCompatActivity {
 
     }
 
+    public void shareAction(){
+        String mimeType = "text/plain";
+        String textToShare = titleShare + " " +  getString(R.string.by_string) + " " + firstNameShare + "," + lastNameShare;
+
+
+        ShareCompat.IntentBuilder.from(BookDetailActivity.this)
+                .setChooserTitle(getString(R.string.share_title))
+                .setType(mimeType)
+                .setText(textToShare)
+                .startChooser();
+
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -298,7 +321,9 @@ public class BookDetailActivity extends AppCompatActivity {
 
                 break;
 
-
+            case R.id.share_action:
+                shareAction();
+                break;
 
 
         }

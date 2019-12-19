@@ -13,6 +13,7 @@
     <string name="filter_book_title">Filter Books</string>
     <string name="search_edit_text_hint">Title, Author</string>
     <string name="error">Error finding image</string>
+    <string name="share_string">Share</string>
 
 
 
@@ -59,6 +60,8 @@
     <string name="error_image_message">Error loading image</string>
     <string name="complete_title_warning">Add a title</string>
     <string name="complete_last_name_warning">Add Last Name author</string>
+    <string name="share_title">Share book</string>
+    <string name="by_string">by</string>
 
 
 </resources>

@@ -17,5 +17,12 @@
         android:orderInCategory="2"
         app:showAsAction="ifRoom"/>
 
+    <item
+        android:id="@+id/share_action"
+        android:title="@string/share_string"
+        android:icon="@drawable/ic_share"
+        android:orderInCategory="3"
+        app:showAsAction="ifRoom"/>
+
 
 </menu>
