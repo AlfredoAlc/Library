@@ -23,11 +23,13 @@ public class BookEntry {
     private String volume;
     private String category;
     private String summary;
+    private byte [] bookCover;
 
     @Ignore
     public BookEntry(String title, String lastName, String firstName, String lastName2, String firstName2,
                      String lastName3, String firstName3, String publisher, String publishedDate,
-                     int numberPages, String series, String volume, String category, String summary) {
+                     int numberPages, String series, String volume, String category, String summary,
+                     byte [] bookCover) {
 
         this.title = title;
         this.lastName = lastName;
@@ -43,13 +45,14 @@ public class BookEntry {
         this.volume = volume;
         this.category = category;
         this.summary = summary;
+        this.bookCover = bookCover;
     }
 
 
     public BookEntry(int id, String title, String lastName, String firstName, String lastName2,
                      String firstName2, String lastName3, String firstName3, String publisher,
                      String publishedDate, int numberPages, String series, String volume,
-                     String category, String summary) {
+                     String category, String summary, byte [] bookCover) {
         this.id = id;
         this.title = title;
         this.lastName = lastName;
@@ -65,6 +68,7 @@ public class BookEntry {
         this.volume = volume;
         this.category = category;
         this.summary = summary;
+        this.bookCover = bookCover;
     }
 
 
@@ -186,5 +190,13 @@ public class BookEntry {
 
     public void setSummary(String summary) {
         this.summary = summary;
+    }
+
+    public byte [] getBookCover() {
+        return bookCover;
+    }
+
+    public void setBookCover(byte [] bookCover) {
+        this.bookCover = bookCover;
     }
 }

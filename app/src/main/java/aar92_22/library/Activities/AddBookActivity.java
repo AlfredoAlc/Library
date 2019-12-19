@@ -1,7 +1,16 @@
 package aar92_22.library.Activities;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -10,25 +19,35 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NavUtils;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import aar92_22.library.AppExecutors;
+import aar92_22.library.BitmapUtils;
 import aar92_22.library.Database.AppDataBase;
 import aar92_22.library.Database.BookEntry;
 import aar92_22.library.Database.CategoryDataBase;
@@ -44,13 +63,20 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
 
     public static final String BOOK_ID = "book_id";
     public static final String INSTANCE_BOOK_ID = "instance_book_id";
+    private static final String FILE_PROVIDER_AUTHORITY = "aar92_22.library.fileprovider";
 
     private static final int DEFAULT_BOOK_ID = -1 ;
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_STORAGE_PERMISSION = 1;
 
 
     private int bookId = DEFAULT_BOOK_ID;
 
     String mCategory;
+    private String mTempPhotoPath;
+
+    private Bitmap mResultsBitmap;
+    private boolean rotateOrientation;
 
     EditText mTitle;
     EditText mLastName;
@@ -70,6 +96,8 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
 
     Button camera;
 
+    ImageView mBookCover;
+
     LinearLayout author2;
     LinearLayout author3;
 
@@ -83,6 +111,7 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_book);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         //Load ad
         AdView mAdView;
@@ -112,6 +141,8 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
         author3 = findViewById(R.id.author_layout3);
 
         camera = findViewById(R.id.take_photo);
+
+        mBookCover = findViewById(R.id.book_cover_input);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
 
@@ -220,12 +251,49 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
     }
 
     public void clickTakePhoto(View view) {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
 
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_STORAGE_PERMISSION);
+        } else {
+            launchCamera();
+        }
 
     }
 
 
+    private void launchCamera() {
 
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = BitmapUtils.createTempImageFile(this);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            if (photoFile != null) {
+                mTempPhotoPath = photoFile.getAbsolutePath();
+
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        FILE_PROVIDER_AUTHORITY,
+                        photoFile);
+
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        }
+    }
+
+
+    private void processAndSetImage() {
+        mResultsBitmap = BitmapUtils.resamplePic(this, mTempPhotoPath);
+        mBookCover.setImageBitmap(mResultsBitmap);
+    }
 
 
     private void populateUI(BookEntry bookEntry){
@@ -253,8 +321,27 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
         mNumberPages.setText(String.valueOf(bookEntry.getNumberPages()));
         mSeries.setText(bookEntry.getSeries());
         mVolume.setText(bookEntry.getVolume());
+
+        for(int i = 0; i < categoryList.size(); i++){
+            if(categoryList.get(i).equals(bookEntry.getCategory())){
+                category.setSelection(i);
+            }
+        }
+
+
+
         mSummary.setText(bookEntry.getSummary());
+
+
+
+        if(bookEntry.getBookCover() != null) {
+            byte[] imageInBytes = bookEntry.getBookCover();
+            mResultsBitmap = BitmapFactory.decodeByteArray(imageInBytes, 0, imageInBytes.length);
+            mBookCover.setImageBitmap(mResultsBitmap);
+        }
+
     }
+
 
     public void saveData() {
         String title = String.valueOf(mTitle.getText());
@@ -276,10 +363,19 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
         String volume = String.valueOf(mVolume.getText());
         String summary = String.valueOf(mSummary.getText());
 
+        byte[] imageInBytes;
+        if(mResultsBitmap != null) {
+            ByteArrayOutputStream objectByteArrayOutputStream = new ByteArrayOutputStream();
+            mResultsBitmap.compress(Bitmap.CompressFormat.JPEG, 100, objectByteArrayOutputStream);
+            imageInBytes = objectByteArrayOutputStream.toByteArray();
+
+        }else {
+            imageInBytes = null;
+        }
 
         final BookEntry bookEntry = new BookEntry(title,lastName, firstName, lastName2, firstName2,
                 lastName3, firstName3, publisher, publishedDate, numberPages, series, volume,
-                mCategory, summary);
+                mCategory, summary, imageInBytes);
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
@@ -315,7 +411,14 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
                 return true;
 
             case R.id.action_done:
-                saveData();
+
+                if(!(String.valueOf(mTitle.getText()).equals("") || String.valueOf(mLastName.getText()).equals(""))){
+                    saveData();
+                } else if (String.valueOf(mTitle.getText()).equals("")){
+                    Toast.makeText(this,R.string.complete_title_warning, Toast.LENGTH_LONG).show();
+                } else if(String.valueOf(mLastName.getText()).equals("")){
+                    Toast.makeText(this,R.string.complete_last_name_warning, Toast.LENGTH_LONG).show();
+                }
                 return true;
 
                 default:  return super.onOptionsItemSelected(item);
@@ -333,6 +436,36 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_STORAGE_PERMISSION: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    launchCamera();
+                } else {
+                    Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_SHORT).show();
+                }
+                break;
+            }
+        }
+    }
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            processAndSetImage();
+        }
+    }
+
+
+
 
 
     @Override
