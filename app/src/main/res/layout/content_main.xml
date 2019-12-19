@@ -13,14 +13,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/list_books_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/adView"
-        android:clipToPadding="false"
-        android:padding="@dimen/module_padding"
-        android:longClickable="true" />
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/pull_to_refresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/adView">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/list_books_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:longClickable="true"
+            android:padding="@dimen/module_padding"/>
+
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 
     <fragment
         android:id="@+id/nav_host_fragment"
@@ -44,7 +53,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:background="@color/colorAccent"
-        app:srcCompat="@drawable/ic_add_book" />
+        app:srcCompat="@drawable/ic_add_new_book" />
 
 
 

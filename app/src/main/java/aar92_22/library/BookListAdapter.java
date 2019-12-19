@@ -1,7 +1,8 @@
 package aar92_22.library;
 
 import android.content.Context;
-import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +13,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -35,6 +35,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
 
     private boolean listView;
     private boolean filterActivity;
+    Bitmap mResultsBitmap;
 
 
 
@@ -70,8 +71,6 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
         String firstName = book.getFirstName();
         int numberPages = book.getNumberPages();
 
-
-
         if(numberPages > 0){
             String pages_string = mContext.getString(R.string.pages_string);
             holder.mNumberPages.setText( numberPages + " " + pages_string);
@@ -85,6 +84,12 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
 
         holder.mTitleModule.setText(title);
 
+        if(book.getBookCover() != null) {
+            byte[] imageInBytes = book.getBookCover();
+            mResultsBitmap = BitmapFactory.decodeByteArray(imageInBytes, 0, imageInBytes.length);
+            holder.bookImageList.setImageBitmap(mResultsBitmap);
+            holder.bookImageModule.setImageBitmap(mResultsBitmap);
+        }
 
     }
 
@@ -114,7 +119,8 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
     class BookViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
             View.OnLongClickListener, View.OnCreateContextMenuListener {
 
-        ImageView bookImage;
+        ImageView bookImageList;
+        ImageView bookImageModule;
         TextView mTitle;
         TextView mLastName;
         TextView mFirstName;
@@ -129,7 +135,8 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
             super(itemView);
 
 
-            bookImage = itemView.findViewById(R.id.book_image_view);
+            bookImageList = itemView.findViewById(R.id.book_image_view_list);
+            bookImageModule = itemView.findViewById(R.id.book_image_view_module);
             mTitle = itemView.findViewById(R.id.title_tv);
             mLastName = itemView.findViewById(R.id.last_name_tv);
             mFirstName = itemView.findViewById(R.id.first_name_tv);
@@ -181,7 +188,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
         @Override
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
 
-            menu.add(0, 1,0,R.string.update_string);
+            menu.add(0, 1,0,R.string.edit_string);
             menu.add(0,2,1,R.string.delete_string);
 
         }

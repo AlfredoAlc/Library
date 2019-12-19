@@ -8,10 +8,9 @@
 
 
     <ImageView
-        android:id="@+id/book_image_view"
+        android:id="@+id/book_image_view_list"
         android:layout_width="80dp"
         android:layout_height="120dp"
-        android:padding="16dp"
         android:src="@drawable/ic_add_book"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,10 +22,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/top_margin"
         android:layout_marginStart="@dimen/left_right_margin"
-        android:layout_marginLeft="@dimen/left_right_margin"
         android:textColor="@color/primary_text"
         android:textSize="15sp"
-        app:layout_constraintStart_toEndOf="@+id/book_image_view"
+        app:layout_constraintStart_toEndOf="@+id/book_image_view_list"
         app:layout_constraintTop_toTopOf="parent" />
 
 
@@ -36,11 +34,10 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/top_margin"
         android:layout_marginStart="@dimen/left_right_margin"
-        android:layout_marginLeft="@dimen/left_right_margin"
         android:textColor="@color/secondary_text"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/book_image_view" />
+        app:layout_constraintStart_toEndOf="@+id/book_image_view_list" />
 
 
     <TextView
@@ -48,7 +45,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/space_margin"
-        android:layout_marginLeft="@dimen/space_margin"
         android:text="@string/coma"
         android:textColor="@color/secondary_text"
         android:textSize="12sp"
@@ -61,7 +57,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/space_margin"
-        android:layout_marginLeft="@dimen/space_margin"
         android:textColor="@color/secondary_text"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/coma_tv"
@@ -73,7 +68,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/number_page_margin"
-        android:layout_marginRight="@dimen/number_page_margin"
         android:textColor="@color/primary_text"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -84,7 +78,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_below="@+id/book_image_view"
+        android:layout_below="@+id/book_image_view_list"
         android:background="@color/divider"
         app:layout_constraintBottom_toBottomOf="parent" />
 

@@ -20,8 +20,12 @@
     <dimen name="top_margin">16dp</dimen>
     <dimen name="left_right_margin">10dp</dimen>
     <dimen name="text_size">18sp</dimen>
+    <dimen name="title_size_detail">26sp</dimen>
+    <dimen name="author_size_detail">22sp</dimen>
     <dimen name="space_margin">3dp</dimen>
     <dimen name="number_page_margin">30dp</dimen>
-
+    <dimen name="image_width">140dp</dimen>
+    <dimen name="image_height">280dp</dimen>
+    <dimen name="camera_button_size">40dp</dimen>
 
 </resources>

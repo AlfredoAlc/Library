@@ -1,6 +1,7 @@
 package aar92_22.library.ViewModel;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -20,11 +21,11 @@ public class MainViewModel extends AndroidViewModel {
     public MainViewModel(@NonNull Application application) {
         super(application);
         AppDataBase dataBase = AppDataBase.getsInstance(this.getApplication());
-        books = dataBase.bookDao().loadAllBooks();
+            books = dataBase.bookDao().loadAllBooks();
     }
 
     public LiveData<List<BookEntry>> getBooks(){
-        return books;
+            return books;
     }
 
 

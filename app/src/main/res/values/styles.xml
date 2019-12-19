@@ -29,12 +29,26 @@
     </style>
 
 
-    <style name="add_book_tv">
+    <style name="detail_tag_display">
 
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginStart">@dimen/left_right_margin</item>
         <item name="android:textSize">@dimen/text_size</item>
         <item name="android:textColor">@color/primary_text</item>
     </style>
 
+
+
+
+    <style name="detail_info_display">
+
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginStart">@dimen/left_right_margin</item>
+        <item name="android:textColor">@color/secondary_text</item>
+        <item name="android:textSize">@dimen/text_size</item>
+
+
+    </style>
 
 
 

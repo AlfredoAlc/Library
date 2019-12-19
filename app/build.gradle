@@ -4,7 +4,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "aar92_22.library"
-        minSdkVersion 15
+        minSdkVersion 19
         targetSdkVersion 28
         versionCode 6
         versionName "1.3"

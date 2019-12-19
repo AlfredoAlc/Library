@@ -11,6 +11,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -28,6 +30,7 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -73,6 +76,7 @@ public class MainActivity extends AppCompatActivity
     DrawerLayout drawer;
     NavigationView navigationView;
     NavController navController;
+    SwipeRefreshLayout pullToRefresh;
 
     boolean first;
 
@@ -152,8 +156,8 @@ public class MainActivity extends AppCompatActivity
             bookList.setHasFixedSize(true);
             mAdapter = new BookListAdapter(this, this,
                     this, listView);
-
             bookList.setAdapter(mAdapter);
+
             setUpViewModel();
 
         }
@@ -170,6 +174,14 @@ public class MainActivity extends AppCompatActivity
 
         }
 
+        pullToRefresh = findViewById(R.id.pull_to_refresh);
+        pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                setUpViewModel();
+                pullToRefresh.setRefreshing(false);
+            }
+        });
 
     }
 
@@ -203,13 +215,12 @@ public class MainActivity extends AppCompatActivity
 
     private void setUpViewModel(){
         MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
-        viewModel.getBooks().observe(this, new Observer<List<BookEntry>>() {
+        viewModel.getBooks().observe(MainActivity.this, new Observer<List<BookEntry>>() {
             @Override
             public void onChanged(@Nullable List<BookEntry> bookEntries) {
                 mAdapter.setBookEntry(bookEntries);
             }
         });
-
     }
 
 
@@ -335,9 +346,7 @@ public class MainActivity extends AppCompatActivity
             public void run() {
                 BookEntry bookEntry = mDb.bookDao().loadBookByIdIndividual(id);
                 Intent intent = new Intent(MainActivity.this, BookDetailActivity.class);
-                intent.putExtra(BookDetailActivity.EXTRA_BOOK_TITLE,bookEntry.getTitle());
-                intent.putExtra(BookDetailActivity.EXTRA_BOOK_LAST_NAME,bookEntry.getLastName());
-                intent.putExtra(BookDetailActivity.EXTRA_CATEGORY, bookEntry.getCategory());
+                intent.putExtra(BookDetailActivity.EXTRA_ID,bookEntry.getId());
                 startActivity(intent);
             }
         });
