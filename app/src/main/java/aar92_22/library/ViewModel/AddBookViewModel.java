@@ -11,7 +11,7 @@ public class AddBookViewModel extends ViewModel {
 
     private LiveData<BookEntry> book;
 
-    public AddBookViewModel (AppDataBase dataBase, int bookId){
+    AddBookViewModel (AppDataBase dataBase, int bookId){
 
         book = dataBase.bookDao().loadBookById(bookId);
 

@@ -17,7 +17,6 @@ import androidx.lifecycle.ViewModelProviders;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -82,7 +81,6 @@ public class BookDetailActivity extends AppCompatActivity {
     String firstNameShare;
 
 
-    private AdView mAdView;
 
 
     @Override
@@ -92,7 +90,7 @@ public class BookDetailActivity extends AppCompatActivity {
 
 
         //Load ad
-        mAdView = (AdView) findViewById(R.id.adView);
+        AdView mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.setAdSize(SMART_BANNER);
         mAdView.setAdUnitId(String.valueOf(R.string.banner_ad_unit_id));
@@ -245,7 +243,8 @@ public class BookDetailActivity extends AppCompatActivity {
 
     public void shareAction(){
         String mimeType = "text/plain";
-        String textToShare = titleShare + " " +  getString(R.string.by_string) + " " + firstNameShare + "," + lastNameShare;
+        String textToShare = titleShare + " " +  getString(R.string.by_string) + " " + firstNameShare + getString(R.string.coma) +
+                " " + lastNameShare;
 
 
         ShareCompat.IntentBuilder.from(BookDetailActivity.this)

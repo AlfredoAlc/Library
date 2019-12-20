@@ -13,6 +13,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -31,13 +32,8 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
     final private ListBookClickListener mOnClickListener ;
     final private BookLongClickListener mOnLongClickListener;
 
-
-
     private boolean listView;
     private boolean filterActivity;
-    Bitmap mResultsBitmap;
-
-
 
 
 
@@ -51,7 +47,8 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
 
 
     @Override
-    public BookViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    @NonNull
+    public BookViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         int layoutIdForBookList = R.layout.individual_book_recycler_view;
 
@@ -64,7 +61,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
     }
 
     @Override
-    public void onBindViewHolder(BookViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull BookViewHolder holder, int position) {
         BookEntry book = mBookEntry.get(position);
         String title = book.getTitle();
         String lastName = book.getLastName();
@@ -73,7 +70,8 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
 
         if(numberPages > 0){
             String pages_string = mContext.getString(R.string.pages_string);
-            holder.mNumberPages.setText( numberPages + " " + pages_string);
+            String textDisplayed = numberPages + " " + pages_string;
+            holder.mNumberPages.setText(textDisplayed);
         }
 
 
@@ -86,7 +84,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
 
         if(book.getBookCover() != null) {
             byte[] imageInBytes = book.getBookCover();
-            mResultsBitmap = BitmapFactory.decodeByteArray(imageInBytes, 0, imageInBytes.length);
+            Bitmap mResultsBitmap = BitmapFactory.decodeByteArray(imageInBytes, 0, imageInBytes.length);
             holder.bookImageList.setImageBitmap(mResultsBitmap);
             holder.bookImageModule.setImageBitmap(mResultsBitmap);
         }
@@ -109,9 +107,9 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
 
     }
 
-    public List<BookEntry> getBooks ( ){
+    /*public List<BookEntry> getBooks ( ){
         return mBookEntry;
-    }
+    }*/
 
 
 
@@ -131,7 +129,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
         FrameLayout listViewFrame;
         FrameLayout moduleViewFrame;
 
-        public BookViewHolder(View itemView) {
+        private BookViewHolder(View itemView) {
             super(itemView);
 
 
@@ -224,17 +222,16 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
         protected FilterResults performFiltering(CharSequence constraint) {
             List<BookEntry> filteredList = new ArrayList<>();
 
+            if (constraint != null || constraint.length() != 0) {
 
-            if(constraint != null || constraint.length() != 0){
-
-                if(filterActivity) {
+                if (filterActivity) {
                     for (BookEntry item : mBookEntryFull) {
                         if (item.getLastName().contains(constraint) || item.getFirstName().contains(constraint)) {
                             filteredList.add(item);
                         }
 
                     }
-                }else {
+                } else {
 
                     String filterPattern = constraint.toString().toLowerCase().trim();
 
@@ -248,7 +245,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
 
                 }
 
-            }else{
+            } else {
                 filteredList.addAll(mBookEntryFull);
 
             }

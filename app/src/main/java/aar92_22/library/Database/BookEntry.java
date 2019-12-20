@@ -84,119 +84,60 @@ public class BookEntry {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public String getLastName() {
         return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
     }
 
     public String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
     public String getLastName2() {
         return lastName2;
-    }
-
-    public void setLastName2(String lastName2) {
-        this.lastName2 = lastName2;
     }
 
     public String getFirstName2() {
         return firstName2;
     }
 
-    public void setFirstName2(String firstName2) {
-        this.firstName2 = firstName2;
-    }
-
     public String getLastName3() {
         return lastName3;
-    }
-
-    public void setLastName3(String lastName3) {
-        this.lastName3 = lastName3;
     }
 
     public String getFirstName3() {
         return firstName3;
     }
 
-    public void setFirstName3(String firstName3) {
-        this.firstName3 = firstName3;
-    }
-
     public String getPublisher() {
         return publisher;
-    }
-
-    public void setPublisher(String publisher) {
-        this.publisher = publisher;
     }
 
     public String getPublishedDate() {
         return publishedDate;
     }
 
-    public void setPublishedDate(String publishedDate) {
-        this.publishedDate = publishedDate;
-    }
-
     public int getNumberPages() {
         return numberPages;
-    }
-
-    public void setNumberPages(int numberPages) {
-        this.numberPages = numberPages;
     }
 
     public String getSeries() {
         return series;
     }
 
-    public void setSeries(String series) {
-        this.series = series;
-    }
-
     public String getVolume() {
         return volume;
-    }
-
-    public void setVolume(String volume) {
-        this.volume = volume;
     }
 
     public String getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
     public String getSummary() {
         return summary;
-    }
-
-    public void setSummary(String summary) {
-        this.summary = summary;
     }
 
     public byte [] getBookCover() {
         return bookCover;
     }
 
-    public void setBookCover(byte [] bookCover) {
-        this.bookCover = bookCover;
-    }
 }

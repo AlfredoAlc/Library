@@ -17,7 +17,7 @@ public class CategoryEntry {
 
     }
 
-    public CategoryEntry(int id, String category) {
+    CategoryEntry(int id, String category) {
         this.id = id;
         this.category = category;
     }

@@ -6,11 +6,9 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -76,7 +74,6 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
     private String mTempPhotoPath;
 
     private Bitmap mResultsBitmap;
-    private boolean rotateOrientation;
 
     EditText mTitle;
     EditText mLastName;
@@ -441,15 +438,13 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_STORAGE_PERMISSION: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    launchCamera();
-                } else {
-                    Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_SHORT).show();
-                }
-                break;
+
+        if(requestCode == REQUEST_STORAGE_PERMISSION){
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                launchCamera();
+            } else {
+                Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_SHORT).show();
             }
         }
     }
