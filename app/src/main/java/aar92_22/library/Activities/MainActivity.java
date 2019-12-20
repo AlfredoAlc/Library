@@ -6,26 +6,27 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -54,7 +55,7 @@ import static com.google.android.gms.ads.AdSize.SMART_BANNER;
 
 public class MainActivity extends AppCompatActivity
         implements SharedPreferences.OnSharedPreferenceChangeListener, BookListAdapter.ListBookClickListener,
-        BookListAdapter.BookLongClickListener {
+        BookListAdapter.BookLongClickListener, NavigationView.OnNavigationItemSelectedListener {
 
 
     private static final String EXTRA_CHANGE_VIEW_BOOLEAN = "change_view";
@@ -66,17 +67,18 @@ public class MainActivity extends AppCompatActivity
     private AppDataBase mDb;
     private CategoryDataBase categoryDataBase;
 
-    private AppBarConfiguration mAppBarConfiguration;
 
     RecyclerView bookList;
     BookListAdapter mAdapter;
 
     FloatingActionButton addBookFab;
     Toolbar toolbar;
+    ActionBarDrawerToggle toggle;
     DrawerLayout drawer;
     NavigationView navigationView;
-    NavController navController;
     SwipeRefreshLayout pullToRefresh;
+
+    Fragment mainFragment;
 
     boolean first;
 
@@ -109,21 +111,18 @@ public class MainActivity extends AppCompatActivity
         drawer = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
 
-        mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_main, R.id.nav_gallery, R.id.nav_slideshow,
-                R.id.nav_tools, R.id.nav_share, R.id.nav_send)
-                .setDrawerLayout(drawer)
-                .build();
+        toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        //drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        navigationView.setNavigationItemSelectedListener(this);
 
 
-
-        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(navigationView, navController);
-
+        mainFragment = getSupportFragmentManager().findFragmentById(R.id.nav_main);
 
         //Load ad
-        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdView mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.setAdSize(SMART_BANNER);
         mAdView.setAdUnitId(String.valueOf(R.string.banner_ad_unit_id));
@@ -255,10 +254,10 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
-
         menuInflater.inflate(R.menu.menu_main_activity,menu);
 
         MenuItem searchItem = menu.findItem(R.id.search_menu);
@@ -279,6 +278,8 @@ public class MainActivity extends AppCompatActivity
         });
         return true;
     }
+
+
 
 
     @Override
@@ -318,8 +319,6 @@ public class MainActivity extends AppCompatActivity
 
                 return true;
 
-
-
             default: return super.onOptionsItemSelected(item);
 
         }
@@ -328,16 +327,12 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+
+        if(key.equals(getString(R.string.library_name_key))){
+            Log.d("CHECKING...", String.valueOf(mainFragment.getTag()));
+        }
+
     }
-
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
-                || super.onSupportNavigateUp();
-    }
-
 
     @Override
     public void onListBookClick(final int id) {
@@ -436,7 +431,7 @@ public class MainActivity extends AppCompatActivity
 
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
     }
 
@@ -449,6 +444,19 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
+        int itemId = menuItem.getItemId();
+
+        if(itemId == R.id.setting_drawer_activity){
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(intent);
+        }
+
+        drawer.closeDrawer(GravityCompat.START);
+
+        return true;
+    }
 }
 
