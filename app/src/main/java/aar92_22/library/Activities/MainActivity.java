@@ -15,7 +15,6 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,7 +23,6 @@ import android.view.inputmethod.EditorInfo;
 
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.preference.PreferenceManager;
@@ -39,7 +37,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import aar92_22.library.AppExecutors;
 import aar92_22.library.BookListAdapter;
@@ -61,13 +62,20 @@ public class MainActivity extends AppCompatActivity
     private static final String EXTRA_CHANGE_VIEW_BOOLEAN = "change_view";
     private int bookId;
     private boolean listView;
-    private boolean filterActivated;
+    private boolean authorFilterActivated;
+    private boolean categoryFilterActivated;
+    private boolean seriesFilterActivated;
     private String authorFilter;
+    private String categoryFilter;
+    private String seriesFilter;
+    boolean first;
+    boolean filtersActivated = false;
+    String sortBy;
 
     private AppDataBase mDb;
     private CategoryDataBase categoryDataBase;
 
-
+    SharedPreferences sharedPreferences;
     RecyclerView bookList;
     BookListAdapter mAdapter;
 
@@ -78,9 +86,9 @@ public class MainActivity extends AppCompatActivity
     NavigationView navigationView;
     SwipeRefreshLayout pullToRefresh;
 
-    Fragment mainFragment;
+    List<BookEntry> listToFilter;
 
-    boolean first;
+
 
 
 
@@ -104,8 +112,11 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.mainToolbar);
+        toolbar.setTitle(getString(R.string.library_string));
         setSupportActionBar(toolbar);
+
+
 
 
         drawer = findViewById(R.id.drawer_layout);
@@ -113,13 +124,10 @@ public class MainActivity extends AppCompatActivity
 
         toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        //drawer.setDrawerListener(toggle);
         toggle.syncState();
 
         navigationView.setNavigationItemSelectedListener(this);
 
-
-        mainFragment = getSupportFragmentManager().findFragmentById(R.id.nav_main);
 
         //Load ad
         AdView mAdView = findViewById(R.id.adView);
@@ -129,10 +137,9 @@ public class MainActivity extends AppCompatActivity
         mAdView.loadAd(adRequest);
 
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        sharedPreferences.getString(getString(R.string.sort_by_key), "" );
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+
 
 
         if(savedInstanceState != null){
@@ -146,7 +153,7 @@ public class MainActivity extends AppCompatActivity
             }
 
 
-            setUpViewModel();
+            setUpViewModel(sharedPreferences);
 
         }else {
             listView = true;
@@ -157,7 +164,7 @@ public class MainActivity extends AppCompatActivity
                     this, listView);
             bookList.setAdapter(mAdapter);
 
-            setUpViewModel();
+            setUpViewModel(sharedPreferences);
 
         }
 
@@ -174,14 +181,20 @@ public class MainActivity extends AppCompatActivity
         }
 
         pullToRefresh = findViewById(R.id.pull_to_refresh);
-        pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                setUpViewModel();
-                pullToRefresh.setRefreshing(false);
-            }
-        });
 
+            pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    if(!filtersActivated) {
+                        setUpViewModel(sharedPreferences);
+                    }
+                    pullToRefresh.setRefreshing(false);
+
+                }
+            });
+
+
+        setToolbarName(sharedPreferences);
     }
 
 
@@ -212,12 +225,14 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void setUpViewModel(){
-        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+    private void setUpViewModel(SharedPreferences sharedPreferences){
+        sortBy = sharedPreferences.getString(getString(R.string.sort_by_key), getString(R.string.title) );
+        MainViewModel viewModel = new MainViewModel(getApplication(),sortBy);
         viewModel.getBooks().observe(MainActivity.this, new Observer<List<BookEntry>>() {
             @Override
             public void onChanged(@Nullable List<BookEntry> bookEntries) {
                 mAdapter.setBookEntry(bookEntries);
+                listToFilter = bookEntries;
             }
         });
     }
@@ -253,6 +268,74 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+    private void setToolbarName (SharedPreferences sharedPreferences){
+        toolbar.setTitle(sharedPreferences.getString(
+                getString(R.string.library_name_key),""));
+
+    }
+
+    private void setFilter(){
+
+
+        BookEntry entry;
+        List<BookEntry> result = new ArrayList<>();
+
+        if(listToFilter != null){
+
+            for(int i = 0; i<listToFilter.size(); i++){
+
+                entry = listToFilter.get(i);
+
+                if(authorFilterActivated && categoryFilterActivated && seriesFilterActivated){
+                    if(entry.getLastName().equals(authorFilter) &&
+                            entry.getCategory().equals(categoryFilter) &&
+                            entry.getSeries().equals(seriesFilter)){
+                        result.add(entry);
+                    }
+                }else if (authorFilterActivated && categoryFilterActivated && !seriesFilterActivated){
+                    if(entry.getLastName().equals(authorFilter) &&
+                            entry.getCategory().equals(categoryFilter)){
+                        result.add(entry);
+                    }
+
+                }else if (authorFilterActivated && !categoryFilterActivated && seriesFilterActivated){
+                    if(entry.getLastName().equals(authorFilter) &&
+                            entry.getSeries().equals(seriesFilter)){
+                        result.add(entry);
+                    }
+
+                }else if (authorFilterActivated && !categoryFilterActivated && !seriesFilterActivated){
+                    if(entry.getLastName().equals(authorFilter)){
+                        result.add(entry);
+                    }
+
+                }else if (!authorFilterActivated && categoryFilterActivated && seriesFilterActivated){
+                    if(entry.getCategory().equals(categoryFilter) &&
+                            entry.getSeries().equals(seriesFilter)){
+                        result.add(entry);
+                    }
+
+                }else if (!authorFilterActivated && categoryFilterActivated && !seriesFilterActivated){
+                    if(entry.getCategory().equals(categoryFilter)){
+                        result.add(entry);
+                    }
+
+                }else if (!authorFilterActivated && !categoryFilterActivated && seriesFilterActivated){
+                    if(entry.getSeries().equals(seriesFilter)){
+                        result.add(entry);
+                    }
+
+                }
+
+            }
+
+        }
+
+
+        mAdapter.setBookEntry(result);
+
+
+    }
 
 
     @Override
@@ -293,12 +376,12 @@ public class MainActivity extends AppCompatActivity
                     listView = false;
                     item.setIcon(R.drawable.ic_view_list);
                     setUpGridLayout();
-                    setUpViewModel();
+                    setUpViewModel(sharedPreferences);
                 } else {
                     listView = true;
                     item.setIcon(R.drawable.ic_view_module);
                     setUpLinearLayout();
-                    setUpViewModel();
+                    setUpViewModel(sharedPreferences);
                 }
 
                 return true;
@@ -307,15 +390,19 @@ public class MainActivity extends AppCompatActivity
 
             case R.id.filter_menu:
 
-                if(filterActivated){
-                    Intent intent = new Intent(MainActivity.this, FilterActivity.class);
-                    intent.putExtra(FilterActivity.AUTHOR_FILTER,authorFilter);
-                    startActivityForResult(intent,100);
+                Intent intent = new Intent(MainActivity.this, FilterActivity.class);
 
-                }else{
-                    Intent intent = new Intent(MainActivity.this, FilterActivity.class);
-                    startActivityForResult(intent,100);
+                if(authorFilterActivated){
+                    intent.putExtra(FilterActivity.AUTHOR_FILTER,authorFilter);
                 }
+                if(categoryFilterActivated){
+                    intent.putExtra(FilterActivity.CATEGORY_FILTER,categoryFilter);
+                }
+                if(seriesFilterActivated){
+                    intent.putExtra(FilterActivity.SERIES_FILTER,seriesFilter);
+                }
+
+                startActivityForResult(intent,100);
 
                 return true;
 
@@ -329,7 +416,9 @@ public class MainActivity extends AppCompatActivity
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
         if(key.equals(getString(R.string.library_name_key))){
-            Log.d("CHECKING...", String.valueOf(mainFragment.getTag()));
+            setToolbarName(sharedPreferences);
+        } else if(key.equals(getString(R.string.sort_by_key))){
+            setUpViewModel(sharedPreferences);
         }
 
     }
@@ -346,6 +435,22 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+
+        int itemId = menuItem.getItemId();
+
+        if(itemId == R.id.setting_drawer_activity){
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(intent);
+        }
+
+        drawer.closeDrawer(GravityCompat.START);
+
+        return true;
+    }
+
 
     @Override
     public void onLongBookClick(int id) {
@@ -413,17 +518,36 @@ public class MainActivity extends AppCompatActivity
 
             if(resultCode == RESULT_OK) {
 
-                if(data != null) {
-                    filterActivated = true;
-                    authorFilter = data.getStringExtra(FilterActivity.AUTHOR_FILTER);
-                    mAdapter.setFiltered(filterActivated);
-                    mAdapter.getFilter().filter(authorFilter);
+                if (data != null) {
+
+                    filtersActivated = true;
+
+                    authorFilterActivated = data.getBooleanExtra(FilterActivity.AUTHOR_FILTER_ACTIVATED, false);
+                    categoryFilterActivated = data.getBooleanExtra(FilterActivity.CATEGORY_FILTER_ACTIVATED, false);
+                    seriesFilterActivated = data.getBooleanExtra(FilterActivity.SERIES_FILTER_ACTIVATED, false);
+
+                    if (authorFilterActivated) {
+                        authorFilter = data.getStringExtra(FilterActivity.AUTHOR_FILTER);
+                    }
+                    if (categoryFilterActivated) {
+                        categoryFilter = data.getStringExtra(FilterActivity.CATEGORY_FILTER);
+                    }
+                    if (seriesFilterActivated) {
+                        seriesFilter = data.getStringExtra(FilterActivity.SERIES_FILTER);
+                    }
+
+                    setFilter();
+
                 }
+
             }
+
             if(resultCode == RESULT_CANCELED){
-                filterActivated = false;
-                mAdapter.setFiltered(false);
-                mAdapter.getFilter().filter("");
+                filtersActivated = false;
+                authorFilterActivated = false;
+                categoryFilterActivated = false;
+                seriesFilterActivated = false;
+                setUpViewModel(sharedPreferences);
             }
         }
 
@@ -444,19 +568,5 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-
-        int itemId = menuItem.getItemId();
-
-        if(itemId == R.id.setting_drawer_activity){
-            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-            startActivity(intent);
-        }
-
-        drawer.closeDrawer(GravityCompat.START);
-
-        return true;
-    }
 }
 
