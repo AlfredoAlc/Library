@@ -3,6 +3,8 @@ package aar92_22.library;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -32,8 +35,10 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
     final private ListBookClickListener mOnClickListener ;
     final private BookLongClickListener mOnLongClickListener;
 
+    Drawable drawable;
+
     private boolean listView;
-    private boolean filterActivity;
+
 
 
 
@@ -43,60 +48,6 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
         this.mOnClickListener = mOnClickListener;
         this.mOnLongClickListener = mOnLongClickListener;
         this.listView = listView;
-    }
-
-
-    @Override
-    @NonNull
-    public BookViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-        int layoutIdForBookList = R.layout.individual_book_recycler_view;
-
-
-        LayoutInflater layoutInflater = LayoutInflater.from(mContext);
-
-        View view = layoutInflater.inflate(layoutIdForBookList,parent,false);
-
-        return new BookViewHolder(view);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull BookViewHolder holder, int position) {
-        BookEntry book = mBookEntry.get(position);
-        String title = book.getTitle();
-        String lastName = book.getLastName();
-        String firstName = book.getFirstName();
-        int numberPages = book.getNumberPages();
-
-        if(numberPages > 0){
-            String pages_string = mContext.getString(R.string.pages_string);
-            String textDisplayed = numberPages + " " + pages_string;
-            holder.mNumberPages.setText(textDisplayed);
-        }
-
-
-        holder.mTitle.setText(title);
-        holder.mLastName.setText(lastName);
-        holder.mFirstName.setText(firstName);
-
-
-        holder.mTitleModule.setText(title);
-
-        if(book.getBookCover() != null) {
-            byte[] imageInBytes = book.getBookCover();
-            Bitmap mResultsBitmap = BitmapFactory.decodeByteArray(imageInBytes, 0, imageInBytes.length);
-            holder.bookImageList.setImageBitmap(mResultsBitmap);
-            holder.bookImageModule.setImageBitmap(mResultsBitmap);
-        }
-
-    }
-
-    @Override
-    public int getItemCount() {
-        if (mBookEntry == null ){
-            return 0;
-        }
-        return mBookEntry.size();
     }
 
 
@@ -110,6 +61,149 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
     /*public List<BookEntry> getBooks ( ){
         return mBookEntry;
     }*/
+
+
+
+    @Override
+    @NonNull
+    public BookViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+        int layoutIdForBookList = R.layout.individual_book_recycler_view;
+
+        drawable = ContextCompat.getDrawable(mContext,R.drawable.ic_add_book);
+
+
+        LayoutInflater layoutInflater = LayoutInflater.from(mContext);
+
+        View view = layoutInflater.inflate(layoutIdForBookList,parent,false);
+
+        return new BookViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull BookViewHolder holder, int position) {
+        BookEntry book = mBookEntry.get(position);
+
+        String title = "";
+        String lastName = "";
+        String firstName = "";
+        int numberPages = 0;
+
+        byte[] imageInBytes = null;
+        Bitmap mResultsBitmap;
+
+        if(!book.getTitle().equals("")){
+            title = book.getTitle();
+        }
+        if(!book.getLastName().equals("")){
+            lastName = book.getLastName();
+        }
+        if(!book.getFirstName().equals("")){
+            firstName = book.getFirstName();
+        }
+
+
+        numberPages = book.getNumberPages();
+        if(numberPages > 0){
+            holder.mNumberPages.setVisibility(View.VISIBLE);
+            String pages_string = mContext.getString(R.string.pages_string);
+            String textDisplayed = numberPages + " " + pages_string;
+            holder.mNumberPages.setText(textDisplayed);
+        } else {
+            holder.mNumberPages.setVisibility(View.INVISIBLE);
+        }
+
+
+        holder.mTitle.setText(title);
+        holder.mLastName.setText(lastName);
+        holder.mFirstName.setText(firstName);
+
+
+        holder.mTitleModule.setText(title);
+
+        if(book.getBookCover() != null) {
+            imageInBytes = book.getBookCover();
+            mResultsBitmap = BitmapFactory.decodeByteArray(imageInBytes, 0, imageInBytes.length);
+            holder.bookImageList.setImageBitmap(mResultsBitmap);
+            holder.bookImageModule.setImageBitmap(mResultsBitmap);
+        }else {
+            holder.bookImageList.setImageDrawable(drawable);
+            holder.bookImageModule.setImageDrawable(drawable);
+        }
+
+
+
+    }
+
+    public interface ListBookClickListener {
+
+        void onListBookClick (int id);
+
+    }
+
+    public interface BookLongClickListener {
+
+        void onLongBookClick (int id);
+
+    }
+
+    @Override
+    public int getItemCount() {
+        if (mBookEntry == null ){
+            return 0;
+        }
+        return mBookEntry.size();
+    }
+
+
+    @Override
+    public Filter getFilter() {
+        return searchFilter;
+    }
+
+
+
+    private Filter searchFilter =  new Filter() {
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            List<BookEntry> filteredList = new ArrayList<>();
+
+            if (constraint != null || constraint.length() != 0) {
+
+                String filterPattern = constraint.toString().toLowerCase().trim();
+
+                for (BookEntry item : mBookEntryFull) {
+                    if (item.getTitle().toLowerCase().contains(filterPattern) ||
+                            item.getLastName().toLowerCase().contains(filterPattern) ||
+                            item.getFirstName().toLowerCase().contains(filterPattern)) {
+                        filteredList.add(item);
+                    }
+                }
+
+            } else {
+                filteredList.addAll(mBookEntryFull);
+
+            }
+
+
+            FilterResults results = new FilterResults();
+            results.values = filteredList;
+
+            return results;
+
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            mBookEntry.clear();
+            mBookEntry.addAll((List) results.values);
+            notifyDataSetChanged();
+        }
+    };
+
+
+
 
 
 
@@ -197,79 +291,6 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
     }
 
 
-
-
-    public interface ListBookClickListener {
-
-        void onListBookClick (int id);
-
-    }
-
-    public interface BookLongClickListener {
-
-        void onLongBookClick (int id);
-
-    }
-
-
-    @Override
-    public Filter getFilter() {
-        return searchFilter;
-    }
-
-    private Filter searchFilter =  new Filter() {
-        @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
-            List<BookEntry> filteredList = new ArrayList<>();
-
-            if (constraint != null || constraint.length() != 0) {
-
-                if (filterActivity) {
-                    for (BookEntry item : mBookEntryFull) {
-                        if (item.getLastName().contains(constraint) || item.getFirstName().contains(constraint)) {
-                            filteredList.add(item);
-                        }
-
-                    }
-                } else {
-
-                    String filterPattern = constraint.toString().toLowerCase().trim();
-
-                    for (BookEntry item : mBookEntryFull) {
-                        if (item.getTitle().toLowerCase().contains(filterPattern) ||
-                                item.getLastName().toLowerCase().contains(filterPattern) ||
-                                item.getFirstName().toLowerCase().contains(filterPattern)) {
-                            filteredList.add(item);
-                        }
-                    }
-
-                }
-
-            } else {
-                filteredList.addAll(mBookEntryFull);
-
-            }
-
-
-            FilterResults results = new FilterResults();
-            results.values = filteredList;
-
-            return results;
-
-        }
-
-        @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
-            mBookEntry.clear();
-            mBookEntry.addAll((List) results.values);
-            notifyDataSetChanged();
-        }
-    };
-
-
-    public void setFiltered (boolean filterActivity){
-        this.filterActivity = filterActivity;
-    }
 
 
 }

@@ -6,15 +6,22 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+
+import androidx.room.RawQuery;
 import androidx.room.Update;
+import androidx.sqlite.db.SupportSQLiteQuery;
 
 import java.util.List;
+
 
 @Dao
 public interface BookDao  {
 
-    @Query("SELECT * FROM books")
-    LiveData<List<BookEntry>> loadAllBooks ();
+
+
+
+    @RawQuery(observedEntities = BookEntry.class)
+    LiveData<List<BookEntry>> loadAllBooks (SupportSQLiteQuery query);
 
     @Insert
     void insertBook ( BookEntry bookEntry);
