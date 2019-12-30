@@ -1,16 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <array name="sort_by_list_entries">
-        <item> Alphabetical</item>
-        <item> Favourites </item>
-        <item> Last saved </item>
+        <item> @string/Title</item>
+        <item> @string/Author_Last_name</item>
+        <item> @string/Author_First_name</item>
+        <item> @string/Series</item>
+        <item> @string/Date_Added</item>
     </array>
 
     <array name="sort_by_list_values">
-        <item> alphabetical</item>
-        <item> favourites </item>
-        <item> last_saved</item>
+        <item> @string/title</item>
+        <item> @string/last_name</item>
+        <item> @string/first_name</item>
+        <item> @string/series</item>
+        <item> @string/date_added</item>
     </array>
 
 
+    <string name="Title">Title</string>
+    <string name="Author_Last_name">Author\'s Last name</string>
+    <string name="Author_First_name">Author\'s First name</string>
+    <string name="Series">Series</string>
+    <string name="Date_Added">Date added</string>
+    <string name="alphabetical" translatable="false">alphabetical</string>
+    <string name="title" translatable="false">title</string>
+    <string name="last_name" translatable="false">lastName</string>
+    <string name="first_name" translatable="false">firstName</string>
+    <string name="series" translatable="false">series</string>
+    <string name="date_added" translatable="false">dateAdded</string>
 </resources>

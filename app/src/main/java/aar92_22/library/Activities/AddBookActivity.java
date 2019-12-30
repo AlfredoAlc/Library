@@ -200,7 +200,7 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
         AppExecutors.getInstance().otherIO().execute(new Runnable() {
             @Override
             public void run() {
-                List<CategoryEntry> categoryEntries = categoryDataBase.categoryDao().loadAllCategories();
+                List<CategoryEntry> categoryEntries = categoryDataBase.categoryDao().loadAllCategoriesList();
 
                 for (int i=0; i< categoryEntries.size(); i++) {
 

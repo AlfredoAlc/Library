@@ -35,7 +35,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
     final private ListBookClickListener mOnClickListener ;
     final private BookLongClickListener mOnLongClickListener;
 
-    Drawable drawable;
+    private Drawable drawable;
 
     private boolean listView;
 
@@ -87,9 +87,8 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
         String title = "";
         String lastName = "";
         String firstName = "";
-        int numberPages = 0;
-
-        byte[] imageInBytes = null;
+        int numberPages;
+        byte[] imageInBytes;
         Bitmap mResultsBitmap;
 
         if(!book.getTitle().equals("")){

@@ -8,13 +8,13 @@
     <string name="delete_string">Delete</string>
     <string name="delete_message">You want to delete this book?</string>
     <string name="permission_denied">Permission denied</string>
+    <string name="library_string">Library</string>
     <string name="book_detail_title">Book detail</string>
     <string name="add_book_title">Add new book</string>
     <string name="filter_book_title">Filter Books</string>
     <string name="search_edit_text_hint">Title, Author</string>
     <string name="error">Error finding image</string>
     <string name="share_string">Share</string>
-
 
 
     <string name="title_tag">Title</string>
@@ -35,13 +35,17 @@
 
     <string name="sort_by_key" translatable="false">sort_by</string>
     <string name="sort_by_title">Sort by</string>
-    <string name="check_first_category_list_key">check_list</string>
+    <string name="check_first_category_list_key" translatable="false">check_list</string>
     <string name="check_first_category_list_title">Category</string>
-    <string name="action_change_view" translatable="false">Change View</string>
-    <string name="action_search" translatable="false">Search</string>
-    <string name="action_filter" translatable="false">Sort</string>
-    <string name="action_refresh" translatable="false">Refresh</string>
-    <string name="action_done" translatable="false">Done</string>
+    <string name="library_name_key" translatable="false">library_name</string>
+    <string name="library_name_title">Library name</string>
+
+
+    <string name="action_change_view">Change View</string>
+    <string name="action_search">Search</string>
+    <string name="action_filter">Filter</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="action_done">Done</string>
 
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -51,7 +55,9 @@
     <string name="nav_header_desc">Navigation header</string>
 
 
-    <string name="menu_main">Library</string>
+    <string name="settings_string"> Settings </string>
+
+
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
     <string name="menu_tools">Tools</string>
@@ -62,6 +68,17 @@
     <string name="complete_last_name_warning">Add Last Name author</string>
     <string name="share_title">Share book</string>
     <string name="by_string">by</string>
+    <string name="edit_category_key">edit_category_key</string>
+    <string name="edit_category_title">Edit category</string>
+    <string name="edit_category_summary">Add, delete or rename categories.</string>
+    <string name="add_category">add_category</string>
+    <string name="ok">OK</string>
+    <string name="cancel">CANCEL</string>
+    <string name="new_category">New category</string>
+    <string name="name">Name:</string>
+    <string name="rename_title">Rename</string>
+    <string name="add_new_category">Add new category</string>
+    <string name="list_view_book">list_view_book</string>
 
 
 </resources>

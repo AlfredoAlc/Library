@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:title="@string/add_book_title"
+            app:title="@string/settings_string"
             app:titleMarginStart="20dp"
             app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
@@ -26,7 +26,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
 
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/activity_settings"
         android:name="aar92_22.library.Fragments.SettingsFragment"
         android:layout_width="match_parent"

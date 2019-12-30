@@ -4,16 +4,32 @@
 
 
 
+    <EditTextPreference
+        android:defaultValue="@string/library_string"
+        android:key="@string/library_name_key"
+        android:title="@string/library_name_title" />
 
     <ListPreference
         android:entries="@array/sort_by_list_entries"
         android:entryValues="@array/sort_by_list_values"
+        android:defaultValue="@string/alphabetical"
         android:key="@string/sort_by_key"
         android:title="@string/sort_by_title"/>
+
+    <Preference
+        android:key="@string/edit_category_key"
+        android:title="@string/edit_category_title"/>
+
+    <Preference
+        android:key="test_two_preference_key"
+        android:title="Test two preference"/>
 
 
     <CheckBoxPreference
         android:key="@string/check_first_category_list_key"
         android:title="@string/check_first_category_list_title" />
+
+
+
 
 </PreferenceScreen>

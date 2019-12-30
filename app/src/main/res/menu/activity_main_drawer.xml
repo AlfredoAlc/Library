@@ -3,16 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
+    <group android:checkableBehavior="single"/>
+
         <item
-            android:id="@+id/nav_main"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="@string/menu_main"
-            android:visible="false"/>
-        <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/menu_gallery" />
+            android:id="@+id/setting_drawer_activity"
+            android:icon="@drawable/ic_settings"
+            android:title="@string/settings_string"/>
         <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_menu_slideshow"
@@ -21,7 +17,10 @@
             android:id="@+id/nav_tools"
             android:icon="@drawable/ic_menu_manage"
             android:title="@string/menu_tools" />
-    </group>
+
+
+
+
 
     <item android:title="Communicate">
         <menu>
