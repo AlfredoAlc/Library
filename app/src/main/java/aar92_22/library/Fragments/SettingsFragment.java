@@ -1,10 +1,12 @@
 package aar92_22.library.Fragments;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
@@ -13,18 +15,21 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
 import aar92_22.library.Activities.EditCategoryActivity;
-import aar92_22.library.Activities.SettingsActivity;
+import aar92_22.library.AppExecutors;
+import aar92_22.library.Database.AppDataBase;
+import aar92_22.library.Database.BookEntry;
 import aar92_22.library.R;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements
         SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceChangeListener,
         Preference.OnPreferenceClickListener {
-
+    AppDataBase mDb;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        mDb = AppDataBase.getsInstance(getActivity());
     }
 
     @Override
@@ -66,6 +71,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             editCategory.setOnPreferenceClickListener(this);
         }
 
+        Preference deleteLibrary = findPreference(getString(R.string.delete_library_key));
+        if(deleteLibrary != null){
+            deleteLibrary.setOnPreferenceClickListener(this);
+        }
+
 
     }
 
@@ -75,8 +85,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
         if(preference.getKey().equals(getString(R.string.edit_category_key))){
             preference.setSummary(getString(R.string.edit_category_summary));
-        } else if(preference.getKey().equals("test_two_preference_key")){
-            preference.setSummary("Test two preference active");
+        }
+        if(preference.getKey().equals(getString(R.string.delete_library_key))){
+            preference.setSummary(getString(R.string.delete_library_summary));
         }
 
 
@@ -134,6 +145,38 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             Intent intent = new Intent(getContext(), EditCategoryActivity.class);
             startActivity(intent);
         }
+        if(preference.getKey().equals(getString(R.string.delete_library_key))){
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage(R.string.delete_library_message);
+            builder.setCancelable(true);
+
+            builder.setPositiveButton(
+                    "Yes",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mDb.clearAllTables();
+                                }
+                            });
+
+                            dialog.cancel();
+                        }
+                    });
+
+            builder.setNegativeButton(
+                    "No",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+        }
+
 
         return true;
     }

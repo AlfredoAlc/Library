@@ -59,6 +59,7 @@
                         android:layout_height="@dimen/image_height"
                         android:layout_marginTop="20dp"
                         android:src="@drawable/ic_add_book"
+                        android:contentDescription="@string/cover_book_view_description"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"/>
 

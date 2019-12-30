@@ -142,7 +142,9 @@ public class EditCategoryActivity extends AppCompatActivity implements CategoryL
             public void onClick(DialogInterface dialog, int id) {
                 categoryName = String.valueOf(categoryNameET.getText());
                 addNewCategory(categoryName, categoryId);
+                dialog.dismiss();
             }
+
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {

@@ -58,27 +58,28 @@
     <string name="settings_string"> Settings </string>
 
 
-    <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
-    <string name="menu_tools">Tools</string>
-    <string name="menu_share">Share</string>
-    <string name="menu_send">Send</string>
+
     <string name="error_image_message">Error loading image</string>
     <string name="complete_title_warning">Add a title</string>
     <string name="complete_last_name_warning">Add Last Name author</string>
     <string name="share_title">Share book</string>
     <string name="by_string">by</string>
-    <string name="edit_category_key">edit_category_key</string>
+    <string name="edit_category_key" translatable="false">edit_category_key</string>
     <string name="edit_category_title">Edit category</string>
     <string name="edit_category_summary">Add, delete or rename categories.</string>
     <string name="add_category">add_category</string>
-    <string name="ok">OK</string>
+    <string name="ok" translatable="false">OK</string>
     <string name="cancel">CANCEL</string>
     <string name="new_category">New category</string>
     <string name="name">Name:</string>
     <string name="rename_title">Rename</string>
     <string name="add_new_category">Add new category</string>
-    <string name="list_view_book">list_view_book</string>
+    <string name="list_view_book" translatable="false">list_view_book</string>
+    <string name="delete_library_key" translatable="false">delete_library_key</string>
+    <string name="delete_library_title">Delete library</string>
+    <string name="cover_book_view_description" translatable="false">cover_description</string>
+    <string name="delete_library_summary">Delete all your books</string>
+    <string name="delete_library_message">Are you sure to delete your library</string>
 
 
 </resources>

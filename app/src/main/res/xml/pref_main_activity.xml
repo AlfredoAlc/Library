@@ -21,8 +21,8 @@
         android:title="@string/edit_category_title"/>
 
     <Preference
-        android:key="test_two_preference_key"
-        android:title="Test two preference"/>
+        android:key="@string/delete_library_key"
+        android:title="@string/delete_library_title"/>
 
 
     <CheckBoxPreference
