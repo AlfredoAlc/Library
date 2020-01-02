@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:orientation="vertical"
+    tools:context=".Activities.AboutActivity">
+
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/app_bar"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:title="@string/about"
+            app:titleMarginStart="20dp"
+            app:popupTheme="@style/AppTheme.PopupOverlay"/>
+
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+
+        <TextView
+            android:id="@+id/appNameTextView"
+            style="@style/TextAppearance.AppCompat.Display3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:layout_gravity="center"
+            android:text="@string/app_name"
+            android:textColor="@color/colorAccent"
+            android:fontFamily="sans-serif"/>
+
+
+        <Button
+            android:id="@+id/share_button"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:layout_gravity="center"
+            android:background="@color/colorAccent"
+            android:paddingStart="@dimen/left_right_margin"
+            android:paddingEnd="@dimen/left_right_margin"
+            android:drawableStart="@drawable/ic_share"
+            android:textAllCaps="false"
+            android:textColor="@color/background"
+            android:textSize="20sp"
+            android:fontFamily="sans-serif"
+            android:text="@string/share_string"
+            android:onClick="shareButtonClick"/>
+
+        <Button
+            android:id="@+id/rate_button"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:layout_gravity="center"
+            android:background="@color/colorAccent"
+            android:paddingStart="@dimen/left_right_margin"
+            android:paddingEnd="@dimen/left_right_margin"
+            android:drawableStart="@drawable/ic_star"
+            android:textAllCaps="false"
+            android:textColor="@color/background"
+            android:textSize="20sp"
+            android:fontFamily="sans-serif"
+            android:text="@string/rate_string"
+            android:onClick="rateButtonClick"/>
+
+
+        <Button
+            android:id="@+id/contact_button"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:layout_gravity="center"
+            android:background="@color/colorAccent"
+            android:paddingStart="@dimen/left_right_margin"
+            android:paddingEnd="@dimen/left_right_margin"
+            android:drawableStart="@drawable/ic_mail"
+            android:textAllCaps="false"
+            android:textColor="@color/background"
+            android:textSize="20sp"
+            android:fontFamily="sans-serif"
+            android:text="@string/contact_string"
+            android:onClick="contactButtonClick"/>
+
+
+        <View
+            android:id="@+id/divider_view"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginStart="@dimen/left_right_margin"
+            android:layout_marginEnd="@dimen/left_right_margin"
+            android:background="@color/divider" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/left_right_margin"
+            android:text="@string/about_announcement"
+            android:textStyle="italic"
+            android:fontFamily="sans-serif"
+            android:textSize="20sp"/>
+
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+
+
+
+
+
+
+
+</LinearLayout>

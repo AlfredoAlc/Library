@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.CheckBoxPreference;
@@ -161,6 +162,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                                 }
                             });
 
+                            Toast.makeText(getContext(),getString(R.string.delete_library_confirmed), Toast.LENGTH_LONG).show();
                             dialog.cancel();
                         }
                     });

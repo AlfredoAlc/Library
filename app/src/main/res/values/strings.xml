@@ -50,13 +50,11 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_title">Keep your books organized</string>
     <string name="nav_header_desc">Navigation header</string>
 
 
     <string name="settings_string"> Settings </string>
-
 
 
     <string name="error_image_message">Error loading image</string>
@@ -80,6 +78,19 @@
     <string name="cover_book_view_description" translatable="false">cover_description</string>
     <string name="delete_library_summary">Delete all your books</string>
     <string name="delete_library_message">Are you sure to delete your library</string>
+    <string name="export_library">Export library</string>
+    <string name="import_library">Import library</string>
+    <string name="support_developer">Support developer</string>
+    <string name="about">About</string>
+    <string name="warning_exporting_message">Book cover probably won\'t get exported. This document will be on Download folder in your device.</string>
+    <string name="export_confirmed">Your library is exported.</string>
+    <string name="import_error">Error importing</string>
+    <string name="warning_importing_message">Make sure your document is in the Download folder in your device, with the same name as your library and is csv format.</string>
+    <string name="delete_library_confirmed">Library deleted</string>
+    <string name="rate_string">Rate</string>
+    <string name="contact_string">Contact us</string>
+    <string name="about_announcement">This app is designed to help organize your books into one application. Enjoy using this application and let us know your feedback so we can improve functionality of the app.</string>
+    <string name="email_error">An error occurred</string>
 
 
 </resources>

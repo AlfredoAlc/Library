@@ -29,6 +29,7 @@
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/activity_settings"
         android:name="aar92_22.library.Fragments.SettingsFragment"
+        android:background="@color/background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/app_bar" />

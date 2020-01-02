@@ -10,14 +10,25 @@
             android:icon="@drawable/ic_settings"
             android:title="@string/settings_string"/>
 
+        <item
+            android:id="@+id/export_library"
+            android:icon="@drawable/ic_export"
+            android:title="@string/export_library"/>
 
+        <item
+            android:id="@+id/import_library"
+            android:icon="@drawable/ic_import"
+            android:title="@string/import_library"/>
 
+        <item
+            android:id="@+id/support_developer"
+            android:icon="@drawable/ic_support_developer"
+            android:title="@string/support_developer"/>
 
+        <item
+            android:id="@+id/info"
+            android:icon="@drawable/ic_info"
+            android:title="@string/about"/>
 
-    <item android:title="Communicate">
-        <menu>
-
-        </menu>
-    </item>
 
 </menu>
