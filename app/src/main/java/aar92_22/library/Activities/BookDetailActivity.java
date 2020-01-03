@@ -60,7 +60,9 @@ public class BookDetailActivity extends AppCompatActivity {
     TextView summaryTv;
     TextView summaryText;
 
-
+    LinearLayout authorLayout;
+    LinearLayout authorLayout2;
+    LinearLayout authorLayout3;
     LinearLayout publisherLayout;
     LinearLayout publishedDateLayout;
     LinearLayout numPagesLayout;
@@ -114,6 +116,9 @@ public class BookDetailActivity extends AppCompatActivity {
         summaryText = findViewById(R.id.summary_tv);
 
 
+        authorLayout = findViewById(R.id.author_layout);
+        authorLayout2 = findViewById(R.id.author_layout2);
+        authorLayout3 = findViewById(R.id.author_layout3);
         publisherLayout = findViewById(R.id.publisher_layout);
         publishedDateLayout = findViewById(R.id.published_date_layout);
         numPagesLayout = findViewById(R.id.number_pages_layout);
@@ -171,15 +176,13 @@ public class BookDetailActivity extends AppCompatActivity {
         lastNameTv.setText(lastNameShare);
         firstNameTv.setText(firstNameShare);
 
-        if(!(bookEntry.getLastName2().equals("") && bookEntry.getFirstName2().equals(""))){
-            lastNameTv2.setVisibility(View.VISIBLE);
-            firstNameTv2.setVisibility(View.VISIBLE);
+        if(!(bookEntry.getLastName2().equals("") || bookEntry.getFirstName2().equals(""))){
+            authorLayout2.setVisibility(View.VISIBLE);
             lastNameTv2.setText(bookEntry.getLastName2());
             firstNameTv2.setText(bookEntry.getFirstName2());
 
-        }else if(!(bookEntry.getLastName3().equals("") && bookEntry.getFirstName2().equals("") )){
-            lastNameTv3.setVisibility(View.VISIBLE);
-            firstNameTv3.setVisibility(View.VISIBLE);
+        }else if(!(bookEntry.getLastName3().equals("") || bookEntry.getFirstName2().equals("") )){
+            authorLayout3.setVisibility(View.VISIBLE);
             lastNameTv3.setText(bookEntry.getLastName2());
             firstNameTv3.setText(bookEntry.getFirstName2());
         }

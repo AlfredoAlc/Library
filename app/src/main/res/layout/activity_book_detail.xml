@@ -44,16 +44,11 @@
             android:orientation="vertical">
 
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="horizontal">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="@dimen/left_right_margin"
-                    android:layout_marginEnd="@dimen/left_right_margin">
 
 
                     <ImageView
@@ -61,90 +56,112 @@
                         android:layout_width="@dimen/image_width"
                         android:layout_height="@dimen/image_height"
                         android:layout_marginTop="20dp"
+                        android:baseline="140dp"
                         android:src="@drawable/ic_add_book"
-                        android:contentDescription="@string/cover_book_view_description"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"/>
+                        android:contentDescription="@string/cover_book_view_description"/>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_toEndOf="@id/book_image_view"
+                    android:orientation="vertical">
 
 
                     <TextView
                         android:id="@+id/title_tv"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="30dp"
+                        android:layout_marginEnd="20dp"
                         android:layout_marginTop="50dp"
                         android:textColor="@color/primary_text"
-                        android:textSize="@dimen/title_size_detail"
-                        app:layout_constraintStart_toEndOf="@+id/book_image_view"
-                        app:layout_constraintTop_toTopOf="@+id/book_image_view" />
+                        android:textSize="@dimen/title_size_detail" />
 
-
-                    <TextView
-                        android:id="@+id/first_name_tv3"
+                    <LinearLayout
+                        android:id="@+id/author_layout3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="30dp"
-                        android:layout_marginBottom="10dp"
-                        android:textSize="@dimen/author_size_detail"
-                        android:textColor="@color/secondary_text"
-                        app:layout_constraintBottom_toTopOf="@+id/first_name_tv2"
-                        app:layout_constraintStart_toEndOf="@+id/book_image_view" />
+                        android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/last_name_tv3"
+                        <TextView
+                            android:id="@+id/first_name_tv3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="30dp"
+                            android:layout_marginBottom="10dp"
+                            android:textColor="@color/secondary_text"
+                            android:textSize="@dimen/author_size_detail"/>
+
+                        <TextView
+                            android:id="@+id/last_name_tv3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:textColor="@color/secondary_text"
+                            android:textSize="@dimen/author_size_detail"/>
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:id="@+id/author_layout2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:textSize="@dimen/author_size_detail"
-                        android:textColor="@color/secondary_text"
-                        app:layout_constraintBottom_toBottomOf="@+id/first_name_tv3"
-                        app:layout_constraintStart_toEndOf="@+id/first_name_tv3"/>
+                        android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/first_name_tv2"
+                        <TextView
+                            android:id="@+id/first_name_tv2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="30dp"
+                            android:layout_marginBottom="10dp"
+                            android:textColor="@color/secondary_text"
+                            android:textSize="@dimen/author_size_detail"/>
+
+                        <TextView
+                            android:id="@+id/last_name_tv2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:textColor="@color/secondary_text"
+                            android:textSize="@dimen/author_size_detail" />
+
+                    </LinearLayout>
+
+
+
+                    <LinearLayout
+                        android:id="@+id/author_layout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="30dp"
-                        android:layout_marginBottom="10dp"
-                        android:textSize="@dimen/author_size_detail"
-                        android:textColor="@color/secondary_text"
-                        app:layout_constraintBottom_toTopOf="@+id/first_name_tv"
-                        app:layout_constraintStart_toEndOf="@+id/book_image_view" />
+                        android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/last_name_tv2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:textSize="@dimen/author_size_detail"
-                        android:textColor="@color/secondary_text"
-                        app:layout_constraintBottom_toBottomOf="@+id/first_name_tv2"
-                        app:layout_constraintStart_toEndOf="@+id/first_name_tv2"/>
+                        <TextView
+                            android:id="@+id/first_name_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="30dp"
+                            android:layout_marginBottom="50dp"
+                            android:textColor="@color/secondary_text"
+                            android:textSize="@dimen/author_size_detail" />
 
-                    <TextView
-                        android:id="@+id/first_name_tv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="30dp"
-                        android:layout_marginBottom="50dp"
-                        android:textSize="@dimen/author_size_detail"
-                        android:textColor="@color/secondary_text"
-                        app:layout_constraintBottom_toBottomOf="@+id/book_image_view"
-                        app:layout_constraintStart_toEndOf="@+id/book_image_view" />
+                        <TextView
+                            android:id="@+id/last_name_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:textColor="@color/secondary_text"
+                            android:textSize="@dimen/author_size_detail" />
 
-                    <TextView
-                        android:id="@+id/last_name_tv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:textSize="@dimen/author_size_detail"
-                        android:textColor="@color/secondary_text"
-                        app:layout_constraintBottom_toBottomOf="@+id/first_name_tv"
-                        app:layout_constraintStart_toEndOf="@+id/first_name_tv"/>
+                    </LinearLayout>
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
 
-            </LinearLayout>
+
+
+                </LinearLayout>
+
+            </RelativeLayout>
 
 
 
