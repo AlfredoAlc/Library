@@ -42,6 +42,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import aar92_22.library.AppExecutors;
@@ -54,7 +55,6 @@ import aar92_22.library.R;
 import aar92_22.library.ViewModel.AddBookFactoryModel;
 import aar92_22.library.ViewModel.AddBookViewModel;
 
-import static com.google.android.gms.ads.AdSize.SMART_BANNER;
 
 public class AddBookActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
 
@@ -111,11 +111,8 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         //Load ad
-        AdView mAdView;
-        mAdView = findViewById(R.id.adView);
+        AdView mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.setAdSize(SMART_BANNER);
-        mAdView.setAdUnitId(String.valueOf(R.string.banner_ad_unit_id));
         mAdView.loadAd(adRequest);
 
         mTitle = findViewById(R.id.title_input);
@@ -370,9 +367,12 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
             imageInBytes = null;
         }
 
+        Date date = new Date();
+
+
         final BookEntry bookEntry = new BookEntry(title,lastName, firstName, lastName2, firstName2,
                 lastName3, firstName3, publisher, publishedDate, numberPages, series, volume,
-                mCategory, summary, imageInBytes);
+                mCategory, summary, imageInBytes, date);
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {

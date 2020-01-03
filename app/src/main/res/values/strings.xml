@@ -65,9 +65,8 @@
     <string name="edit_category_key" translatable="false">edit_category_key</string>
     <string name="edit_category_title">Edit category</string>
     <string name="edit_category_summary">Add, delete or rename categories.</string>
-    <string name="add_category">add_category</string>
+    <string name="add_category" translatable="false">add_category</string>
     <string name="ok" translatable="false">OK</string>
-    <string name="cancel">CANCEL</string>
     <string name="new_category">New category</string>
     <string name="name">Name:</string>
     <string name="rename_title">Rename</string>
@@ -91,6 +90,7 @@
     <string name="contact_string">Contact us</string>
     <string name="about_announcement">This app is designed to help organize your books into one application. Enjoy using this application and let us know your feedback so we can improve functionality of the app.</string>
     <string name="email_error">An error occurred</string>
+    <string name="description_cover_module" translatable="false">cover_module_image_view</string>
 
 
 </resources>

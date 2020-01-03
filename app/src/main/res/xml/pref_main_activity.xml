@@ -12,7 +12,7 @@
     <ListPreference
         android:entries="@array/sort_by_list_entries"
         android:entryValues="@array/sort_by_list_values"
-        android:defaultValue="@string/alphabetical"
+        android:defaultValue="@string/date_added"
         android:key="@string/sort_by_key"
         android:title="@string/sort_by_title"/>
 

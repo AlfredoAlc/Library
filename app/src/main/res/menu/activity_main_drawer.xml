@@ -21,11 +21,6 @@
             android:title="@string/import_library"/>
 
         <item
-            android:id="@+id/support_developer"
-            android:icon="@drawable/ic_support_developer"
-            android:title="@string/support_developer"/>
-
-        <item
             android:id="@+id/info"
             android:icon="@drawable/ic_info"
             android:title="@string/about"/>

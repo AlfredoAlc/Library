@@ -2,22 +2,17 @@
 
 
 <LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/background"
-    tools:context=".Activities.AddBookActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/app_bar"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             android:theme="@style/AppTheme.AppBarOverlay">
 
                 <androidx.appcompat.widget.Toolbar
@@ -37,8 +32,9 @@
         <com.google.android.gms.ads.AdView
             android:id="@+id/adView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
+            android:layout_height="wrap_content"
+            app:adSize="BANNER"
+            app:adUnitId="@string/banner_ad_unit_id"/>
 
      <ScrollView
          android:layout_width="match_parent"
@@ -58,7 +54,8 @@
                          android:layout_marginStart="@dimen/left_right_margin"
                          android:layout_marginEnd="@dimen/left_right_margin"
                          android:hint="@string/title_tag"
-                         android:textSize="@dimen/text_size" />
+                         android:textSize="@dimen/text_size"
+                         android:inputType="text"/>
 
                      <LinearLayout
                          android:layout_width="match_parent"

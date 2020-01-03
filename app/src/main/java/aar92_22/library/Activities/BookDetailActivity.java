@@ -36,7 +36,6 @@ import aar92_22.library.R;
 import aar92_22.library.ViewModel.AddBookFactoryModel;
 import aar92_22.library.ViewModel.AddBookViewModel;
 
-import static com.google.android.gms.ads.AdSize.SMART_BANNER;
 
 public class BookDetailActivity extends AppCompatActivity {
 
@@ -92,8 +91,6 @@ public class BookDetailActivity extends AppCompatActivity {
         //Load ad
         AdView mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.setAdSize(SMART_BANNER);
-        mAdView.setAdUnitId(String.valueOf(R.string.banner_ad_unit_id));
         mAdView.loadAd(adRequest);
 
         mDb = AppDataBase.getsInstance(getApplicationContext());

@@ -1,8 +1,11 @@
 package aar92_22.library.Database;
 
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
+
+import java.util.Date;
 
 @Entity(tableName = "books")
 public class BookEntry {
@@ -24,12 +27,14 @@ public class BookEntry {
     private String category;
     private String summary;
     private byte [] bookCover;
+    @ColumnInfo(name = "dateAdded")
+    private Date dateAdded;
 
     @Ignore
     public BookEntry(String title, String lastName, String firstName, String lastName2, String firstName2,
                      String lastName3, String firstName3, String publisher, String publishedDate,
                      int numberPages, String series, String volume, String category, String summary,
-                     byte [] bookCover) {
+                     byte [] bookCover, Date dateAdded) {
 
         this.title = title;
         this.lastName = lastName;
@@ -46,13 +51,14 @@ public class BookEntry {
         this.category = category;
         this.summary = summary;
         this.bookCover = bookCover;
+        this.dateAdded = dateAdded;
     }
 
 
     public BookEntry(int id, String title, String lastName, String firstName, String lastName2,
                      String firstName2, String lastName3, String firstName3, String publisher,
                      String publishedDate, int numberPages, String series, String volume,
-                     String category, String summary, byte [] bookCover) {
+                     String category, String summary, byte [] bookCover, Date dateAdded) {
         this.id = id;
         this.title = title;
         this.lastName = lastName;
@@ -69,6 +75,7 @@ public class BookEntry {
         this.category = category;
         this.summary = summary;
         this.bookCover = bookCover;
+        this.dateAdded = dateAdded;
     }
 
 
@@ -140,4 +147,11 @@ public class BookEntry {
         return bookCover;
     }
 
+    public Date getDateAdded() {
+        return dateAdded;
+    }
+
+    public void setDateAdded(Date dateAdded) {
+        this.dateAdded = dateAdded;
+    }
 }

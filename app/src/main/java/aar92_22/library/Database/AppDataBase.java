@@ -6,8 +6,10 @@ import android.content.Context;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
 
 @Database(entities = {BookEntry.class}, version = 1, exportSchema = false)
+@TypeConverters(DateConverter.class)
 public abstract class AppDataBase extends RoomDatabase {
 
     private static final Object LOCK = new Object();

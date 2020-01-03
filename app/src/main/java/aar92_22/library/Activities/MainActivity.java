@@ -44,6 +44,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import aar92_22.library.AppExecutors;
@@ -58,7 +59,6 @@ import aar92_22.library.ModuleViewDecoration;
 import aar92_22.library.R;
 import aar92_22.library.ViewModel.MainViewModel;
 
-import static com.google.android.gms.ads.AdSize.SMART_BANNER;
 
 public class MainActivity extends AppCompatActivity
         implements SharedPreferences.OnSharedPreferenceChangeListener, BookListAdapter.ListBookClickListener,
@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity
 
 
     private static final String EXTRA_CHANGE_VIEW_BOOLEAN = "change_view";
+    private static final int REQUEST_CODE_FILTER = 11;
     private int bookId;
     private boolean listView;
     private boolean authorFilterActivated;
@@ -104,6 +105,11 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Load ad
+        AdView mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
         bookList = findViewById(R.id.list_books_recycler_view);
 
         mDb = AppDataBase.getsInstance(this);
@@ -134,14 +140,6 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         navigationView.setNavigationItemSelectedListener(this);
-
-
-        //Load ad
-        AdView mAdView = findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.setAdSize(SMART_BANNER);
-        mAdView.setAdUnitId(String.valueOf(R.string.banner_ad_unit_id));
-        mAdView.loadAd(adRequest);
 
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -233,7 +231,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setUpViewModel(SharedPreferences sharedPreferences){
-        sortBy = sharedPreferences.getString(getString(R.string.sort_by_key), getString(R.string.title) );
+        sortBy = sharedPreferences.getString(getString(R.string.sort_by_key), getString(R.string.date_added) );
         MainViewModel viewModel = new MainViewModel(getApplication(),sortBy);
         viewModel.getBooks().observe(MainActivity.this, new Observer<List<BookEntry>>() {
             @Override
@@ -277,7 +275,7 @@ public class MainActivity extends AppCompatActivity
 
     private void setToolbarName (SharedPreferences sharedPreferences){
         libraryName = sharedPreferences.getString(
-                getString(R.string.library_name_key),"");
+                getString(R.string.library_name_key), getString(R.string.library_string) );
 
         toolbar.setTitle(libraryName);
 
@@ -347,6 +345,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
@@ -411,7 +410,7 @@ public class MainActivity extends AppCompatActivity
                     intent.putExtra(FilterActivity.SERIES_FILTER,seriesFilter);
                 }
 
-                startActivityForResult(intent,100);
+                startActivityForResult(intent,REQUEST_CODE_FILTER);
 
                 return true;
 
@@ -531,146 +530,150 @@ public class MainActivity extends AppCompatActivity
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int num) {
 
-                                CSVReader csvReader = null;
-                                try {
-                                    csvReader = new CSVReader(
-                                            new FileReader(Environment.getExternalStoragePublicDirectory(
-                                                    Environment.DIRECTORY_DOWNLOADS) + "/" + libraryName + ".csv"));
+                                try{
+
+
+                                    String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) +"/"+ libraryName +".csv";
+                                    File file = new File(path);
+                                    FileReader reader = new FileReader(file);
+
+                                    CSVReader csvReader = new CSVReader(reader);
+
+                                    String[] line;
+
+
+                                    csvReader.readNext();
+                                    try{
+                                        while ( (line = csvReader.readNext()) != null){
+
+                                            int id;
+                                            String title;
+                                            String lastName;
+                                            String firstName;
+                                            String lastName2;
+                                            String firstName2;
+                                            String lastName3;
+                                            String firstName3;
+                                            String publisher;
+                                            String publishedDate;
+                                            int numberPages;
+                                            String series;
+                                            String volume;
+                                            String category;
+                                            String summary;
+                                            byte [] bookCover;
+                                            Date date = new Date ();
+
+                                            id = Integer.parseInt(line[0]);
+                                            title = line [1];
+                                            if(line[2].length()>0){
+                                                lastName = line[2];
+                                            }else{
+                                                lastName = "";
+                                            }
+
+                                            if(line[3].length()>0){
+                                                firstName = line[3];
+                                            }else{
+                                                firstName="";
+                                            }
+
+                                            if(line[4].length()>0){
+                                                lastName2 = line[4];
+                                            }else{
+                                                lastName2="";
+                                            }
+
+                                            if(line[5].length()>0){
+                                                firstName2 = line[5];
+                                            }else{
+                                                firstName2="";
+                                            }
+
+                                            if(line[6].length()>0){
+                                                lastName3 = line[6];
+                                            }else{
+                                                lastName3="";
+                                            }
+
+                                            if(line[7].length()>0){
+                                                firstName3 = line[7];
+                                            }else{
+                                                firstName3="";
+                                            }
+
+                                            if(line[8].length()>0){
+                                                publisher = line[8];
+                                            }else{
+                                                publisher="";
+                                            }
+
+                                            if(line[9].length()>0){
+                                                publishedDate = line[9];
+                                            }else{
+                                                publishedDate="";
+                                            }
+
+                                            if(line[10].length()>0){
+                                                numberPages = Integer.parseInt(line[10]);
+                                            }else{
+                                                numberPages=0;
+                                            }
+
+                                            if(line[11].length()>0){
+                                                series = line[11];
+                                            }else{
+                                                series="";
+                                            }
+
+                                            if(line[12].length()>0){
+                                                volume = line[12];
+                                            }else{
+                                                volume="";
+                                            }
+
+                                            if(line[13].length()>0){
+                                                category = line[13];
+                                            }else{
+                                                category="";
+                                            }
+
+                                            if(line[14].length()>0){
+                                                summary = line[14];
+                                            }else{
+                                                summary="";
+                                            }
+
+                                            if(line[15].length()>0){
+                                                bookCover = line[15].getBytes();
+                                            }else{
+                                                bookCover = null;
+                                            }
+
+                                            final BookEntry bookEntry = new BookEntry(id, title,lastName, firstName, lastName2, firstName2,
+                                                    lastName3, firstName3, publisher, publishedDate, numberPages, series, volume,
+                                                    category, summary, bookCover, date);
+
+                                            AppExecutors.getInstance().otherIO().execute(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    mDb.bookDao().insertNewLibrary(bookEntry);
+                                                }
+                                            });
+
+                                        }
+                                    }catch (Exception e){
+                                        e.printStackTrace();
+                                    }
+
                                 } catch (FileNotFoundException e) {
                                     e.printStackTrace();
                                     Toast.makeText(getApplicationContext(),getString(R.string.import_error), Toast.LENGTH_LONG).show();
-
-                                }
-
-                                String[] line;
-
-                                try {
-                                    csvReader.readNext();
-                                } catch (IOException e) {
+                                } catch (IOException e){
                                     e.printStackTrace();
+                                } catch (NullPointerException ex){
+                                    Log.wtf("Exception", "", ex);
                                 }
-                                try{
-                                    while ( (line = csvReader.readNext()) != null){
-
-                                        int id;
-                                        String title;
-                                        String lastName;
-                                        String firstName;
-                                        String lastName2;
-                                        String firstName2;
-                                        String lastName3;
-                                        String firstName3;
-                                        String publisher;
-                                        String publishedDate;
-                                        int numberPages;
-                                        String series;
-                                        String volume;
-                                        String category;
-                                        String summary;
-                                        byte [] bookCover = null;
-
-                                        id = Integer.parseInt(line[0]);
-                                        title = line [1];
-                                        if(line[2].length()>0){
-                                            lastName = line[2];
-                                        }else{
-                                            lastName = "";
-                                        }
-
-                                        if(line[3].length()>0){
-                                            firstName = line[3];
-                                        }else{
-                                            firstName="";
-                                        }
-
-                                        if(line[4].length()>0){
-                                            lastName2 = line[4];
-                                        }else{
-                                            lastName2="";
-                                        }
-
-                                        if(line[5].length()>0){
-                                            firstName2 = line[5];
-                                        }else{
-                                            firstName2="";
-                                        }
-
-                                        if(line[6].length()>0){
-                                            lastName3 = line[6];
-                                        }else{
-                                            lastName3="";
-                                        }
-
-                                        if(line[7].length()>0){
-                                            firstName3 = line[7];
-                                        }else{
-                                            firstName3="";
-                                        }
-
-                                        if(line[8].length()>0){
-                                            publisher = line[8];
-                                        }else{
-                                            publisher="";
-                                        }
-
-                                        if(line[9].length()>0){
-                                            publishedDate = line[9];
-                                        }else{
-                                            publishedDate="";
-                                        }
-
-                                        if(line[10].length()>0){
-                                            numberPages = Integer.parseInt(line[10]);
-                                        }else{
-                                            numberPages=0;
-                                        }
-
-                                        if(line[11].length()>0){
-                                            series = line[11];
-                                        }else{
-                                            series="";
-                                        }
-
-                                        if(line[12].length()>0){
-                                            volume = line[12];
-                                        }else{
-                                            volume="";
-                                        }
-
-                                        if(line[13].length()>0){
-                                            category = line[13];
-                                        }else{
-                                            category="";
-                                        }
-
-                                        if(line[14].length()>0){
-                                            summary = line[14];
-                                        }else{
-                                            summary="";
-                                        }
-
-                                        if(line[15].length()>0){
-                                            bookCover = line[15].getBytes();
-                                        }else{
-                                            bookCover = null;
-                                        }
-
-                                        final BookEntry bookEntry = new BookEntry(id, title,lastName, firstName, lastName2, firstName2,
-                                                lastName3, firstName3, publisher, publishedDate, numberPages, series, volume,
-                                                category, summary, bookCover);
-
-                                        AppExecutors.getInstance().otherIO().execute(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                mDb.bookDao().insertNewLibrary(bookEntry);
-                                            }
-                                        });
-
-                                    }
-                                }catch (Exception e){
-                                    e.printStackTrace();
-                                }
-
 
 
 
@@ -694,9 +697,6 @@ public class MainActivity extends AppCompatActivity
 
                 break;
 
-            case R.id.support_developer:
-
-                break;
 
             case R.id.info:
 
@@ -780,7 +780,7 @@ public class MainActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 100) {
+        if (requestCode == REQUEST_CODE_FILTER) {
 
             if(resultCode == RESULT_OK) {
 
@@ -816,6 +816,8 @@ public class MainActivity extends AppCompatActivity
                 setUpViewModel(sharedPreferences);
             }
         }
+
+
 
     }
 
