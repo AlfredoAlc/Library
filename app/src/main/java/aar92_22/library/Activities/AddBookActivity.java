@@ -1,14 +1,20 @@
 package aar92_22.library.Activities;
 
 import android.Manifest;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,12 +26,14 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -65,7 +73,8 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
 
     private static final int DEFAULT_BOOK_ID = -1 ;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
-    private static final int REQUEST_STORAGE_PERMISSION = 1;
+    private static final int REQUEST_STORAGE_PERMISSION = 2;
+    private static final int SELECT_IMAGE = 3;
 
 
     private int bookId = DEFAULT_BOOK_ID;
@@ -245,16 +254,69 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
     }
 
     public void clickTakePhoto(View view) {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    REQUEST_STORAGE_PERMISSION);
-        } else {
-            launchCamera();
-        }
+
+        LayoutInflater inflater = LayoutInflater.from(AddBookActivity.this);
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(AddBookActivity.this);
+        final AlertDialog dialog = builder.create();
+
+        View dialogView = inflater.inflate(R.layout.image_options_dialog,null,false);
+
+        TextView selectImage = dialogView.findViewById(R.id.select_image);
+        TextView takePhoto = dialogView.findViewById(R.id.take_photo);
+
+        dialog.setCancelable(true);
+        dialog.setView(dialogView);
+
+
+
+        selectImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(ContextCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED){
+
+                    ActivityCompat.requestPermissions(AddBookActivity.this,
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            REQUEST_STORAGE_PERMISSION);
+
+                } else {
+                    selectImage();
+                }
+
+                dialog.dismiss();
+
+            }
+
+
+        });
+
+        takePhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE )
+                        != PackageManager.PERMISSION_GRANTED) {
+
+                    ActivityCompat.requestPermissions(AddBookActivity.this,
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            REQUEST_STORAGE_PERMISSION);
+                } else {
+                    launchCamera();
+                }
+
+                dialog.dismiss();
+            }
+
+
+        });
+
+
+
+        dialog.show();
+
 
     }
 
@@ -283,10 +345,22 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
         }
     }
 
+    private void selectImage(){
+        Intent selectImage = new Intent(Intent.ACTION_GET_CONTENT);
+        selectImage.setType("image/*");
+        startActivityForResult(selectImage,SELECT_IMAGE);
+    }
+
 
     private void processAndSetImage() {
         mResultsBitmap = BitmapUtils.resamplePic(this, mTempPhotoPath);
         mBookCover.setImageBitmap(mResultsBitmap);
+    }
+
+    private void processReceivedImageFromDevice(String path){
+        mResultsBitmap = BitmapUtils.resamplePic(this, path);
+        mBookCover.setImageBitmap(mResultsBitmap);
+
     }
 
 
@@ -389,6 +463,25 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
         finish();
     }
 
+    public static String getPath(Context context, Uri uri ) {
+        String result = null;
+        String[] proj = { MediaStore.Images.Media.DATA };
+        Cursor cursor = context.getContentResolver( ).query( uri, proj, null, null, null );
+        if(cursor != null){
+            if ( cursor.moveToFirst( ) ) {
+                int column_index = cursor.getColumnIndexOrThrow( proj[0] );
+                result = cursor.getString( column_index );
+            }
+            cursor.close( );
+        }
+        if(result == null) {
+            result = "Not found";
+        }
+        return result;
+    }
+
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
@@ -457,6 +550,18 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             processAndSetImage();
         }
+        if(requestCode == SELECT_IMAGE && resultCode == RESULT_OK){
+            Uri selectedImageUri = data.getData();
+            String realPath = getPath(this.getApplicationContext(),selectedImageUri);
+            if(realPath.equals("Not found")){
+                Log.d("CHECKING...", "Not found");
+            }else{
+                processReceivedImageFromDevice(realPath);
+            }
+
+        }
+
+
     }
 
 

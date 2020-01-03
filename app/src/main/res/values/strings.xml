@@ -91,6 +91,8 @@
     <string name="about_announcement">This app is designed to help organize your books into one application. Enjoy using this application and let us know your feedback so we can improve functionality of the app.</string>
     <string name="email_error">An error occurred</string>
     <string name="description_cover_module" translatable="false">cover_module_image_view</string>
+    <string name="select_image">Select image from device</string>
+    <string name="take_photo">Use camera</string>
 
 
 </resources>

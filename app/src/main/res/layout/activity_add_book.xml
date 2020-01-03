@@ -396,7 +396,7 @@
                                          android:layout_width="@dimen/camera_button_size"
                                          android:layout_height="@dimen/camera_button_size"
                                          android:layout_gravity="center"
-                                         android:background="@drawable/ic_camera"
+                                         android:background="@drawable/ic_add_a_photo"
                                          android:onClick="clickTakePhoto"
                                          style="@style/Widget.AppCompat.Button.Borderless"/>
 
