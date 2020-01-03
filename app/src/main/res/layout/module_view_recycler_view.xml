@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="100dp"
     android:layout_height="wrap_content"
     android:background="@color/background"
@@ -12,24 +11,22 @@
         android:id="@+id/book_image_view_module"
         android:layout_width="80dp"
         android:layout_height="150dp"
+        android:layout_gravity="center"
         android:padding="5dp"
         android:src="@drawable/ic_add_book"
-        android:contentDescription="@string/description_cover_module"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:contentDescription="@string/description_cover_module"/>
 
     <TextView
         android:id="@+id/title_tv_module"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="2dp"
         android:layout_marginBottom="@dimen/top_margin"
+        android:gravity="center"
         android:maxLength="10"
         android:textColor="@color/primary_text"
-        android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="@+id/book_image_view_module"
-        app:layout_constraintStart_toStartOf="@+id/book_image_view_module"
-        app:layout_constraintTop_toBottomOf="@+id/book_image_view_module" />
+        android:textSize="15sp"/>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
