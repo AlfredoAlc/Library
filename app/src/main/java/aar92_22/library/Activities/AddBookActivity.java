@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -101,6 +102,7 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
     Spinner category;
 
     Button camera;
+    Button rotateImage;
 
     ImageView mBookCover;
 
@@ -144,6 +146,7 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
         author3 = findViewById(R.id.author_layout3);
 
         camera = findViewById(R.id.take_photo);
+        rotateImage = findViewById(R.id.rotate_image);
 
         mBookCover = findViewById(R.id.book_cover_input);
 
@@ -352,14 +355,44 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
     }
 
 
+    public static String getPath(Context context, Uri uri ) {
+        String result = null;
+        String[] proj = { MediaStore.Images.Media.DATA };
+        Cursor cursor = context.getContentResolver( ).query( uri, proj, null, null, null );
+        if(cursor != null){
+            if ( cursor.moveToFirst( ) ) {
+                int column_index = cursor.getColumnIndexOrThrow( proj[0] );
+                result = cursor.getString( column_index );
+            }
+            cursor.close( );
+        }
+        if(result == null) {
+            result = "Not found";
+        }
+        return result;
+    }
+
+    public void clickRotateImage(View view) {
+        Bitmap rotatedImage;
+        Matrix matrix = new Matrix();
+        matrix.postRotate(90);
+        rotatedImage = Bitmap.createBitmap(mResultsBitmap, 0, 0, mResultsBitmap.getWidth(), mResultsBitmap.getHeight(), matrix, true);
+        mResultsBitmap = rotatedImage;
+        mBookCover.setImageBitmap(mResultsBitmap);
+
+    }
+
     private void processAndSetImage() {
         mResultsBitmap = BitmapUtils.resamplePic(this, mTempPhotoPath);
         mBookCover.setImageBitmap(mResultsBitmap);
+        rotateImage.setVisibility(View.VISIBLE);
+
     }
 
     private void processReceivedImageFromDevice(String path){
         mResultsBitmap = BitmapUtils.resamplePic(this, path);
         mBookCover.setImageBitmap(mResultsBitmap);
+        rotateImage.setVisibility(View.VISIBLE);
 
     }
 
@@ -434,7 +467,7 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
         byte[] imageInBytes;
         if(mResultsBitmap != null) {
             ByteArrayOutputStream objectByteArrayOutputStream = new ByteArrayOutputStream();
-            mResultsBitmap.compress(Bitmap.CompressFormat.JPEG, 100, objectByteArrayOutputStream);
+            mResultsBitmap.compress(Bitmap.CompressFormat.JPEG, 50, objectByteArrayOutputStream);
             imageInBytes = objectByteArrayOutputStream.toByteArray();
 
         }else {
@@ -463,22 +496,7 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
         finish();
     }
 
-    public static String getPath(Context context, Uri uri ) {
-        String result = null;
-        String[] proj = { MediaStore.Images.Media.DATA };
-        Cursor cursor = context.getContentResolver( ).query( uri, proj, null, null, null );
-        if(cursor != null){
-            if ( cursor.moveToFirst( ) ) {
-                int column_index = cursor.getColumnIndexOrThrow( proj[0] );
-                result = cursor.getString( column_index );
-            }
-            cursor.close( );
-        }
-        if(result == null) {
-            result = "Not found";
-        }
-        return result;
-    }
+
 
 
 
@@ -554,7 +572,7 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
             Uri selectedImageUri = data.getData();
             String realPath = getPath(this.getApplicationContext(),selectedImageUri);
             if(realPath.equals("Not found")){
-                Log.d("CHECKING...", "Not found");
+                Toast.makeText(this, getString(R.string.error_image_message),Toast.LENGTH_LONG).show();
             }else{
                 processReceivedImageFromDevice(realPath);
             }
@@ -565,9 +583,6 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
     }
 
 
-
-
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putInt(INSTANCE_BOOK_ID, bookId);
@@ -575,6 +590,7 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
 
 
     }
+
 
 
 }

@@ -389,6 +389,7 @@
                                  android:layout_height="wrap_content"
                                  android:layout_weight="3"
                                  android:layout_gravity="center"
+                                 android:orientation="vertical"
                                  android:gravity="center">
 
                                      <Button
@@ -399,6 +400,19 @@
                                          android:background="@drawable/ic_add_a_photo"
                                          android:onClick="clickTakePhoto"
                                          style="@style/Widget.AppCompat.Button.Borderless"/>
+
+                                     <Button
+                                         android:id="@+id/rotate_image"
+                                         android:layout_width="@dimen/camera_button_size"
+                                         android:layout_height="@dimen/camera_button_size"
+                                         android:layout_marginTop="30dp"
+                                         android:layout_gravity="center"
+                                         android:background="@drawable/ic_rotate"
+                                         android:onClick="clickRotateImage"
+                                         android:visibility="gone"
+                                         style="@style/Widget.AppCompat.Button.Borderless"/>
+
+
 
 
                              </LinearLayout>
