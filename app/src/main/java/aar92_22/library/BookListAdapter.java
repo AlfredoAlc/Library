@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,11 +56,6 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
         notifyDataSetChanged();
 
     }
-
-    /*public List<BookEntry> getBooks ( ){
-        return mBookEntry;
-    }*/
-
 
 
     @Override

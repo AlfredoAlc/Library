@@ -177,7 +177,7 @@ public class EditCategoryActivity extends AppCompatActivity implements CategoryL
 
         });
 
-        setCategoriesList();
+
     }
 
 
@@ -195,8 +195,5 @@ public class EditCategoryActivity extends AppCompatActivity implements CategoryL
                 categoryDataBase.categoryDao().deleteCategory(categoryEntry);
             }
         });
-
-        setCategoriesList();
-
     }
 }

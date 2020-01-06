@@ -110,6 +110,7 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
 
     public void setCategoryEntries ( List<CategoryEntry> categoryEntries){
         this.categoryEntries = categoryEntries;
+        notifyDataSetChanged();
 
     }
 
