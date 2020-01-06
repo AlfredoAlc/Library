@@ -55,6 +55,7 @@ import aar92_22.library.Database.AppDataBase;
 import aar92_22.library.Database.BookEntry;
 import aar92_22.library.Database.CategoryDataBase;
 import aar92_22.library.Database.CategoryEntry;
+import aar92_22.library.Fragments.SettingsFragment;
 import aar92_22.library.ModuleViewDecoration;
 import aar92_22.library.R;
 import aar92_22.library.ViewModel.MainViewModel;
@@ -175,14 +176,11 @@ public class MainActivity extends AppCompatActivity
 
 
 
-        first = sharedPreferences.getBoolean(getString(R.string.check_first_category_list_key), true);
+        first = SettingsFragment.getCategoryValue(this);
 
         if(first){
             firstCategories();
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean(getString(R.string.check_first_category_list_key), false);
-            editor.apply();
-
+            SettingsFragment.firstCategoryList(this);
         }
 
         pullToRefresh = findViewById(R.id.pull_to_refresh);

@@ -25,11 +25,5 @@
         android:title="@string/delete_library_title"/>
 
 
-    <CheckBoxPreference
-        android:key="@string/check_first_category_list_key"
-        android:title="@string/check_first_category_list_title" />
-
-
-
 
 </PreferenceScreen>

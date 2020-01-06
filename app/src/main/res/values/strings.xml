@@ -35,8 +35,6 @@
 
     <string name="sort_by_key" translatable="false">sort_by</string>
     <string name="sort_by_title">Sort by</string>
-    <string name="check_first_category_list_key" translatable="false">check_list</string>
-    <string name="check_first_category_list_title">Category</string>
     <string name="library_name_key" translatable="false">library_name</string>
     <string name="library_name_title">Library name</string>
 
