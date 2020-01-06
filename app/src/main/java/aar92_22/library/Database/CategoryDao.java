@@ -14,7 +14,7 @@ import java.util.List;
 public interface CategoryDao {
 
     @Query("SELECT * FROM category")
-    LiveData<List<CategoryEntry>> loadAllCategories ();
+    LiveData<List<CategoryEntry>> loadAllCategories();
 
     @Insert
     void newCategory ( CategoryEntry category);

@@ -56,6 +56,7 @@
                         android:layout_width="@dimen/image_width"
                         android:layout_height="@dimen/image_height"
                         android:layout_marginTop="20dp"
+                        android:layout_marginStart="@dimen/left_right_margin"
                         android:baseline="140dp"
                         android:src="@drawable/ic_add_book"
                         android:contentDescription="@string/cover_book_view_description"/>

@@ -22,7 +22,7 @@ public class MainViewModel extends AndroidViewModel {
     public MainViewModel(@NonNull Application application, String sort) {
         super(application);
         SimpleSQLiteQuery query = new SimpleSQLiteQuery("SELECT * FROM books ORDER BY LOWER(" + sort + ")");
-        AppDataBase dataBase = AppDataBase.getsInstance(this.getApplication());
+        AppDataBase dataBase = AppDataBase.getsInstance(application);
             books = dataBase.bookDao().loadAllBooks(query);
     }
 

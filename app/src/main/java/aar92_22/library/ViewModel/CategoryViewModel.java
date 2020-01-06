@@ -18,7 +18,7 @@ public class CategoryViewModel extends AndroidViewModel {
 
     public CategoryViewModel(@NonNull Application application) {
         super(application);
-        CategoryDataBase dataBase = CategoryDataBase.getsInstance(this.getApplication());
+        CategoryDataBase dataBase = CategoryDataBase.getsInstance(application);
         categoryEntries = dataBase.categoryDao().loadAllCategories();
     }
 
