@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -40,6 +41,11 @@ import aar92_22.library.ViewModel.AddBookViewModel;
 public class BookDetailActivity extends AppCompatActivity {
 
     public static final String EXTRA_ID = "book_id";
+    public static final String EXTRA_AD = "extra_ad";
+
+    private static final String AD_PAGE = "https://amzn.to/3als0aU";
+
+    Toolbar toolbar;
 
 
     ImageView bookCoverImageView;
@@ -59,6 +65,7 @@ public class BookDetailActivity extends AppCompatActivity {
     TextView categoryTv;
     TextView summaryTv;
     TextView summaryText;
+    TextView apologiesText;
 
     LinearLayout authorLayout;
     LinearLayout authorLayout2;
@@ -80,6 +87,8 @@ public class BookDetailActivity extends AppCompatActivity {
     String titleShare;
     String lastNameShare;
     String firstNameShare;
+
+    boolean adSelected;
 
 
 
@@ -114,6 +123,7 @@ public class BookDetailActivity extends AppCompatActivity {
         categoryTv = findViewById(R.id.category_display);
         summaryTv = findViewById(R.id.summary_display);
         summaryText = findViewById(R.id.summary_tv);
+        apologiesText = findViewById(R.id.apologies_text);
 
 
         authorLayout = findViewById(R.id.author_layout);
@@ -127,7 +137,7 @@ public class BookDetailActivity extends AppCompatActivity {
 
         summaryScrollView = findViewById(R.id.summary_scroll_view);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
 
@@ -139,28 +149,107 @@ public class BookDetailActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        if(intent != null && intent.hasExtra(EXTRA_ID)){
+        if(intent != null){
 
+            if(intent.hasExtra(EXTRA_ID)){
+                bookId = intent.getIntExtra(EXTRA_ID, -1);
 
-            bookId = intent.getIntExtra(EXTRA_ID, -1);
+                AddBookFactoryModel factory = new AddBookFactoryModel(mDb, bookId);
 
-            AddBookFactoryModel factory = new AddBookFactoryModel(mDb, bookId);
+                final AddBookViewModel viewModel = ViewModelProviders.of(this,factory).get(AddBookViewModel.class);
 
-            final AddBookViewModel viewModel = ViewModelProviders.of(this,factory).get(AddBookViewModel.class);
+                viewModel.getBooks().observe(this, new Observer<BookEntry>() {
+                    @Override
+                    public void onChanged(@Nullable BookEntry bookEntry) {
+                        viewModel.getBooks().removeObserver(this);
+                        populateUI(bookEntry);
+                    }
+                });
+            }
 
-            viewModel.getBooks().observe(this, new Observer<BookEntry>() {
-                @Override
-                public void onChanged(@Nullable BookEntry bookEntry) {
-                    viewModel.getBooks().removeObserver(this);
-                    populateUI(bookEntry);
-                }
-            });
-
+            if(intent.hasExtra(EXTRA_AD) && intent.getBooleanExtra(EXTRA_AD, false)){
+                adSelected = true;
+                showAd();
             }
 
 
 
+        }
+
+
+
     }
+
+
+
+
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.book_detail_menu, menu);
+
+        if(adSelected) {
+            MenuItem editMenu = menu.findItem(R.id.edit_action);
+            MenuItem deleteMenu = menu.findItem(R.id.delete_action);
+            MenuItem shopMenu = menu.findItem(R.id.shop_action);
+            editMenu.setVisible(false);
+            deleteMenu.setVisible(false);
+            shopMenu.setVisible(true);
+        }
+
+        return super.onCreateOptionsMenu(menu);
+
+
+
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id){
+
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+
+            case R.id.edit_action:
+                Intent intent = new Intent(BookDetailActivity.this, AddBookActivity.class);
+                intent.putExtra(AddBookActivity.BOOK_ID, bookId );
+                startActivity(intent);
+                finish();
+                break;
+
+            case R.id.delete_action:
+
+                deleteCheck();
+                break;
+
+            case R.id.share_action:
+                shareAction();
+                break;
+
+            case R.id.shop_action:
+                Uri adPage = Uri.parse(AD_PAGE);
+                Intent shopIntent = new Intent(Intent.ACTION_VIEW, adPage);
+                if(shopIntent.resolveActivity(getPackageManager()) != null){
+                    startActivity(shopIntent);
+                }
+
+                break;
+
+
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+
+
 
 
     private void populateUI(BookEntry bookEntry){
@@ -241,6 +330,43 @@ public class BookDetailActivity extends AppCompatActivity {
 
     }
 
+    private void deleteCheck() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.delete_message);
+        builder.setCancelable(true);
+
+        builder.setPositiveButton(
+                "Yes",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                BookEntry book = mDb.bookDao().loadBookByIdIndividual(bookId);
+                                mDb.bookDao().deleteBook(book);
+                            }
+                        });
+
+                        dialog.cancel();
+                        finish();
+                    }
+                });
+
+        builder.setNegativeButton(
+                "No",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+
+    }
+
+
     public void shareAction(){
         String mimeType = "text/plain";
         String textToShare = titleShare + " " +  getString(R.string.by_string) + " " + firstNameShare + getString(R.string.coma) +
@@ -256,77 +382,38 @@ public class BookDetailActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.book_detail_menu, menu);
+    private void showAd() {
 
-        return super.onCreateOptionsMenu(menu);
+        apologiesText.setVisibility(View.VISIBLE);
 
 
+        toolbar.setTitle(getString(R.string.best_sellers_string));
+
+        titleShare = "Where the crawdads sing";
+        lastNameShare = "Owens";
+        firstNameShare = "Delia";
+        String publisher = "G.P. Putnam's sons";
+        String publishedDate = "14/08/2018";
+        int numberPages = 368;
+        String category = "Literature & Fiction";
+        String summary = "In 1952, six-year-old Catherine Danielle Clark (nicknamed \"Kya\") watches " +
+                "her mother abandon her and her family. While Kya waits in vain for her mother's return, " +
+                "she witnesses her older siblings, Missy, Murph, Mandy, and eventually Jodie, " +
+                "all leave as well, due to their Pa's drinking and physical abuse.";
+
+
+
+
+         BookEntry bookEntry = new BookEntry(titleShare, lastNameShare, firstNameShare, "", "",
+                "", "", publisher, publishedDate, numberPages, "", "",
+                category, summary, null, null);
+
+         populateUI(bookEntry);
+
+         bookCoverImageView.setImageResource(R.drawable.where_the_crawdads_sing);
 
 
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
 
-        switch (id){
-
-            case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
-
-            case R.id.edit_action:
-                Intent intent = new Intent(BookDetailActivity.this, AddBookActivity.class);
-                intent.putExtra(AddBookActivity.BOOK_ID, bookId );
-                startActivity(intent);
-                finish();
-                break;
-
-            case R.id.delete_action:
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage(R.string.delete_message);
-                builder.setCancelable(true);
-
-                builder.setPositiveButton(
-                        "Yes",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                AppExecutors.getInstance().diskIO().execute(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        BookEntry book = mDb.bookDao().loadBookByIdIndividual(bookId);
-                                        mDb.bookDao().deleteBook(book);
-                                    }
-                                });
-
-                                dialog.cancel();
-                                finish();
-                            }
-                        });
-
-                builder.setNegativeButton(
-                        "No",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-
-                AlertDialog alertDialog = builder.create();
-                alertDialog.show();
-
-                break;
-
-            case R.id.share_action:
-                shareAction();
-                break;
-
-
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 }

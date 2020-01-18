@@ -22,6 +22,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.core.view.GravityCompat;
@@ -35,7 +36,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import java.io.File;
@@ -43,6 +43,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -58,6 +59,7 @@ import aar92_22.library.Database.CategoryEntry;
 import aar92_22.library.Fragments.SettingsFragment;
 import aar92_22.library.ModuleViewDecoration;
 import aar92_22.library.R;
+import aar92_22.library.Utilities.NetworkUtilities;
 import aar92_22.library.ViewModel.MainViewModel;
 
 
@@ -88,7 +90,7 @@ public class MainActivity extends AppCompatActivity
     RecyclerView bookList;
     BookListAdapter mAdapter;
 
-    FloatingActionButton addBookFab;
+
     Toolbar toolbar;
     ActionBarDrawerToggle toggle;
     DrawerLayout drawer;
@@ -116,15 +118,6 @@ public class MainActivity extends AppCompatActivity
         mDb = AppDataBase.getsInstance(this);
         categoryDataBase = CategoryDataBase.getsInstance(this);
 
-        addBookFab = findViewById(R.id.add_book_fab);
-
-        addBookFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent (MainActivity.this, AddBookActivity.class);
-                startActivity(intent);
-            }
-        });
 
         toolbar = findViewById(R.id.mainToolbar);
         toolbar.setTitle(getString(R.string.library_string));
@@ -199,6 +192,281 @@ public class MainActivity extends AppCompatActivity
 
         setToolbarName(sharedPreferences);
     }
+
+
+
+
+
+
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_main_activity,menu);
+
+        MenuItem searchItem = menu.findItem(R.id.search_menu);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                mAdapter.getFilter().filter(s);
+                return false;
+            }
+        });
+        return true;
+    }
+
+
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+
+        switch (itemId){
+            case R.id.change_view_menu:
+
+                if(listView){
+                    listView = false;
+                    item.setIcon(R.drawable.ic_view_list);
+                    setUpGridLayout();
+                    setUpViewModel(sharedPreferences);
+                } else {
+                    listView = true;
+                    item.setIcon(R.drawable.ic_view_module);
+                    setUpLinearLayout();
+                    setUpViewModel(sharedPreferences);
+                }
+
+                return true;
+
+
+
+            case R.id.filter_menu:
+
+                Intent intent = new Intent(MainActivity.this, FilterActivity.class);
+
+                if(authorFilterActivated){
+                    intent.putExtra(FilterActivity.AUTHOR_FILTER,authorFilter);
+                }
+                if(categoryFilterActivated){
+                    intent.putExtra(FilterActivity.CATEGORY_FILTER,categoryFilter);
+                }
+                if(seriesFilterActivated){
+                    intent.putExtra(FilterActivity.SERIES_FILTER,seriesFilter);
+                }
+
+                startActivityForResult(intent,REQUEST_CODE_FILTER);
+
+                return true;
+
+            default: return super.onOptionsItemSelected(item);
+
+        }
+
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+
+        if(key.equals(getString(R.string.library_name_key))){
+            setToolbarName(sharedPreferences);
+        } else if(key.equals(getString(R.string.sort_by_key))){
+            setUpViewModel(sharedPreferences);
+        }
+
+    }
+
+    @Override
+    public void onListBookClick(final int id) {
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                BookEntry bookEntry = mDb.bookDao().loadBookByIdIndividual(id);
+                Intent intent = new Intent(MainActivity.this, BookDetailActivity.class);
+                intent.putExtra(BookDetailActivity.EXTRA_ID,bookEntry.getId());
+                startActivity(intent);
+            }
+        });
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+
+        int itemId = menuItem.getItemId();
+
+        switch (itemId){
+
+            case R.id.setting_drawer_activity:
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
+                break;
+
+            case R.id.export_library:
+                exportLibrary();
+                break;
+
+            case R.id.import_library:
+                importLibrary();
+                break;
+
+
+            case R.id.info:
+
+                Intent aboutIntent =  new Intent(MainActivity.this, AboutActivity.class);
+                startActivity(aboutIntent);
+
+                break;
+
+
+
+
+
+
+        }
+
+        drawer.closeDrawer(GravityCompat.START);
+
+        return true;
+    }
+
+
+    @Override
+    public void onLongBookClick(int id) {
+        this.bookId = id;
+
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+
+        switch (item.getItemId()){
+            case 1:
+                Intent intent = new Intent(this, AddBookActivity.class);
+                intent.putExtra(AddBookActivity.BOOK_ID, bookId );
+                startActivity(intent);
+                break;
+
+            case 2:
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(R.string.delete_message);
+                builder.setCancelable(true);
+
+                builder.setPositiveButton(
+                        "Yes",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        BookEntry book = mDb.bookDao().loadBookByIdIndividual(bookId);
+                                        mDb.bookDao().deleteBook(book);
+                                    }
+                                });
+
+                                dialog.cancel();
+                            }
+                        });
+
+                builder.setNegativeButton(
+                        "No",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+                break;
+
+        }
+
+        return true;
+
+
+
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_FILTER) {
+
+            if(resultCode == RESULT_OK) {
+
+                if (data != null) {
+
+                    filtersActivated = true;
+
+                    authorFilterActivated = data.getBooleanExtra(FilterActivity.AUTHOR_FILTER_ACTIVATED, false);
+                    categoryFilterActivated = data.getBooleanExtra(FilterActivity.CATEGORY_FILTER_ACTIVATED, false);
+                    seriesFilterActivated = data.getBooleanExtra(FilterActivity.SERIES_FILTER_ACTIVATED, false);
+
+                    if (authorFilterActivated) {
+                        authorFilter = data.getStringExtra(FilterActivity.AUTHOR_FILTER);
+                    }
+                    if (categoryFilterActivated) {
+                        categoryFilter = data.getStringExtra(FilterActivity.CATEGORY_FILTER);
+                    }
+                    if (seriesFilterActivated) {
+                        seriesFilter = data.getStringExtra(FilterActivity.SERIES_FILTER);
+                    }
+
+                    setFilter();
+
+                }
+
+            }
+
+            if(resultCode == RESULT_CANCELED){
+                filtersActivated = false;
+                authorFilterActivated = false;
+                categoryFilterActivated = false;
+                seriesFilterActivated = false;
+                setUpViewModel(sharedPreferences);
+            }
+        }
+
+
+
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        PreferenceManager.getDefaultSharedPreferences(this).
+                unregisterOnSharedPreferenceChangeListener(this);
+
+        super.onDestroy();
+    }
+
+
+
+
+
+
+
+
+                                           /////METHODS///
+
+
+
 
 
 
@@ -343,494 +611,272 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.menu_main_activity,menu);
-
-        MenuItem searchItem = menu.findItem(R.id.search_menu);
-        SearchView searchView = (SearchView) searchItem.getActionView();
-        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-                mAdapter.getFilter().filter(s);
-                return false;
-            }
-        });
-        return true;
-    }
-
-
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-
-        switch (itemId){
-            case R.id.change_view_menu:
-
-                if(listView){
-                    listView = false;
-                    item.setIcon(R.drawable.ic_view_list);
-                    setUpGridLayout();
-                    setUpViewModel(sharedPreferences);
-                } else {
-                    listView = true;
-                    item.setIcon(R.drawable.ic_view_module);
-                    setUpLinearLayout();
-                    setUpViewModel(sharedPreferences);
-                }
-
-                return true;
-
-
-
-            case R.id.filter_menu:
-
-                Intent intent = new Intent(MainActivity.this, FilterActivity.class);
-
-                if(authorFilterActivated){
-                    intent.putExtra(FilterActivity.AUTHOR_FILTER,authorFilter);
-                }
-                if(categoryFilterActivated){
-                    intent.putExtra(FilterActivity.CATEGORY_FILTER,categoryFilter);
-                }
-                if(seriesFilterActivated){
-                    intent.putExtra(FilterActivity.SERIES_FILTER,seriesFilter);
-                }
-
-                startActivityForResult(intent,REQUEST_CODE_FILTER);
-
-                return true;
-
-            default: return super.onOptionsItemSelected(item);
-
-        }
+    public void scanIsbnClick(View v){
 
     }
 
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
-        if(key.equals(getString(R.string.library_name_key))){
-            setToolbarName(sharedPreferences);
-        } else if(key.equals(getString(R.string.sort_by_key))){
-            setUpViewModel(sharedPreferences);
-        }
+    public void searchOnlineClick(View v){
+        /*Intent searchIntent = new Intent(MainActivity.this, SearchOnlineActivity.class);
+        startActivity(searchIntent);
+        */
+    }
+
+    public void bestSellersClick(View v){
+        /*Intent bestSellersIntent = new Intent(MainActivity.this, BestSellers.class);
+        startActivity(bestSellersIntent);*/
+        Intent bookDetailAd = new Intent(MainActivity.this, BookDetailActivity.class);
+        bookDetailAd.putExtra(BookDetailActivity.EXTRA_AD, true);
+        startActivity(bookDetailAd);
 
     }
 
-    @Override
-    public void onListBookClick(final int id) {
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                BookEntry bookEntry = mDb.bookDao().loadBookByIdIndividual(id);
-                Intent intent = new Intent(MainActivity.this, BookDetailActivity.class);
-                intent.putExtra(BookDetailActivity.EXTRA_ID,bookEntry.getId());
-                startActivity(intent);
-            }
-        });
+
+    public void addBookClick(View v){
+        Intent intent = new Intent (MainActivity.this, AddBookActivity.class);
+        startActivity(intent);
     }
 
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
-        int itemId = menuItem.getItemId();
+    public void exportLibrary(){
+        AlertDialog.Builder exportBuilder = new AlertDialog.Builder(this);
+        exportBuilder.setMessage(R.string.warning_exporting_message);
+        exportBuilder.setCancelable(true);
 
-        switch (itemId){
+        exportBuilder.setPositiveButton(
+                "Ok",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        String path = String.valueOf(
+                                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS));
 
-            case R.id.setting_drawer_activity:
-                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(intent);
-                break;
+                        File exportDir = new File(path, "");
+                        if (!exportDir.exists()) {
+                            exportDir.mkdirs();
+                        }
 
-            case R.id.export_library:
+                        File file = new File(exportDir, libraryName + ".csv");
+                        try {
+                            file.createNewFile();
+                            CSVWriter csvWrite = new CSVWriter(new FileWriter(file));
+                            Cursor curCSV = mDb.query("SELECT * FROM books", null);
+                            csvWrite.writeNext(curCSV.getColumnNames());
+                            while (curCSV.moveToNext()) {
+                                //Which column you want to export
+                                String arrStr[] = new String[curCSV.getColumnCount()];
+                                for (int i = 0; i < curCSV.getColumnCount() - 1; i++)
+                                    arrStr[i] = curCSV.getString(i);
+                                csvWrite.writeNext(arrStr);
+                            }
+                            csvWrite.close();
+                            curCSV.close();
 
-                AlertDialog.Builder exportBuilder = new AlertDialog.Builder(this);
-                exportBuilder.setMessage(R.string.warning_exporting_message);
-                exportBuilder.setCancelable(true);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
 
-                exportBuilder.setPositiveButton(
-                        "Ok",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                String path = String.valueOf(
-                                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS));
 
-                                File exportDir = new File(path, "");
-                                if (!exportDir.exists()) {
-                                    exportDir.mkdirs();
-                                }
 
-                                File file = new File(exportDir, libraryName + ".csv");
-                                try {
-                                    file.createNewFile();
-                                    CSVWriter csvWrite = new CSVWriter(new FileWriter(file));
-                                    Cursor curCSV = mDb.query("SELECT * FROM books", null);
-                                    csvWrite.writeNext(curCSV.getColumnNames());
-                                    while (curCSV.moveToNext()) {
-                                        //Which column you want to export
-                                        String arrStr[] = new String[curCSV.getColumnCount()];
-                                        for (int i = 0; i < curCSV.getColumnCount() - 1; i++)
-                                            arrStr[i] = curCSV.getString(i);
-                                        csvWrite.writeNext(arrStr);
+                        Toast.makeText(getApplicationContext(),
+                                getString(R.string.export_confirmed), Toast.LENGTH_LONG).show();
+                        dialog.cancel();
+                    }
+
+                });
+
+        exportBuilder.setNegativeButton(
+                "Cancel",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alertDialog = exportBuilder.create();
+        alertDialog.show();
+
+
+
+    }
+
+
+    public void importLibrary(){
+
+        AlertDialog.Builder importBuilder = new AlertDialog.Builder(this);
+        importBuilder.setMessage(R.string.warning_importing_message);
+        importBuilder.setCancelable(true);
+
+        importBuilder.setPositiveButton(
+                "Ok",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int num) {
+
+                        try{
+
+
+                            String path = Environment.getExternalStoragePublicDirectory(
+                                    Environment.DIRECTORY_DOWNLOADS) +"/"+ libraryName +".csv";
+                            File file = new File(path);
+                            FileReader reader = new FileReader(file);
+
+                            CSVReader csvReader = new CSVReader(reader);
+
+                            String[] line;
+
+
+                            csvReader.readNext();
+                            try{
+                                while ( (line = csvReader.readNext()) != null){
+
+                                    int id;
+                                    String title;
+                                    String lastName;
+                                    String firstName;
+                                    String lastName2;
+                                    String firstName2;
+                                    String lastName3;
+                                    String firstName3;
+                                    String publisher;
+                                    String publishedDate;
+                                    int numberPages;
+                                    String series;
+                                    String volume;
+                                    String category;
+                                    String summary;
+                                    byte [] bookCover;
+                                    Date date = new Date ();
+
+                                    id = Integer.parseInt(line[0]);
+                                    title = line [1];
+                                    if(line[2].length()>0){
+                                        lastName = line[2];
+                                    }else{
+                                        lastName = "";
                                     }
-                                    csvWrite.close();
-                                    curCSV.close();
 
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                    if(line[3].length()>0){
+                                        firstName = line[3];
+                                    }else{
+                                        firstName="";
+                                    }
 
+                                    if(line[4].length()>0){
+                                        lastName2 = line[4];
+                                    }else{
+                                        lastName2="";
+                                    }
 
+                                    if(line[5].length()>0){
+                                        firstName2 = line[5];
+                                    }else{
+                                        firstName2="";
+                                    }
 
-                                Toast.makeText(getApplicationContext(),
-                                        getString(R.string.export_confirmed), Toast.LENGTH_LONG).show();
-                                dialog.cancel();
-                            }
+                                    if(line[6].length()>0){
+                                        lastName3 = line[6];
+                                    }else{
+                                        lastName3="";
+                                    }
 
-                        });
+                                    if(line[7].length()>0){
+                                        firstName3 = line[7];
+                                    }else{
+                                        firstName3="";
+                                    }
 
-                exportBuilder.setNegativeButton(
-                        "Cancel",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
+                                    if(line[8].length()>0){
+                                        publisher = line[8];
+                                    }else{
+                                        publisher="";
+                                    }
 
-                AlertDialog alertDialog = exportBuilder.create();
-                alertDialog.show();
+                                    if(line[9].length()>0){
+                                        publishedDate = line[9];
+                                    }else{
+                                        publishedDate="";
+                                    }
 
+                                    if(line[10].length()>0){
+                                        numberPages = Integer.parseInt(line[10]);
+                                    }else{
+                                        numberPages=0;
+                                    }
 
+                                    if(line[11].length()>0){
+                                        series = line[11];
+                                    }else{
+                                        series="";
+                                    }
 
+                                    if(line[12].length()>0){
+                                        volume = line[12];
+                                    }else{
+                                        volume="";
+                                    }
 
-                break;
+                                    if(line[13].length()>0){
+                                        category = line[13];
+                                    }else{
+                                        category="";
+                                    }
 
-            case R.id.import_library:
+                                    if(line[14].length()>0){
+                                        summary = line[14];
+                                    }else{
+                                        summary="";
+                                    }
 
-                AlertDialog.Builder importBuilder = new AlertDialog.Builder(this);
-                importBuilder.setMessage(R.string.warning_importing_message);
-                importBuilder.setCancelable(true);
+                                    if(line[15].length()>0){
+                                        bookCover = line[15].getBytes();
+                                    }else{
+                                        bookCover = null;
+                                    }
 
-                importBuilder.setPositiveButton(
-                        "Ok",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int num) {
+                                    final BookEntry bookEntry = new BookEntry(id, title,lastName, firstName, lastName2, firstName2,
+                                            lastName3, firstName3, publisher, publishedDate, numberPages, series, volume,
+                                            category, summary, bookCover, date);
 
-                                try{
-
-
-                                    String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) +"/"+ libraryName +".csv";
-                                    File file = new File(path);
-                                    FileReader reader = new FileReader(file);
-
-                                    CSVReader csvReader = new CSVReader(reader);
-
-                                    String[] line;
-
-
-                                    csvReader.readNext();
-                                    try{
-                                        while ( (line = csvReader.readNext()) != null){
-
-                                            int id;
-                                            String title;
-                                            String lastName;
-                                            String firstName;
-                                            String lastName2;
-                                            String firstName2;
-                                            String lastName3;
-                                            String firstName3;
-                                            String publisher;
-                                            String publishedDate;
-                                            int numberPages;
-                                            String series;
-                                            String volume;
-                                            String category;
-                                            String summary;
-                                            byte [] bookCover;
-                                            Date date = new Date ();
-
-                                            id = Integer.parseInt(line[0]);
-                                            title = line [1];
-                                            if(line[2].length()>0){
-                                                lastName = line[2];
-                                            }else{
-                                                lastName = "";
-                                            }
-
-                                            if(line[3].length()>0){
-                                                firstName = line[3];
-                                            }else{
-                                                firstName="";
-                                            }
-
-                                            if(line[4].length()>0){
-                                                lastName2 = line[4];
-                                            }else{
-                                                lastName2="";
-                                            }
-
-                                            if(line[5].length()>0){
-                                                firstName2 = line[5];
-                                            }else{
-                                                firstName2="";
-                                            }
-
-                                            if(line[6].length()>0){
-                                                lastName3 = line[6];
-                                            }else{
-                                                lastName3="";
-                                            }
-
-                                            if(line[7].length()>0){
-                                                firstName3 = line[7];
-                                            }else{
-                                                firstName3="";
-                                            }
-
-                                            if(line[8].length()>0){
-                                                publisher = line[8];
-                                            }else{
-                                                publisher="";
-                                            }
-
-                                            if(line[9].length()>0){
-                                                publishedDate = line[9];
-                                            }else{
-                                                publishedDate="";
-                                            }
-
-                                            if(line[10].length()>0){
-                                                numberPages = Integer.parseInt(line[10]);
-                                            }else{
-                                                numberPages=0;
-                                            }
-
-                                            if(line[11].length()>0){
-                                                series = line[11];
-                                            }else{
-                                                series="";
-                                            }
-
-                                            if(line[12].length()>0){
-                                                volume = line[12];
-                                            }else{
-                                                volume="";
-                                            }
-
-                                            if(line[13].length()>0){
-                                                category = line[13];
-                                            }else{
-                                                category="";
-                                            }
-
-                                            if(line[14].length()>0){
-                                                summary = line[14];
-                                            }else{
-                                                summary="";
-                                            }
-
-                                            if(line[15].length()>0){
-                                                bookCover = line[15].getBytes();
-                                            }else{
-                                                bookCover = null;
-                                            }
-
-                                            final BookEntry bookEntry = new BookEntry(id, title,lastName, firstName, lastName2, firstName2,
-                                                    lastName3, firstName3, publisher, publishedDate, numberPages, series, volume,
-                                                    category, summary, bookCover, date);
-
-                                            AppExecutors.getInstance().otherIO().execute(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    mDb.bookDao().insertNewLibrary(bookEntry);
-                                                }
-                                            });
-
+                                    AppExecutors.getInstance().otherIO().execute(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            mDb.bookDao().insertNewLibrary(bookEntry);
                                         }
-                                    }catch (Exception e){
-                                        e.printStackTrace();
-                                    }
+                                    });
 
-                                } catch (FileNotFoundException e) {
-                                    e.printStackTrace();
-                                    Toast.makeText(getApplicationContext(),getString(R.string.import_error), Toast.LENGTH_LONG).show();
-                                } catch (IOException e){
-                                    e.printStackTrace();
-                                } catch (NullPointerException ex){
-                                    Log.wtf("Exception", "", ex);
                                 }
-
-
-
-                                dialog.cancel();
+                            }catch (Exception e){
+                                e.printStackTrace();
                             }
-                        });
 
-                importBuilder.setNegativeButton(
-                        "Cancel",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-
-                AlertDialog importDialog = importBuilder.create();
-                importDialog.show();
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                            Toast.makeText(getApplicationContext(),getString(R.string.import_error), Toast.LENGTH_LONG).show();
+                        } catch (IOException e){
+                            e.printStackTrace();
+                        } catch (NullPointerException ex){
+                            Log.wtf("Exception", "", ex);
+                        }
 
 
 
-
-                break;
-
-
-            case R.id.info:
-
-                Intent aboutIntent =  new Intent(MainActivity.this, AboutActivity.class);
-                startActivity(aboutIntent);
-
-                break;
-
-
-
-
-
-
-        }
-
-        drawer.closeDrawer(GravityCompat.START);
-
-        return true;
-    }
-
-
-    @Override
-    public void onLongBookClick(int id) {
-        this.bookId = id;
-
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-
-        switch (item.getItemId()){
-            case 1:
-                Intent intent = new Intent(this, AddBookActivity.class);
-                intent.putExtra(AddBookActivity.BOOK_ID, bookId );
-                startActivity(intent);
-                break;
-
-            case 2:
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage(R.string.delete_message);
-                builder.setCancelable(true);
-
-                builder.setPositiveButton(
-                        "Yes",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                AppExecutors.getInstance().diskIO().execute(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        BookEntry book = mDb.bookDao().loadBookByIdIndividual(bookId);
-                                        mDb.bookDao().deleteBook(book);
-                                    }
-                                });
-
-                                dialog.cancel();
-                            }
-                        });
-
-                builder.setNegativeButton(
-                        "No",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-
-                AlertDialog alertDialog = builder.create();
-                alertDialog.show();
-                break;
-
-        }
-
-        return true;
-
-
-
-    }
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_CODE_FILTER) {
-
-            if(resultCode == RESULT_OK) {
-
-                if (data != null) {
-
-                    filtersActivated = true;
-
-                    authorFilterActivated = data.getBooleanExtra(FilterActivity.AUTHOR_FILTER_ACTIVATED, false);
-                    categoryFilterActivated = data.getBooleanExtra(FilterActivity.CATEGORY_FILTER_ACTIVATED, false);
-                    seriesFilterActivated = data.getBooleanExtra(FilterActivity.SERIES_FILTER_ACTIVATED, false);
-
-                    if (authorFilterActivated) {
-                        authorFilter = data.getStringExtra(FilterActivity.AUTHOR_FILTER);
+                        dialog.cancel();
                     }
-                    if (categoryFilterActivated) {
-                        categoryFilter = data.getStringExtra(FilterActivity.CATEGORY_FILTER);
+                });
+
+        importBuilder.setNegativeButton(
+                "Cancel",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
                     }
-                    if (seriesFilterActivated) {
-                        seriesFilter = data.getStringExtra(FilterActivity.SERIES_FILTER);
-                    }
+                });
 
-                    setFilter();
-
-                }
-
-            }
-
-            if(resultCode == RESULT_CANCELED){
-                filtersActivated = false;
-                authorFilterActivated = false;
-                categoryFilterActivated = false;
-                seriesFilterActivated = false;
-                setUpViewModel(sharedPreferences);
-            }
-        }
+        AlertDialog importDialog = importBuilder.create();
+        importDialog.show();
 
 
 
-    }
 
-
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onDestroy() {
-        PreferenceManager.getDefaultSharedPreferences(this).
-                unregisterOnSharedPreferenceChangeListener(this);
-
-        super.onDestroy();
     }
 
 

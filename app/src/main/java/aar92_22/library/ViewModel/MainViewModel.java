@@ -26,6 +26,8 @@ public class MainViewModel extends AndroidViewModel {
             books = dataBase.bookDao().loadAllBooks(query);
     }
 
+
+
     public LiveData<List<BookEntry>> getBooks(){
             return books;
     }

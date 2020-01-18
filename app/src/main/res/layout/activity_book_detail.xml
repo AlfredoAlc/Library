@@ -32,6 +32,20 @@
         app:adSize="BANNER"
         app:adUnitId="@string/banner_ad_unit_id"/>
 
+    <TextView
+        android:id="@+id/apologies_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingStart="@dimen/padding_20"
+        android:paddingEnd="@dimen/padding_20"
+        android:text="@string/apologies"
+        android:textColor="@color/colorPrimaryDark"
+        android:drawableStart="@drawable/ic_developer_mode_dark"
+        android:drawableEnd="@drawable/ic_developer_mode_dark"
+        android:textSize="@dimen/text_size"
+        android:visibility="gone"/>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

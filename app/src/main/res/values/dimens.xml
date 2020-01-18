@@ -27,5 +27,7 @@
     <dimen name="image_width">140dp</dimen>
     <dimen name="image_height">280dp</dimen>
     <dimen name="camera_button_size">40dp</dimen>
+    <dimen name="padding_20">20dp</dimen>
+    <dimen name="padding_10">10dp</dimen>
 
 </resources>

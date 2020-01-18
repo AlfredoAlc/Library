@@ -4,24 +4,32 @@
 
 
     <item
+        android:id="@+id/shop_action"
+        android:title="@string/shop_string"
+        android:icon="@drawable/ic_shopping_cart"
+        android:orderInCategory="1"
+        android:visible="false"
+        app:showAsAction="ifRoom"/>
+
+    <item
         android:id="@+id/edit_action"
         android:title="@string/edit_string"
         android:icon="@drawable/ic_edit"
-        android:orderInCategory="1"
+        android:orderInCategory="2"
         app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/delete_action"
         android:title="@string/delete_string"
         android:icon="@drawable/ic_delete"
-        android:orderInCategory="2"
+        android:orderInCategory="3"
         app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/share_action"
         android:title="@string/share_string"
         android:icon="@drawable/ic_share"
-        android:orderInCategory="3"
+        android:orderInCategory="4"
         app:showAsAction="ifRoom"/>
 
 

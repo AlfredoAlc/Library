@@ -41,7 +41,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
 
 
 
-    public BookListAdapter ( Context mContext, ListBookClickListener mOnClickListener,
+    public BookListAdapter (Context mContext, ListBookClickListener mOnClickListener,
                              BookLongClickListener mOnLongClickListener, boolean listView){
         this.mContext = mContext;
         this.mOnClickListener = mOnClickListener;
@@ -50,13 +50,12 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
     }
 
 
-    public void setBookEntry ( List<BookEntry> bookEntry){
+    public void setBookEntry (List<BookEntry> bookEntry){
         mBookEntry = bookEntry;
         mBookEntryFull = new ArrayList<>(mBookEntry);
         notifyDataSetChanged();
 
     }
-
 
     @Override
     @NonNull
@@ -123,7 +122,6 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
             holder.bookImageList.setImageDrawable(drawable);
             holder.bookImageModule.setImageDrawable(drawable);
         }
-
 
 
     }

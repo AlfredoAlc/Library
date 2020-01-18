@@ -87,10 +87,20 @@
     <string name="rate_string">Rate</string>
     <string name="contact_string">Contact us</string>
     <string name="about_announcement">This app is designed to help organize your books into one application. Enjoy using this application and let us know your feedback so we can improve functionality of the app.</string>
-    <string name="email_error">An error occurred</string>
+    <string name="error_ocurred">An error occurred</string>
     <string name="description_cover_module" translatable="false">cover_module_image_view</string>
     <string name="select_image">Select image from device</string>
     <string name="take_photo">Use camera</string>
+    <string name="add_book_button_description" translatable="false">add_book_button</string>
+    <string name="scan_isbn_description" translatable="false">scan_isbn</string>
+    <string name="search_online_description" translatable="false">search_online</string>
+    <string name="search_image_view_description" translatable="false">search_image_view</string>
+    <string name="cancel_image_view_description" translatable="false">cancel_image_view</string>
+    <string name="search_online_title">Search online</string>
+    <string name="best_sellers_description" translatable="false">best_sellers</string>
+    <string name="best_sellers_string">Best Sellers</string>
+    <string name="shop_string">Shop</string>
+    <string name="apologies">Sorry, working on this.</string>
 
 
 </resources>
