@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Library</string>
+    <string name="app_name" translatable="false">My Library</string>
 
     <string name="banner_ad_unit_id" translatable="false">ca-app-pub-4769341895289435/3740778936</string>
 
@@ -13,7 +13,6 @@
     <string name="add_book_title">Add new book</string>
     <string name="filter_book_title">Filter Books</string>
     <string name="search_edit_text_hint">Title, Author</string>
-    <string name="error">Error finding image</string>
     <string name="share_string">Share</string>
 
 

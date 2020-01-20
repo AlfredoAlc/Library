@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">My Library</string>
+
+    <string name="banner_ad_unit_id" translatable="false">ca-app-pub-4769341895289435/3740778936</string>
+
+    <string name="edit_string">Editar</string>
+    <string name="delete_string">Eliminar</string>
+    <string name="delete_message">Quieres eliminar este libro?</string>
+    <string name="permission_denied">Permiso denegado</string>
+    <string name="library_string">Libreria</string>
+    <string name="book_detail_title">Detalles del libro</string>
+    <string name="add_book_title">Agregar libro</string>
+    <string name="filter_book_title">Filtrar libros</string>
+    <string name="search_edit_text_hint">Titulo, Autor</string>
+    <string name="share_string">Compartir</string>
+
+
+    <string name="title_tag">Titulo</string>
+    <string name="last_name_tag">Apellido</string>
+    <string name="first_name_tag">Nombre</string>
+    <string name="publisher_tag">Editorial</string>
+    <string name="publisher_tag_detail">Editorial:</string>
+    <string name="published_date_tag">Fecha de publicación:</string>
+    <string name="published_date_format_hint">dd/mm/aaaa</string>
+    <string name="number_page_tag">Páginas:</string>
+    <string name="series_tag">Serie:</string>
+    <string name="volume_tag">Vol:</string>
+    <string name="category_tag">Categoría:</string>
+    <string name="summary_tag">Resumen</string>
+    <string name="summary_hint">Resumen del libro</string>
+    <string name="pages_string"> páginas</string>
+
+
+    <string name="sort_by_key" translatable="false">sort_by</string>
+    <string name="sort_by_title">Ordenar por</string>
+    <string name="library_name_key" translatable="false">library_name</string>
+    <string name="library_name_title">Nombre de librería</string>
+
+
+    <string name="action_change_view">Cambiar vista</string>
+    <string name="action_search">Buscar</string>
+    <string name="action_filter">Filtrar</string>
+    <string name="action_refresh">Actualizar</string>
+    <string name="action_done">Listo</string>
+
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Manten tus libros organizados</string>
+    <string name="nav_header_desc">Navigation header</string>
+
+
+    <string name="settings_string"> Ajustes </string>
+
+
+    <string name="error_image_message">Error descargando imagen</string>
+    <string name="complete_title_warning">Agrega un título</string>
+    <string name="complete_last_name_warning">Agrega apellido de autor</string>
+    <string name="share_title">Compartir libro</string>
+    <string name="by_string">por</string>
+    <string name="edit_category_key" translatable="false">edit_category_key</string>
+    <string name="edit_category_title">Editar categorias</string>
+    <string name="edit_category_summary">Agrega, elimina o cambia nombre de categorias.</string>
+    <string name="add_category" translatable="false">add_category</string>
+    <string name="ok" translatable="false">OK</string>
+    <string name="new_category">Agregar categoría.</string>
+    <string name="name">Nombre:</string>
+    <string name="rename_title">Cambiar nombre</string>
+    <string name="add_new_category">Agregar categoría</string>
+    <string name="list_view_book" translatable="false">list_view_book</string>
+    <string name="delete_library_key" translatable="false">delete_library_key</string>
+    <string name="delete_library_title">Eliminar librería</string>
+    <string name="cover_book_view_description" translatable="false">cover_description</string>
+    <string name="delete_library_summary">Eliminar todos los libros</string>
+    <string name="delete_library_message">Seguro que quieres eliminar librería</string>
+    <string name="export_library">Exportar librería</string>
+    <string name="import_library">Importar librería</string>
+    <string name="support_developer">Apoyar a desarrollador</string>
+    <string name="about">Información</string>
+    <string name="warning_exporting_message">La imagen de portada probablemente no se exporte. Este documento estará en la carpeta de Descargas en tu equipo.</string>
+    <string name="export_confirmed">Se exportó tu librería.</string>
+    <string name="import_error">Error importando</string>
+    <string name="warning_importing_message">Asegurate que tu documento se encuentre en la carpeta de Descargas en tu equipo, con el mismo nombre de tu librería y en formato csv.</string>
+    <string name="delete_library_confirmed">Librería eliminada</string>
+    <string name="rate_string">Calificar</string>
+    <string name="contact_string">Contacto</string>
+    <string name="about_announcement">Esta aplicación esta diseñada para ayudar a organizar tus libros en una sola aplicación. Disfruta esta aplicación y ayudanos a mejorarla enviando sugerencias.</string>
+    <string name="error_ocurred">Ocurrió un error</string>
+    <string name="description_cover_module" translatable="false">cover_module_image_view</string>
+    <string name="select_image">Escoge una imagen de tu equipo</string>
+    <string name="take_photo">Utilizar cámara</string>
+    <string name="add_book_button_description" translatable="false">add_book_button</string>
+    <string name="scan_isbn_description" translatable="false">scan_isbn</string>
+    <string name="search_online_description" translatable="false">search_online</string>
+    <string name="search_image_view_description" translatable="false">search_image_view</string>
+    <string name="cancel_image_view_description" translatable="false">cancel_image_view</string>
+    <string name="search_online_title">Buscar en línea</string>
+    <string name="best_sellers_description" translatable="false">best_sellers</string>
+    <string name="best_sellers_string">Más vendidos</string>
+    <string name="shop_string">Comprar</string>
+    <string name="apologies">Una disculpa, seguimos trabajando.</string>
+
+
+
+</resources>
