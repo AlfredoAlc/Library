@@ -389,17 +389,21 @@ public class BookDetailActivity extends AppCompatActivity {
 
         toolbar.setTitle(getString(R.string.best_sellers_string));
 
-        titleShare = "Where the crawdads sing";
-        lastNameShare = "Owens";
-        firstNameShare = "Delia";
-        String publisher = "G.P. Putnam's sons";
-        String publishedDate = "14/08/2018";
-        int numberPages = 368;
-        String category = "Literature & Fiction";
-        String summary = "In 1952, six-year-old Catherine Danielle Clark (nicknamed \"Kya\") watches " +
-                "her mother abandon her and her family. While Kya waits in vain for her mother's return, " +
-                "she witnesses her older siblings, Missy, Murph, Mandy, and eventually Jodie, " +
-                "all leave as well, due to their Pa's drinking and physical abuse.";
+        titleShare = "El hombre en busca de sentido";
+        lastNameShare = "Emil Frankl";
+        firstNameShare = "Viktor";
+        String publisher = "Herder";
+        String publishedDate = "01/01/2015";
+        int numberPages = 162;
+        String category = "Psicología clínica";
+        String summary = "Nueva traducción de \"El hombre en busca de sentido\". El doctor Frankl, " +
+                "psiquiatra y escritor, suele preguntar a sus pacientes aquejados de múltiples " +
+                "padecimientos: «¿Por qué no se suicida usted? Y muchas veces, de las respuestas " +
+                "extrae una orientación para la psicoterapia a aplicar: a éste, lo que le ata a la " +
+                "vida son los hijos; al otro, un talento, una habilidad sin explotar; a un tercero, " +
+                "quizás, sólo unos cuantos recuerdos que merece la pena rescatar del olvido. " +
+                "Tejer estas tenues hebras de vidas rotas en una urdimbre firme, coherente, " +
+                "significativa y responsable es el objeto con que se enfrenta la logoterapia.";
 
 
 
@@ -410,7 +414,7 @@ public class BookDetailActivity extends AppCompatActivity {
 
          populateUI(bookEntry);
 
-         bookCoverImageView.setImageResource(R.drawable.where_the_crawdads_sing);
+         bookCoverImageView.setImageResource(R.drawable.el_hombre_en_busca_de_sentido);
 
 
     }

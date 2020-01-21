@@ -104,7 +104,7 @@ public class AboutActivity extends AppCompatActivity {
         if(contactIntent.resolveActivity(getPackageManager()) != null){
             startActivity(contactIntent);
         }else{
-            Toast.makeText(this,getString(R.string.error_ocurred), Toast.LENGTH_LONG).show();
+            Toast.makeText(this,getString(R.string.error_occurred), Toast.LENGTH_LONG).show();
         }
 
     }

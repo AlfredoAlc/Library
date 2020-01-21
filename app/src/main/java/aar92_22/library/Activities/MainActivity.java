@@ -1,10 +1,14 @@
 package aar92_22.library.Activities;
 
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,15 +20,18 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.Observer;
@@ -32,6 +39,7 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.sqlite.db.SimpleSQLiteQuery;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.gms.ads.AdRequest;
@@ -43,12 +51,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import aar92_22.library.AppExecutors;
+import aar92_22.library.BitmapUtils;
 import aar92_22.library.BookListAdapter;
 import aar92_22.library.CSVReader;
 import aar92_22.library.CSVWriter;
@@ -59,8 +67,9 @@ import aar92_22.library.Database.CategoryEntry;
 import aar92_22.library.Fragments.SettingsFragment;
 import aar92_22.library.ModuleViewDecoration;
 import aar92_22.library.R;
-import aar92_22.library.Utilities.NetworkUtilities;
 import aar92_22.library.ViewModel.MainViewModel;
+
+import static aar92_22.library.Activities.AddBookActivity.getPath;
 
 
 public class MainActivity extends AppCompatActivity
@@ -70,6 +79,9 @@ public class MainActivity extends AppCompatActivity
 
     private static final String EXTRA_CHANGE_VIEW_BOOLEAN = "change_view";
     private static final int REQUEST_CODE_FILTER = 11;
+    private static final int REQUEST_WRITE_EXTERNAL_PERMISSION = 12;
+    private static final int SELECT_LIBRARY = 13;
+    private static final int REQUEST_READ_EXTERNAL_PERMISSION = 14;
     private int bookId;
     private boolean listView;
     private boolean authorFilterActivated;
@@ -311,11 +323,36 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case R.id.export_library:
-                exportLibrary();
+                verifyWriteExternalPermission(MainActivity.this);
                 break;
 
             case R.id.import_library:
-                importLibrary();
+
+                AlertDialog.Builder exportBuilder = new AlertDialog.Builder(this);
+                exportBuilder.setMessage(R.string.warning_importing_message);
+                exportBuilder.setCancelable(true);
+
+                exportBuilder.setPositiveButton(
+                        "Ok",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                verifyReadExternalPermission(MainActivity.this);
+                                dialog.cancel();
+                            }
+
+                        });
+
+                exportBuilder.setNegativeButton(
+                        "Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+                AlertDialog alertDialog = exportBuilder.create();
+                alertDialog.show();
+
                 break;
 
 
@@ -439,7 +476,61 @@ public class MainActivity extends AppCompatActivity
         }
 
 
+        if(requestCode == SELECT_LIBRARY && data != null){
 
+            Uri selectedLibrary = data.getData();
+            File file = new File(selectedLibrary.getPath());
+            String[] split = file.getPath().split(":");
+            String realPath = split[1];
+            String extension = realPath.substring(realPath.lastIndexOf("."));
+            if(realPath.equals("Not found")){
+                Toast.makeText(this, getString(R.string.error_occurred),Toast.LENGTH_LONG).show();
+            }else{
+                if(!extension.equals(".csv")){
+                    Toast.makeText(this, getString(R.string.warning_importing_message), Toast.LENGTH_LONG).show();
+                }else {
+                    importLibrary(realPath);
+
+                }
+            }
+        }
+
+
+
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_WRITE_EXTERNAL_PERMISSION:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    exportLibrary();
+                } else {
+                    Toast.makeText(this,"Permission not granted",Toast.LENGTH_LONG).show();
+
+                }
+                break;
+
+            case REQUEST_READ_EXTERNAL_PERMISSION:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    Intent selectLibrary = new Intent(Intent.ACTION_GET_CONTENT);
+                    selectLibrary.setType("text/*");
+                    startActivityForResult(selectLibrary,SELECT_LIBRARY);
+
+                } else {
+                    Toast.makeText(this,"Permission not granted",Toast.LENGTH_LONG).show();
+
+                }
+                break;
+
+
+
+        }
     }
 
 
@@ -513,16 +604,16 @@ public class MainActivity extends AppCompatActivity
 
         final List<String> firstList = new ArrayList<>();
 
-        firstList.add("Others");
-        firstList.add("Art & Design");
-        firstList.add("Business & Financial");
-        firstList.add("Children's Books");
-        firstList.add("Comics & Graphic Novels");
-        firstList.add("Education & Engineering");
-        firstList.add("History");
-        firstList.add("Literature & Fiction");
-        firstList.add("Politics & Social Sciences");
-        firstList.add("Travel");
+        firstList.add(getString(R.string.others_category));
+        firstList.add(getString(R.string.art_design_category));
+        firstList.add(getString(R.string.business_financial_category));
+        firstList.add(getString(R.string.children_book_category));
+        firstList.add(getString(R.string.comic_graphic_novels_category));
+        firstList.add(getString(R.string.education_engineering));
+        firstList.add(getString(R.string.history_category));
+        firstList.add(getString(R.string.literature_fiction_category));
+        firstList.add(getString(R.string.politics_social_sciences_category));
+        firstList.add(getString(R.string.travel_category));
 
 
         AppExecutors.getInstance().otherIO().execute(new Runnable() {
@@ -647,38 +738,54 @@ public class MainActivity extends AppCompatActivity
                 "Ok",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        String path = String.valueOf(
-                                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS));
 
-                        File exportDir = new File(path, "");
-                        if (!exportDir.exists()) {
-                            exportDir.mkdirs();
-                        }
+                        AppExecutors.getInstance().otherIO().execute(new Runnable() {
 
-                        File file = new File(exportDir, libraryName + ".csv");
-                        try {
-                            file.createNewFile();
-                            CSVWriter csvWrite = new CSVWriter(new FileWriter(file));
-                            Cursor curCSV = mDb.query("SELECT * FROM books", null);
-                            csvWrite.writeNext(curCSV.getColumnNames());
-                            while (curCSV.moveToNext()) {
-                                //Which column you want to export
-                                String arrStr[] = new String[curCSV.getColumnCount()];
-                                for (int i = 0; i < curCSV.getColumnCount() - 1; i++)
-                                    arrStr[i] = curCSV.getString(i);
-                                csvWrite.writeNext(arrStr);
+
+                            @Override
+                            public void run() {
+                                String path = String.valueOf(
+                                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS));
+                                File file = new File(path, libraryName + ".csv");
+                                try {
+                                    final CSVWriter csvWrite = new CSVWriter(new FileWriter(file));
+                                    final SimpleSQLiteQuery query = new SimpleSQLiteQuery("SELECT * FROM books");
+                                Cursor curCSV = mDb.query(query);
+                                csvWrite.writeNext(curCSV.getColumnNames());
+                                while (curCSV.moveToNext()) {
+                                    String arrStr[] = new String[curCSV.getColumnCount()];
+                                    for (int i = 0; i < curCSV.getColumnCount() - 1; i++)
+                                        arrStr[i] = curCSV.getString(i);
+                                    csvWrite.writeNext(arrStr);
+                                }
+                                curCSV.close();
+                                csvWrite.close();
+                                 MainActivity.this.runOnUiThread(new Runnable() {
+                                     @Override
+                                     public void run() {
+                                         Toast.makeText(MainActivity.this,getString(R.string.export_confirmed),
+                                                 Toast.LENGTH_LONG).show();
+
+                                     }
+                                 });
+
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    MainActivity.this.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(MainActivity.this,getString(R.string.error_occurred),
+                                                    Toast.LENGTH_LONG).show();
+
+                                        }
+                                    });
+
+                                }
                             }
-                            csvWrite.close();
-                            curCSV.close();
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
 
 
 
-                        Toast.makeText(getApplicationContext(),
-                                getString(R.string.export_confirmed), Toast.LENGTH_LONG).show();
+                        });
                         dialog.cancel();
                     }
 
@@ -695,189 +802,209 @@ public class MainActivity extends AppCompatActivity
         AlertDialog alertDialog = exportBuilder.create();
         alertDialog.show();
 
-
-
     }
 
 
-    public void importLibrary(){
+    public void importLibrary(String path){
+        try{
+            File file = new File(Environment.getExternalStorageDirectory(),path);
 
-        AlertDialog.Builder importBuilder = new AlertDialog.Builder(this);
-        importBuilder.setMessage(R.string.warning_importing_message);
-        importBuilder.setCancelable(true);
+            FileReader reader = new FileReader(file);
 
-        importBuilder.setPositiveButton(
-                "Ok",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int num) {
+            CSVReader csvReader = new CSVReader(reader);
 
-                        try{
+            String[] line;
 
 
-                            String path = Environment.getExternalStoragePublicDirectory(
-                                    Environment.DIRECTORY_DOWNLOADS) +"/"+ libraryName +".csv";
-                            File file = new File(path);
-                            FileReader reader = new FileReader(file);
+            csvReader.readNext();
+            try{
+                while ( (line = csvReader.readNext()) != null){
 
-                            CSVReader csvReader = new CSVReader(reader);
+                    int id;
+                    String title;
+                    String lastName;
+                    String firstName;
+                    String lastName2;
+                    String firstName2;
+                    String lastName3;
+                    String firstName3;
+                    String publisher;
+                    String publishedDate;
+                    int numberPages;
+                    String series;
+                    String volume;
+                    String category;
+                    String summary;
+                    byte [] bookCover;
+                    Date date = new Date ();
 
-                            String[] line;
+                    id = Integer.parseInt(line[0]);
+                    title = line [1];
+                    if(line[2].length()>0){
+                        lastName = line[2];
+                    }else{
+                        lastName = "";
+                    }
 
+                    if(line[3].length()>0){
+                        firstName = line[3];
+                    }else{
+                        firstName="";
+                    }
 
-                            csvReader.readNext();
-                            try{
-                                while ( (line = csvReader.readNext()) != null){
+                    if(line[4].length()>0){
+                        lastName2 = line[4];
+                    }else{
+                        lastName2="";
+                    }
 
-                                    int id;
-                                    String title;
-                                    String lastName;
-                                    String firstName;
-                                    String lastName2;
-                                    String firstName2;
-                                    String lastName3;
-                                    String firstName3;
-                                    String publisher;
-                                    String publishedDate;
-                                    int numberPages;
-                                    String series;
-                                    String volume;
-                                    String category;
-                                    String summary;
-                                    byte [] bookCover;
-                                    Date date = new Date ();
+                    if(line[5].length()>0){
+                        firstName2 = line[5];
+                    }else{
+                        firstName2="";
+                    }
 
-                                    id = Integer.parseInt(line[0]);
-                                    title = line [1];
-                                    if(line[2].length()>0){
-                                        lastName = line[2];
-                                    }else{
-                                        lastName = "";
-                                    }
+                    if(line[6].length()>0){
+                        lastName3 = line[6];
+                    }else{
+                        lastName3="";
+                    }
 
-                                    if(line[3].length()>0){
-                                        firstName = line[3];
-                                    }else{
-                                        firstName="";
-                                    }
+                    if(line[7].length()>0){
+                        firstName3 = line[7];
+                    }else{
+                        firstName3="";
+                    }
 
-                                    if(line[4].length()>0){
-                                        lastName2 = line[4];
-                                    }else{
-                                        lastName2="";
-                                    }
+                    if(line[8].length()>0){
+                        publisher = line[8];
+                    }else{
+                        publisher="";
+                    }
 
-                                    if(line[5].length()>0){
-                                        firstName2 = line[5];
-                                    }else{
-                                        firstName2="";
-                                    }
+                    if(line[9].length()>0){
+                        publishedDate = line[9];
+                    }else{
+                        publishedDate="";
+                    }
 
-                                    if(line[6].length()>0){
-                                        lastName3 = line[6];
-                                    }else{
-                                        lastName3="";
-                                    }
+                    if(line[10].length()>0){
+                        numberPages = Integer.parseInt(line[10]);
+                    }else{
+                        numberPages=0;
+                    }
 
-                                    if(line[7].length()>0){
-                                        firstName3 = line[7];
-                                    }else{
-                                        firstName3="";
-                                    }
+                    if(line[11].length()>0){
+                        series = line[11];
+                    }else{
+                        series="";
+                    }
 
-                                    if(line[8].length()>0){
-                                        publisher = line[8];
-                                    }else{
-                                        publisher="";
-                                    }
+                    if(line[12].length()>0){
+                        volume = line[12];
+                    }else{
+                        volume="";
+                    }
 
-                                    if(line[9].length()>0){
-                                        publishedDate = line[9];
-                                    }else{
-                                        publishedDate="";
-                                    }
+                    if(line[13].length()>0){
+                        category = line[13];
+                    }else{
+                        category="";
+                    }
 
-                                    if(line[10].length()>0){
-                                        numberPages = Integer.parseInt(line[10]);
-                                    }else{
-                                        numberPages=0;
-                                    }
+                    if(line[14].length()>0){
+                        summary = line[14];
+                    }else{
+                        summary="";
+                    }
 
-                                    if(line[11].length()>0){
-                                        series = line[11];
-                                    }else{
-                                        series="";
-                                    }
+                    if(line[15].length()>0){
+                        bookCover = line[15].getBytes();
+                    }else{
+                        bookCover = null;
+                    }
 
-                                    if(line[12].length()>0){
-                                        volume = line[12];
-                                    }else{
-                                        volume="";
-                                    }
+                    final BookEntry bookEntry = new BookEntry(id, title,lastName, firstName, lastName2, firstName2,
+                            lastName3, firstName3, publisher, publishedDate, numberPages, series, volume,
+                            category, summary, bookCover, date);
 
-                                    if(line[13].length()>0){
-                                        category = line[13];
-                                    }else{
-                                        category="";
-                                    }
-
-                                    if(line[14].length()>0){
-                                        summary = line[14];
-                                    }else{
-                                        summary="";
-                                    }
-
-                                    if(line[15].length()>0){
-                                        bookCover = line[15].getBytes();
-                                    }else{
-                                        bookCover = null;
-                                    }
-
-                                    final BookEntry bookEntry = new BookEntry(id, title,lastName, firstName, lastName2, firstName2,
-                                            lastName3, firstName3, publisher, publishedDate, numberPages, series, volume,
-                                            category, summary, bookCover, date);
-
-                                    AppExecutors.getInstance().otherIO().execute(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            mDb.bookDao().insertNewLibrary(bookEntry);
-                                        }
-                                    });
-
-                                }
-                            }catch (Exception e){
-                                e.printStackTrace();
-                            }
-
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                            Toast.makeText(getApplicationContext(),getString(R.string.import_error), Toast.LENGTH_LONG).show();
-                        } catch (IOException e){
-                            e.printStackTrace();
-                        } catch (NullPointerException ex){
-                            Log.wtf("Exception", "", ex);
+                    AppExecutors.getInstance().otherIO().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            mDb.bookDao().insertNewLibrary(bookEntry);
                         }
+                    });
 
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
 
-
-                        dialog.cancel();
-                    }
-                });
-
-        importBuilder.setNegativeButton(
-                "Cancel",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
-
-        AlertDialog importDialog = importBuilder.create();
-        importDialog.show();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(),getString(R.string.import_error), Toast.LENGTH_LONG).show();
+        } catch (IOException e){
+            e.printStackTrace();
+        } catch (NullPointerException ex){
+            Log.wtf("Exception", "", ex);
+        }
 
 
 
 
     }
+
+
+    public void verifyWriteExternalPermission(Activity activity) {
+
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                Toast.makeText(this,"Permission not granted",Toast.LENGTH_LONG).show();
+
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        REQUEST_WRITE_EXTERNAL_PERMISSION);
+
+            }
+        } else {
+            exportLibrary();
+
+        }
+
+    }
+
+
+    public void verifyReadExternalPermission(Activity activity) {
+
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
+                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                Toast.makeText(this,"Permission not granted",Toast.LENGTH_LONG).show();
+
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        REQUEST_READ_EXTERNAL_PERMISSION);
+
+            }
+        } else {
+            Intent selectLibrary = new Intent(Intent.ACTION_GET_CONTENT);
+            selectLibrary.setType("text/*");
+            startActivityForResult(selectLibrary,SELECT_LIBRARY);
+        }
+
+    }
+
+
+
+
+
 
 
 }

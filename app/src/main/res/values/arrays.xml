@@ -17,14 +17,5 @@
     </array>
 
 
-    <string name="Title">Title</string>
-    <string name="Author_Last_name">Author\'s Last name</string>
-    <string name="Author_First_name">Author\'s First name</string>
-    <string name="Series">Series</string>
-    <string name="Date_Added">Date added</string>
-    <string name="title" translatable="false">title</string>
-    <string name="last_name" translatable="false">lastName</string>
-    <string name="first_name" translatable="false">firstName</string>
-    <string name="series" translatable="false">series</string>
-    <string name="date_added" translatable="false">dateAdded</string>
+
 </resources>

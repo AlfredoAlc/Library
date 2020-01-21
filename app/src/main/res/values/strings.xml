@@ -81,12 +81,12 @@
     <string name="warning_exporting_message">Book cover probably won\'t get exported. This document will be on Download folder in your device.</string>
     <string name="export_confirmed">Your library is exported.</string>
     <string name="import_error">Error importing</string>
-    <string name="warning_importing_message">Make sure your document is in the Download folder in your device, with the same name as your library and is csv format.</string>
+    <string name="warning_importing_message">File must be on csv format.</string>
     <string name="delete_library_confirmed">Library deleted</string>
     <string name="rate_string">Rate</string>
     <string name="contact_string">Contact us</string>
     <string name="about_announcement">This app is designed to help organize your books into one application. Enjoy using this application and let us know your feedback so we can improve functionality of the app.</string>
-    <string name="error_ocurred">An error occurred</string>
+    <string name="error_occurred">An error occurred</string>
     <string name="description_cover_module" translatable="false">cover_module_image_view</string>
     <string name="select_image">Select image from device</string>
     <string name="take_photo">Use camera</string>
@@ -100,6 +100,34 @@
     <string name="best_sellers_string">Best Sellers</string>
     <string name="shop_string">Shop</string>
     <string name="apologies">Sorry, working on this.</string>
+
+
+    //Category List
+    <string name="others_category">Others</string>
+    <string name="art_design_category"><![CDATA[Art & Design]]></string>
+    <string name="business_financial_category"><![CDATA[Business & Financial]]></string>
+    <string name="children_book_category">Children\'s Books</string>
+    <string name="comic_graphic_novels_category"><![CDATA[Comics & Graphic Novels]]></string>
+    <string name="education_engineering"><![CDATA[Education & Engineering]]></string>
+    <string name="history_category">History</string>
+    <string name="literature_fiction_category"><![CDATA[Literature & Fiction]]></string>
+    <string name="politics_social_sciences_category"><![CDATA[Politics & Social Sciences]]></string>
+    <string name="travel_category">Travel</string>
+
+
+
+    //Array Sort by
+
+    <string name="Title">Title</string>
+    <string name="Author_Last_name">Author\'s Last name</string>
+    <string name="Author_First_name">Author\'s First name</string>
+    <string name="Series">Series</string>
+    <string name="Date_Added">Date added</string>
+    <string name="title" translatable="false">title</string>
+    <string name="last_name" translatable="false">lastName</string>
+    <string name="first_name" translatable="false">firstName</string>
+    <string name="series" translatable="false">series</string>
+    <string name="date_added" translatable="false">dateAdded</string>
 
 
 </resources>

@@ -81,12 +81,12 @@
     <string name="warning_exporting_message">La imagen de portada probablemente no se exporte. Este documento estará en la carpeta de Descargas en tu equipo.</string>
     <string name="export_confirmed">Se exportó tu librería.</string>
     <string name="import_error">Error importando</string>
-    <string name="warning_importing_message">Asegurate que tu documento se encuentre en la carpeta de Descargas en tu equipo, con el mismo nombre de tu librería y en formato csv.</string>
+    <string name="warning_importing_message">El formato del archivo debe ser csv.</string>
     <string name="delete_library_confirmed">Librería eliminada</string>
     <string name="rate_string">Calificar</string>
     <string name="contact_string">Contacto</string>
     <string name="about_announcement">Esta aplicación esta diseñada para ayudar a organizar tus libros en una sola aplicación. Disfruta esta aplicación y ayudanos a mejorarla enviando sugerencias.</string>
-    <string name="error_ocurred">Ocurrió un error</string>
+    <string name="error_occurred">Ocurrió un error</string>
     <string name="description_cover_module" translatable="false">cover_module_image_view</string>
     <string name="select_image">Escoge una imagen de tu equipo</string>
     <string name="take_photo">Utilizar cámara</string>
@@ -101,6 +101,32 @@
     <string name="shop_string">Comprar</string>
     <string name="apologies">Una disculpa, seguimos trabajando.</string>
 
+
+    //Category List
+    <string name="others_category">Otro</string>
+    <string name="art_design_category">Arte y diseño</string>
+    <string name="business_financial_category">Negocios></string>
+    <string name="children_book_category">Libros para niños</string>
+    <string name="comic_graphic_novels_category">Comico</string>
+    <string name="education_engineering">Educación</string>
+    <string name="history_category">Historia</string>
+    <string name="literature_fiction_category">Literatura y ficción</string>
+    <string name="politics_social_sciences_category">Política</string>
+    <string name="travel_category">Viajes</string>
+
+
+    //Array Sort by
+
+    <string name="Title">Título</string>
+    <string name="Author_Last_name">Apellido autor</string>
+    <string name="Author_First_name">Nombre autor</string>
+    <string name="Series">Serie</string>
+    <string name="Date_Added">Fecha agregado</string>
+    <string name="title" translatable="false">title</string>
+    <string name="last_name" translatable="false">lastName</string>
+    <string name="first_name" translatable="false">firstName</string>
+    <string name="series" translatable="false">series</string>
+    <string name="date_added" translatable="false">dateAdded</string>
 
 
 </resources>
