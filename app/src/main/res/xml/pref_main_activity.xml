@@ -24,6 +24,8 @@
         android:key="@string/delete_library_key"
         android:title="@string/delete_library_title"/>
 
+    <SwitchPreference/>
+
 
 
 </PreferenceScreen>

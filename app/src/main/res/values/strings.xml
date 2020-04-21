@@ -45,8 +45,8 @@
     <string name="action_done">Done</string>
 
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
     <string name="nav_header_title">Keep your books organized</string>
     <string name="nav_header_desc">Navigation header</string>
 
@@ -128,6 +128,7 @@
     <string name="first_name" translatable="false">firstName</string>
     <string name="series" translatable="false">series</string>
     <string name="date_added" translatable="false">dateAdded</string>
+
 
 
 </resources>

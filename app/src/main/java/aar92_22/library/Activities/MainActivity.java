@@ -20,7 +20,6 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,7 +30,6 @@ import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.Observer;
@@ -56,7 +54,6 @@ import java.util.Date;
 import java.util.List;
 
 import aar92_22.library.AppExecutors;
-import aar92_22.library.BitmapUtils;
 import aar92_22.library.BookListAdapter;
 import aar92_22.library.CSVReader;
 import aar92_22.library.CSVWriter;
@@ -68,8 +65,6 @@ import aar92_22.library.Fragments.SettingsFragment;
 import aar92_22.library.ModuleViewDecoration;
 import aar92_22.library.R;
 import aar92_22.library.ViewModel.MainViewModel;
-
-import static aar92_22.library.Activities.AddBookActivity.getPath;
 
 
 public class MainActivity extends AppCompatActivity
