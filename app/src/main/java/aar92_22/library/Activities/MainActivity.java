@@ -107,9 +107,6 @@ public class MainActivity extends AppCompatActivity
     List<BookEntry> listToFilter;
 
 
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,8 +128,6 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
 
-
-
         drawer = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
 
@@ -147,21 +142,20 @@ public class MainActivity extends AppCompatActivity
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
 
-
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
 
             listView = savedInstanceState.getBoolean(EXTRA_CHANGE_VIEW_BOOLEAN);
 
-            if(listView){
+            if (listView) {
                 setUpLinearLayout();
-            }else{
+            } else {
                 setUpGridLayout();
             }
 
 
             setUpViewModel(sharedPreferences);
 
-        }else {
+        } else {
             listView = true;
             LinearLayoutManager linearLayout = new LinearLayoutManager(this);
             bookList.setLayoutManager(linearLayout);
@@ -175,42 +169,35 @@ public class MainActivity extends AppCompatActivity
         }
 
 
-
         first = SettingsFragment.getCategoryValue(this);
 
-        if(first){
+        if (first) {
             firstCategories();
             SettingsFragment.firstCategoryList(this);
         }
 
         pullToRefresh = findViewById(R.id.pull_to_refresh);
 
-            pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    if(!filtersActivated) {
-                        setUpViewModel(sharedPreferences);
-                    }
-                    pullToRefresh.setRefreshing(false);
-
+        pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (!filtersActivated) {
+                    setUpViewModel(sharedPreferences);
                 }
-            });
+                pullToRefresh.setRefreshing(false);
+
+            }
+        });
 
 
         setToolbarName(sharedPreferences);
     }
 
 
-
-
-
-
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.menu_main_activity,menu);
+        menuInflater.inflate(R.menu.menu_main_activity, menu);
 
         MenuItem searchItem = menu.findItem(R.id.search_menu);
         SearchView searchView = (SearchView) searchItem.getActionView();
@@ -232,16 +219,14 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
 
-        switch (itemId){
+        switch (itemId) {
             case R.id.change_view_menu:
 
-                if(listView){
+                if (listView) {
                     listView = false;
                     item.setIcon(R.drawable.ic_view_list);
                     setUpGridLayout();
@@ -256,26 +241,26 @@ public class MainActivity extends AppCompatActivity
                 return true;
 
 
-
             case R.id.filter_menu:
 
                 Intent intent = new Intent(MainActivity.this, FilterActivity.class);
 
-                if(authorFilterActivated){
-                    intent.putExtra(FilterActivity.AUTHOR_FILTER,authorFilter);
+                if (authorFilterActivated) {
+                    intent.putExtra(FilterActivity.AUTHOR_FILTER, authorFilter);
                 }
-                if(categoryFilterActivated){
-                    intent.putExtra(FilterActivity.CATEGORY_FILTER,categoryFilter);
+                if (categoryFilterActivated) {
+                    intent.putExtra(FilterActivity.CATEGORY_FILTER, categoryFilter);
                 }
-                if(seriesFilterActivated){
-                    intent.putExtra(FilterActivity.SERIES_FILTER,seriesFilter);
+                if (seriesFilterActivated) {
+                    intent.putExtra(FilterActivity.SERIES_FILTER, seriesFilter);
                 }
 
-                startActivityForResult(intent,REQUEST_CODE_FILTER);
+                startActivityForResult(intent, REQUEST_CODE_FILTER);
 
                 return true;
 
-            default: return super.onOptionsItemSelected(item);
+            default:
+                return super.onOptionsItemSelected(item);
 
         }
 
@@ -284,9 +269,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
-        if(key.equals(getString(R.string.library_name_key))){
+        if (key.equals(getString(R.string.library_name_key))) {
             setToolbarName(sharedPreferences);
-        } else if(key.equals(getString(R.string.sort_by_key))){
+        } else if (key.equals(getString(R.string.sort_by_key))) {
             setUpViewModel(sharedPreferences);
         }
 
@@ -299,7 +284,7 @@ public class MainActivity extends AppCompatActivity
             public void run() {
                 BookEntry bookEntry = mDb.bookDao().loadBookByIdIndividual(id);
                 Intent intent = new Intent(MainActivity.this, BookDetailActivity.class);
-                intent.putExtra(BookDetailActivity.EXTRA_ID,bookEntry.getId());
+                intent.putExtra(BookDetailActivity.EXTRA_ID, bookEntry.getId());
                 startActivity(intent);
             }
         });
@@ -310,7 +295,7 @@ public class MainActivity extends AppCompatActivity
 
         int itemId = menuItem.getItemId();
 
-        switch (itemId){
+        switch (itemId) {
 
             case R.id.setting_drawer_activity:
                 Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
@@ -353,14 +338,10 @@ public class MainActivity extends AppCompatActivity
 
             case R.id.info:
 
-                Intent aboutIntent =  new Intent(MainActivity.this, AboutActivity.class);
+                Intent aboutIntent = new Intent(MainActivity.this, AboutActivity.class);
                 startActivity(aboutIntent);
 
                 break;
-
-
-
-
 
 
         }
@@ -380,10 +361,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onContextItemSelected(MenuItem item) {
 
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case 1:
                 Intent intent = new Intent(this, AddBookActivity.class);
-                intent.putExtra(AddBookActivity.BOOK_ID, bookId );
+                intent.putExtra(AddBookActivity.BOOK_ID, bookId);
                 startActivity(intent);
                 break;
 
@@ -425,7 +406,6 @@ public class MainActivity extends AppCompatActivity
         return true;
 
 
-
     }
 
 
@@ -435,7 +415,7 @@ public class MainActivity extends AppCompatActivity
 
         if (requestCode == REQUEST_CODE_FILTER) {
 
-            if(resultCode == RESULT_OK) {
+            if (resultCode == RESULT_OK) {
 
                 if (data != null) {
 
@@ -461,7 +441,7 @@ public class MainActivity extends AppCompatActivity
 
             }
 
-            if(resultCode == RESULT_CANCELED){
+            if (resultCode == RESULT_CANCELED) {
                 filtersActivated = false;
                 authorFilterActivated = false;
                 categoryFilterActivated = false;
@@ -471,25 +451,24 @@ public class MainActivity extends AppCompatActivity
         }
 
 
-        if(requestCode == SELECT_LIBRARY && data != null){
+        if (requestCode == SELECT_LIBRARY && data != null) {
 
             Uri selectedLibrary = data.getData();
             File file = new File(selectedLibrary.getPath());
             String[] split = file.getPath().split(":");
             String realPath = split[1];
             String extension = realPath.substring(realPath.lastIndexOf("."));
-            if(realPath.equals("Not found")){
-                Toast.makeText(this, getString(R.string.error_occurred),Toast.LENGTH_LONG).show();
-            }else{
-                if(!extension.equals(".csv")){
+            if (realPath.equals("Not found")) {
+                Toast.makeText(this, getString(R.string.error_occurred), Toast.LENGTH_LONG).show();
+            } else {
+                if (!extension.equals(".csv")) {
                     Toast.makeText(this, getString(R.string.warning_importing_message), Toast.LENGTH_LONG).show();
-                }else {
+                } else {
                     importLibrary(realPath);
 
                 }
             }
         }
-
 
 
     }
@@ -504,7 +483,7 @@ public class MainActivity extends AppCompatActivity
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     exportLibrary();
                 } else {
-                    Toast.makeText(this,"Permission not granted",Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Permission not granted", Toast.LENGTH_LONG).show();
 
                 }
                 break;
@@ -515,14 +494,13 @@ public class MainActivity extends AppCompatActivity
 
                     Intent selectLibrary = new Intent(Intent.ACTION_GET_CONTENT);
                     selectLibrary.setType("text/*");
-                    startActivityForResult(selectLibrary,SELECT_LIBRARY);
+                    startActivityForResult(selectLibrary, SELECT_LIBRARY);
 
                 } else {
-                    Toast.makeText(this,"Permission not granted",Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Permission not granted", Toast.LENGTH_LONG).show();
 
                 }
                 break;
-
 
 
         }
@@ -543,20 +521,10 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    /////METHODS///
 
 
-
-
-
-
-                                           /////METHODS///
-
-
-
-
-
-
-    private void setUpLinearLayout (){
+    private void setUpLinearLayout() {
 
         LinearLayoutManager linearLayout = new LinearLayoutManager(this);
         bookList.setLayoutManager(linearLayout);
@@ -568,7 +536,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void setUpGridLayout (){
+    private void setUpGridLayout() {
 
         GridLayoutManager gridLayout = new GridLayoutManager(this, 3);
         bookList.setLayoutManager(gridLayout);
@@ -582,9 +550,9 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void setUpViewModel(SharedPreferences sharedPreferences){
-        sortBy = sharedPreferences.getString(getString(R.string.sort_by_key), getString(R.string.date_added) );
-        MainViewModel viewModel = new MainViewModel(getApplication(),sortBy);
+    private void setUpViewModel(SharedPreferences sharedPreferences) {
+        sortBy = sharedPreferences.getString(getString(R.string.sort_by_key), getString(R.string.date_added));
+        MainViewModel viewModel = new MainViewModel(getApplication(), sortBy);
         viewModel.getBooks().observe(MainActivity.this, new Observer<List<BookEntry>>() {
             @Override
             public void onChanged(@Nullable List<BookEntry> bookEntries) {
@@ -595,7 +563,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    private void firstCategories(){
+    private void firstCategories() {
 
         final List<String> firstList = new ArrayList<>();
 
@@ -616,7 +584,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void run() {
 
-                for(int i = 0; i<firstList.size(); i++) {
+                for (int i = 0; i < firstList.size(); i++) {
                     CategoryEntry categoryEntry = new CategoryEntry(firstList.get(i));
                     categoryDataBase.categoryDao().newCategory(categoryEntry);
                 }
@@ -625,62 +593,62 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private void setToolbarName (SharedPreferences sharedPreferences){
+    private void setToolbarName(SharedPreferences sharedPreferences) {
         libraryName = sharedPreferences.getString(
-                getString(R.string.library_name_key), getString(R.string.library_string) );
+                getString(R.string.library_name_key), getString(R.string.library_string));
 
         toolbar.setTitle(libraryName);
 
     }
 
-    private void setFilter(){
+    private void setFilter() {
 
 
         BookEntry entry;
         List<BookEntry> result = new ArrayList<>();
 
-        if(listToFilter != null){
+        if (listToFilter != null) {
 
-            for(int i = 0; i<listToFilter.size(); i++){
+            for (int i = 0; i < listToFilter.size(); i++) {
 
                 entry = listToFilter.get(i);
 
-                if(authorFilterActivated && categoryFilterActivated && seriesFilterActivated){
-                    if(entry.getLastName().equals(authorFilter) &&
+                if (authorFilterActivated && categoryFilterActivated && seriesFilterActivated) {
+                    if (entry.getLastName().equals(authorFilter) &&
                             entry.getCategory().equals(categoryFilter) &&
-                            entry.getSeries().equals(seriesFilter)){
+                            entry.getSeries().equals(seriesFilter)) {
                         result.add(entry);
                     }
-                }else if (authorFilterActivated && categoryFilterActivated && !seriesFilterActivated){
-                    if(entry.getLastName().equals(authorFilter) &&
-                            entry.getCategory().equals(categoryFilter)){
-                        result.add(entry);
-                    }
-
-                }else if (authorFilterActivated && !categoryFilterActivated && seriesFilterActivated){
-                    if(entry.getLastName().equals(authorFilter) &&
-                            entry.getSeries().equals(seriesFilter)){
+                } else if (authorFilterActivated && categoryFilterActivated && !seriesFilterActivated) {
+                    if (entry.getLastName().equals(authorFilter) &&
+                            entry.getCategory().equals(categoryFilter)) {
                         result.add(entry);
                     }
 
-                }else if (authorFilterActivated && !categoryFilterActivated && !seriesFilterActivated){
-                    if(entry.getLastName().equals(authorFilter)){
+                } else if (authorFilterActivated && !categoryFilterActivated && seriesFilterActivated) {
+                    if (entry.getLastName().equals(authorFilter) &&
+                            entry.getSeries().equals(seriesFilter)) {
                         result.add(entry);
                     }
 
-                }else if (!authorFilterActivated && categoryFilterActivated && seriesFilterActivated){
-                    if(entry.getCategory().equals(categoryFilter) &&
-                            entry.getSeries().equals(seriesFilter)){
+                } else if (authorFilterActivated && !categoryFilterActivated && !seriesFilterActivated) {
+                    if (entry.getLastName().equals(authorFilter)) {
                         result.add(entry);
                     }
 
-                }else if (!authorFilterActivated && categoryFilterActivated && !seriesFilterActivated){
-                    if(entry.getCategory().equals(categoryFilter)){
+                } else if (!authorFilterActivated && categoryFilterActivated && seriesFilterActivated) {
+                    if (entry.getCategory().equals(categoryFilter) &&
+                            entry.getSeries().equals(seriesFilter)) {
                         result.add(entry);
                     }
 
-                }else if (!authorFilterActivated && !categoryFilterActivated && seriesFilterActivated){
-                    if(entry.getSeries().equals(seriesFilter)){
+                } else if (!authorFilterActivated && categoryFilterActivated && !seriesFilterActivated) {
+                    if (entry.getCategory().equals(categoryFilter)) {
+                        result.add(entry);
+                    }
+
+                } else if (!authorFilterActivated && !categoryFilterActivated && seriesFilterActivated) {
+                    if (entry.getSeries().equals(seriesFilter)) {
                         result.add(entry);
                     }
 
@@ -697,18 +665,18 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    public void scanIsbnClick(View v){
+    public void scanIsbnClick(View v) {
 
     }
 
 
-    public void searchOnlineClick(View v){
+    public void searchOnlineClick(View v) {
         /*Intent searchIntent = new Intent(MainActivity.this, SearchOnlineActivity.class);
         startActivity(searchIntent);
         */
     }
 
-    public void bestSellersClick(View v){
+    public void bestSellersClick(View v) {
         /*Intent bestSellersIntent = new Intent(MainActivity.this, BestSellers.class);
         startActivity(bestSellersIntent);*/
         Intent bookDetailAd = new Intent(MainActivity.this, BookDetailActivity.class);
@@ -718,13 +686,13 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    public void addBookClick(View v){
-        Intent intent = new Intent (MainActivity.this, AddBookActivity.class);
+    public void addBookClick(View v) {
+        Intent intent = new Intent(MainActivity.this, AddBookActivity.class);
         startActivity(intent);
     }
 
 
-    public void exportLibrary(){
+    public void exportLibrary() {
         AlertDialog.Builder exportBuilder = new AlertDialog.Builder(this);
         exportBuilder.setMessage(R.string.warning_exporting_message);
         exportBuilder.setCancelable(true);
@@ -745,31 +713,31 @@ public class MainActivity extends AppCompatActivity
                                 try {
                                     final CSVWriter csvWrite = new CSVWriter(new FileWriter(file));
                                     final SimpleSQLiteQuery query = new SimpleSQLiteQuery("SELECT * FROM books");
-                                Cursor curCSV = mDb.query(query);
-                                csvWrite.writeNext(curCSV.getColumnNames());
-                                while (curCSV.moveToNext()) {
-                                    String arrStr[] = new String[curCSV.getColumnCount()];
-                                    for (int i = 0; i < curCSV.getColumnCount() - 1; i++)
-                                        arrStr[i] = curCSV.getString(i);
-                                    csvWrite.writeNext(arrStr);
-                                }
-                                curCSV.close();
-                                csvWrite.close();
-                                 MainActivity.this.runOnUiThread(new Runnable() {
-                                     @Override
-                                     public void run() {
-                                         Toast.makeText(MainActivity.this,getString(R.string.export_confirmed),
-                                                 Toast.LENGTH_LONG).show();
+                                    Cursor curCSV = mDb.query(query);
+                                    csvWrite.writeNext(curCSV.getColumnNames());
+                                    while (curCSV.moveToNext()) {
+                                        String arrStr[] = new String[curCSV.getColumnCount()];
+                                        for (int i = 0; i < curCSV.getColumnCount() - 1; i++)
+                                            arrStr[i] = curCSV.getString(i);
+                                        csvWrite.writeNext(arrStr);
+                                    }
+                                    curCSV.close();
+                                    csvWrite.close();
+                                    MainActivity.this.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(MainActivity.this, getString(R.string.export_confirmed),
+                                                    Toast.LENGTH_LONG).show();
 
-                                     }
-                                 });
+                                        }
+                                    });
 
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                     MainActivity.this.runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            Toast.makeText(MainActivity.this,getString(R.string.error_occurred),
+                                            Toast.makeText(MainActivity.this, getString(R.string.error_occurred),
                                                     Toast.LENGTH_LONG).show();
 
                                         }
@@ -777,7 +745,6 @@ public class MainActivity extends AppCompatActivity
 
                                 }
                             }
-
 
 
                         });
@@ -800,9 +767,9 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    public void importLibrary(String path){
-        try{
-            File file = new File(Environment.getExternalStorageDirectory(),path);
+    public void importLibrary(String path) {
+        try {
+            File file = new File(Environment.getExternalStorageDirectory(), path);
 
             FileReader reader = new FileReader(file);
 
@@ -812,8 +779,8 @@ public class MainActivity extends AppCompatActivity
 
 
             csvReader.readNext();
-            try{
-                while ( (line = csvReader.readNext()) != null){
+            try {
+                while ((line = csvReader.readNext()) != null) {
 
                     int id;
                     String title;
@@ -830,96 +797,96 @@ public class MainActivity extends AppCompatActivity
                     String volume;
                     String category;
                     String summary;
-                    byte [] bookCover;
-                    Date date = new Date ();
+                    byte[] bookCover;
+                    Date date = new Date();
 
                     id = Integer.parseInt(line[0]);
-                    title = line [1];
-                    if(line[2].length()>0){
+                    title = line[1];
+                    if (line[2].length() > 0) {
                         lastName = line[2];
-                    }else{
+                    } else {
                         lastName = "";
                     }
 
-                    if(line[3].length()>0){
+                    if (line[3].length() > 0) {
                         firstName = line[3];
-                    }else{
-                        firstName="";
+                    } else {
+                        firstName = "";
                     }
 
-                    if(line[4].length()>0){
+                    if (line[4].length() > 0) {
                         lastName2 = line[4];
-                    }else{
-                        lastName2="";
+                    } else {
+                        lastName2 = "";
                     }
 
-                    if(line[5].length()>0){
+                    if (line[5].length() > 0) {
                         firstName2 = line[5];
-                    }else{
-                        firstName2="";
+                    } else {
+                        firstName2 = "";
                     }
 
-                    if(line[6].length()>0){
+                    if (line[6].length() > 0) {
                         lastName3 = line[6];
-                    }else{
-                        lastName3="";
+                    } else {
+                        lastName3 = "";
                     }
 
-                    if(line[7].length()>0){
+                    if (line[7].length() > 0) {
                         firstName3 = line[7];
-                    }else{
-                        firstName3="";
+                    } else {
+                        firstName3 = "";
                     }
 
-                    if(line[8].length()>0){
+                    if (line[8].length() > 0) {
                         publisher = line[8];
-                    }else{
-                        publisher="";
+                    } else {
+                        publisher = "";
                     }
 
-                    if(line[9].length()>0){
+                    if (line[9].length() > 0) {
                         publishedDate = line[9];
-                    }else{
-                        publishedDate="";
+                    } else {
+                        publishedDate = "";
                     }
 
-                    if(line[10].length()>0){
+                    if (line[10].length() > 0) {
                         numberPages = Integer.parseInt(line[10]);
-                    }else{
-                        numberPages=0;
+                    } else {
+                        numberPages = 0;
                     }
 
-                    if(line[11].length()>0){
+                    if (line[11].length() > 0) {
                         series = line[11];
-                    }else{
-                        series="";
+                    } else {
+                        series = "";
                     }
 
-                    if(line[12].length()>0){
+                    if (line[12].length() > 0) {
                         volume = line[12];
-                    }else{
-                        volume="";
+                    } else {
+                        volume = "";
                     }
 
-                    if(line[13].length()>0){
+                    if (line[13].length() > 0) {
                         category = line[13];
-                    }else{
-                        category="";
+                    } else {
+                        category = "";
                     }
 
-                    if(line[14].length()>0){
+                    if (line[14].length() > 0) {
                         summary = line[14];
-                    }else{
-                        summary="";
+                    } else {
+                        summary = "";
                     }
 
-                    if(line[15].length()>0){
+                    if (line[15].length() > 0) {
                         bookCover = line[15].getBytes();
-                    }else{
+                    } else {
                         bookCover = null;
                     }
 
-                    final BookEntry bookEntry = new BookEntry(id, title,lastName, firstName, lastName2, firstName2,
+                    final BookEntry bookEntry = new BookEntry(id, title, lastName, firstName, lastName2, firstName2,
                             lastName3, firstName3, publisher, publishedDate, numberPages, series, volume,
                             category, summary, bookCover, date);
 
@@ -931,20 +898,18 @@ public class MainActivity extends AppCompatActivity
                     });
 
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(),getString(R.string.import_error), Toast.LENGTH_LONG).show();
-        } catch (IOException e){
+            Toast.makeText(getApplicationContext(), getString(R.string.import_error), Toast.LENGTH_LONG).show();
+        } catch (IOException e) {
             e.printStackTrace();
-        } catch (NullPointerException ex){
+        } catch (NullPointerException ex) {
             Log.wtf("Exception", "", ex);
         }
-
-
 
 
     }
@@ -957,7 +922,7 @@ public class MainActivity extends AppCompatActivity
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                Toast.makeText(this,"Permission not granted",Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Permission not granted", Toast.LENGTH_LONG).show();
 
             } else {
                 ActivityCompat.requestPermissions(this,
@@ -980,7 +945,7 @@ public class MainActivity extends AppCompatActivity
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
                     Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                Toast.makeText(this,"Permission not granted",Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Permission not granted", Toast.LENGTH_LONG).show();
 
             } else {
                 ActivityCompat.requestPermissions(this,
@@ -991,15 +956,10 @@ public class MainActivity extends AppCompatActivity
         } else {
             Intent selectLibrary = new Intent(Intent.ACTION_GET_CONTENT);
             selectLibrary.setType("text/*");
-            startActivityForResult(selectLibrary,SELECT_LIBRARY);
+            startActivityForResult(selectLibrary, SELECT_LIBRARY);
         }
 
     }
-
-
-
-
-
 
 
 }
