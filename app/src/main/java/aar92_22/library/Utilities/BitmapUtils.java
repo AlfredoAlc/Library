@@ -1,4 +1,4 @@
-package aar92_22.library;
+package aar92_22.library.Utilities;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -50,9 +50,6 @@ public class BitmapUtils {
         return resultBitmap;
     }
 
-
-
-
     public static File createTempImageFile(Context context) throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
                 Locale.getDefault()).format(new Date());
@@ -65,65 +62,5 @@ public class BitmapUtils {
                 storageDir      /* directory */
         );
     }
-
-/*
-    public static boolean deleteImageFile(Context context, String imagePath) {
-        File imageFile = new File(imagePath);
-
-        boolean deleted = imageFile.delete();
-
-        if (!deleted) {
-            String errorMessage = context.getString(R.string.error);
-            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
-        }
-
-        return deleted;
-    }
-
-    private static void galleryAddPic(Context context, String imagePath) {
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(imagePath);
-        Uri contentUri = Uri.fromFile(f);
-        mediaScanIntent.setData(contentUri);
-        context.sendBroadcast(mediaScanIntent);
-    }
-
-    static String saveImage(Context context, Bitmap image) {
-
-        String savedImagePath = null;
-
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
-                Locale.getDefault()).format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + ".jpg";
-        File storageDir = new File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                        + "/Emojify");
-        boolean success = true;
-        if (!storageDir.exists()) {
-            success = storageDir.mkdirs();
-        }
-
-        if (success) {
-            File imageFile = new File(storageDir, imageFileName);
-            savedImagePath = imageFile.getAbsolutePath();
-            try {
-                OutputStream fOut = new FileOutputStream(imageFile);
-                image.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
-                fOut.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            // Add the image to the system gallery
-            galleryAddPic(context, savedImagePath);
-
-            // Show a Toast with the save location
-          //  String savedMessage = context.getString(R.string.saved_message, savedImagePath);
-           // Toast.makeText(context, savedMessage, Toast.LENGTH_SHORT).show();
-        }
-
-        return savedImagePath;
-    }*/
-
 
 }

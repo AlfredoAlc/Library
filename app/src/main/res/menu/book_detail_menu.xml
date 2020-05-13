@@ -12,24 +12,32 @@
         app:showAsAction="ifRoom"/>
 
     <item
+        android:id="@+id/save_to_library"
+        android:title="@string/save_to_library_string"
+        android:icon="@drawable/ic_save_to_library"
+        android:orderInCategory="2"
+        android:visible="false"
+        app:showAsAction="ifRoom"/>
+
+    <item
         android:id="@+id/edit_action"
         android:title="@string/edit_string"
         android:icon="@drawable/ic_edit"
-        android:orderInCategory="2"
+        android:orderInCategory="3"
         app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/delete_action"
         android:title="@string/delete_string"
         android:icon="@drawable/ic_delete"
-        android:orderInCategory="3"
+        android:orderInCategory="4"
         app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/share_action"
         android:title="@string/share_string"
         android:icon="@drawable/ic_share"
-        android:orderInCategory="4"
+        android:orderInCategory="5"
         app:showAsAction="ifRoom"/>
 
 

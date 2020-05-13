@@ -25,7 +25,7 @@ import com.google.android.gms.ads.AdView;
 import java.util.List;
 
 import aar92_22.library.AppExecutors;
-import aar92_22.library.CategoryListAdapter;
+import aar92_22.library.Adapters.CategoryListAdapter;
 import aar92_22.library.Database.CategoryDataBase;
 import aar92_22.library.Database.CategoryEntry;
 import aar92_22.library.R;

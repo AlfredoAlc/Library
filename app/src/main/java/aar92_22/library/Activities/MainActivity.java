@@ -54,7 +54,7 @@ import java.util.Date;
 import java.util.List;
 
 import aar92_22.library.AppExecutors;
-import aar92_22.library.BookListAdapter;
+import aar92_22.library.Adapters.BookListAdapter;
 import aar92_22.library.CSVReader;
 import aar92_22.library.CSVWriter;
 import aar92_22.library.Database.AppDataBase;
@@ -97,6 +97,9 @@ public class MainActivity extends AppCompatActivity
     RecyclerView bookList;
     BookListAdapter mAdapter;
 
+    LinearLayoutManager linearLayout;
+    GridLayoutManager gridLayout;
+    ModuleViewDecoration moduleViewDecoration;
 
     Toolbar toolbar;
     ActionBarDrawerToggle toggle;
@@ -137,6 +140,11 @@ public class MainActivity extends AppCompatActivity
 
         navigationView.setNavigationItemSelectedListener(this);
 
+        linearLayout = new LinearLayoutManager(this);
+        gridLayout = new GridLayoutManager(this, 3);
+        moduleViewDecoration = new ModuleViewDecoration(this, R.dimen.module_padding);
+
+
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
@@ -144,7 +152,7 @@ public class MainActivity extends AppCompatActivity
 
         if (savedInstanceState != null) {
 
-            listView = savedInstanceState.getBoolean(EXTRA_CHANGE_VIEW_BOOLEAN);
+            listView = savedInstanceState.getBoolean(EXTRA_CHANGE_VIEW_BOOLEAN, true);
 
             if (listView) {
                 setUpLinearLayout();
@@ -157,15 +165,9 @@ public class MainActivity extends AppCompatActivity
 
         } else {
             listView = true;
-            LinearLayoutManager linearLayout = new LinearLayoutManager(this);
-            bookList.setLayoutManager(linearLayout);
-            bookList.setHasFixedSize(true);
-            mAdapter = new BookListAdapter(this, this,
-                    this, listView);
-            bookList.setAdapter(mAdapter);
 
+            setUpLinearLayout();
             setUpViewModel(sharedPreferences);
-
         }
 
 
@@ -288,6 +290,11 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    public void onListBookClickFromSearch(BookEntry bookEntry) {
+
     }
 
     @Override
@@ -454,6 +461,7 @@ public class MainActivity extends AppCompatActivity
         if (requestCode == SELECT_LIBRARY && data != null) {
 
             Uri selectedLibrary = data.getData();
+            assert selectedLibrary != null;
             File file = new File(selectedLibrary.getPath());
             String[] split = file.getPath().split(":");
             String realPath = split[1];
@@ -525,30 +533,19 @@ public class MainActivity extends AppCompatActivity
 
 
     private void setUpLinearLayout() {
-
-        LinearLayoutManager linearLayout = new LinearLayoutManager(this);
         bookList.setLayoutManager(linearLayout);
-        bookList.setHasFixedSize(true);
-        mAdapter = new BookListAdapter(this, this,
-                this, listView);
-
+        mAdapter = new BookListAdapter(this, this,this, listView);
+        bookList.removeItemDecoration(moduleViewDecoration);
         bookList.setAdapter(mAdapter);
-
     }
 
     private void setUpGridLayout() {
-
-        GridLayoutManager gridLayout = new GridLayoutManager(this, 3);
         bookList.setLayoutManager(gridLayout);
-        ModuleViewDecoration moduleViewDecoration = new ModuleViewDecoration(this, R.dimen.module_padding);
         bookList.addItemDecoration(moduleViewDecoration);
-        bookList.setHasFixedSize(true);
-        mAdapter = new BookListAdapter(this, this,
-                this, listView);
-
+        mAdapter = new BookListAdapter(this, this,this, listView);
         bookList.setAdapter(mAdapter);
-
     }
+
 
     private void setUpViewModel(SharedPreferences sharedPreferences) {
         sortBy = sharedPreferences.getString(getString(R.string.sort_by_key), getString(R.string.date_added));
@@ -602,8 +599,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setFilter() {
-
-
         BookEntry entry;
         List<BookEntry> result = new ArrayList<>();
 
@@ -671,20 +666,10 @@ public class MainActivity extends AppCompatActivity
 
 
     public void searchOnlineClick(View v) {
-        /*Intent searchIntent = new Intent(MainActivity.this, SearchOnlineActivity.class);
+        Intent searchIntent = new Intent(MainActivity.this, SearchOnlineActivity.class);
         startActivity(searchIntent);
-        */
-    }
-
-    public void bestSellersClick(View v) {
-        /*Intent bestSellersIntent = new Intent(MainActivity.this, BestSellers.class);
-        startActivity(bestSellersIntent);*/
-        Intent bookDetailAd = new Intent(MainActivity.this, BookDetailActivity.class);
-        bookDetailAd.putExtra(BookDetailActivity.EXTRA_AD, true);
-        startActivity(bookDetailAd);
 
     }
-
 
     public void addBookClick(View v) {
         Intent intent = new Intent(MainActivity.this, AddBookActivity.class);
@@ -716,7 +701,7 @@ public class MainActivity extends AppCompatActivity
                                     Cursor curCSV = mDb.query(query);
                                     csvWrite.writeNext(curCSV.getColumnNames());
                                     while (curCSV.moveToNext()) {
-                                        String arrStr[] = new String[curCSV.getColumnCount()];
+                                        String[] arrStr = new String[curCSV.getColumnCount()];
                                         for (int i = 0; i < curCSV.getColumnCount() - 1; i++)
                                             arrStr[i] = curCSV.getString(i);
                                         csvWrite.writeNext(arrStr);
