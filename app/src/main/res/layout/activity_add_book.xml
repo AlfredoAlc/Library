@@ -37,6 +37,7 @@
             app:adUnitId="@string/banner_ad_unit_id"/>
 
      <ScrollView
+         android:id="@+id/add_book_scroll_view"
          android:layout_width="match_parent"
          android:layout_height="match_parent">
 
@@ -72,7 +73,8 @@
                                  android:layout_height="wrap_content"
                                  android:layout_marginEnd="@dimen/left_right_margin"
                                  android:hint="@string/last_name_tag"
-                                 android:textSize="@dimen/text_size" />
+                                 android:textSize="@dimen/text_size"
+                                 android:inputType="text"/>
 
                              <EditText
                                  android:id="@+id/first_name_input"
@@ -81,7 +83,8 @@
                                  android:layout_height="wrap_content"
                                  android:layout_marginEnd="@dimen/left_right_margin"
                                  android:hint="@string/first_name_tag"
-                                 android:textSize="@dimen/text_size" />
+                                 android:textSize="@dimen/text_size"
+                                 android:inputType="text"/>
 
                              <ImageView
                                  android:id="@+id/add_author"
@@ -112,7 +115,8 @@
                                  android:layout_height="wrap_content"
                                  android:layout_marginEnd="@dimen/left_right_margin"
                                  android:hint="@string/last_name_tag"
-                                 android:textSize="@dimen/text_size" />
+                                 android:textSize="@dimen/text_size"
+                                 android:inputType="text"/>
 
                              <EditText
                                  android:id="@+id/first_name_input2"
@@ -121,7 +125,8 @@
                                  android:layout_height="wrap_content"
                                  android:layout_marginEnd="@dimen/left_right_margin"
                                  android:hint="@string/first_name_tag"
-                                 android:textSize="@dimen/text_size" />
+                                 android:textSize="@dimen/text_size"
+                                 android:inputType="text"/>
 
                              <ImageView
                                  android:id="@+id/remove_author2"
@@ -153,7 +158,8 @@
                                  android:layout_height="wrap_content"
                                  android:layout_marginEnd="@dimen/left_right_margin"
                                  android:hint="@string/last_name_tag"
-                                 android:textSize="@dimen/text_size" />
+                                 android:textSize="@dimen/text_size"
+                                 android:inputType="text"/>
 
                              <EditText
                                  android:id="@+id/first_name_input3"
@@ -162,7 +168,8 @@
                                  android:layout_height="wrap_content"
                                  android:layout_marginEnd="@dimen/left_right_margin"
                                  android:hint="@string/first_name_tag"
-                                 android:textSize="@dimen/text_size" />
+                                 android:textSize="@dimen/text_size"
+                                 android:inputType="text"/>
 
                              <ImageView
                                  android:id="@+id/remove_author3"

@@ -76,10 +76,9 @@
     <string name="error_occurred">Ocurrió un error</string>
     <string name="select_image">Escoge una imagen de tu equipo</string>
     <string name="take_photo">Utilizar cámara</string>
-    <string name="search_online_title">Buscar en línea</string>
-    <string name="best_sellers_string">Más vendidos</string>
+    <string name="search_online_title">En línea</string>
+    <string name="save_to_library_string">Guardar en librería</string>
     <string name="shop_string">Comprar</string>
-    <string name="apologies">Una disculpa, seguimos trabajando.</string>
 
 
     //Category List
@@ -102,6 +101,7 @@
     <string name="Author_First_name">Nombre autor</string>
     <string name="Series">Serie</string>
     <string name="Date_Added">Fecha agregado</string>
+
 
 
 </resources>

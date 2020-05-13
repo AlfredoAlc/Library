@@ -95,11 +95,9 @@
     <string name="search_online_description" translatable="false">search_online</string>
     <string name="search_image_view_description" translatable="false">search_image_view</string>
     <string name="cancel_image_view_description" translatable="false">cancel_image_view</string>
-    <string name="search_online_title">Search online</string>
-    <string name="best_sellers_description" translatable="false">best_sellers</string>
-    <string name="best_sellers_string">Best Sellers</string>
+    <string name="search_online_title">Online</string>
+    <string name="save_to_library_string">Save to library</string>
     <string name="shop_string">Shop</string>
-    <string name="apologies">Sorry, working on this.</string>
 
 
     //Category List

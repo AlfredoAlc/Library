@@ -63,35 +63,22 @@
             android:onClick="scanIsbnClick"
             android:visibility="gone"/>
 
-        <ImageButton
+        <Button
             android:id="@+id/search_online_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:paddingTop="13dp"
+            android:paddingBottom="7dp"
             android:contentDescription="@string/search_online_description"
             android:background="@drawable/bottom_button_shape"
-            android:src="@drawable/ic_search"
-            android:onClick="searchOnlineClick"
-            android:visibility="gone"/>
-
-
-        <Button
-            android:id="@+id/best_sellers_button"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:contentDescription="@string/best_sellers_description"
-            android:background="@drawable/bottom_button_shape"
-            android:paddingStart="@dimen/padding_20"
-            android:paddingEnd="@dimen/padding_10"
-            android:drawableStart="@drawable/ic_star"
-            android:text="@string/best_sellers_string"
-            android:textColor="#FFF"
-            android:fontFamily="sans-serif"
-            android:textSize="16sp"
+            android:drawableTop="@drawable/ic_search"
             android:textAllCaps="false"
-            android:onClick="bestSellersClick"/>
-
+            android:textColor="@color/icons"
+            android:text="@string/search_online_title"
+            android:textSize="10sp"
+            android:onClick="searchOnlineClick"
+            android:visibility="visible"/>
 
 
         <ImageButton

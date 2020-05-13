@@ -1,4 +1,4 @@
-package aar92_22.library;
+package aar92_22.library.Adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import aar92_22.library.Database.BookEntry;
+import aar92_22.library.R;
 
 
 public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookViewHolder>
@@ -37,8 +38,6 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
     private Drawable drawable;
 
     private boolean listView;
-
-
 
 
     public BookListAdapter (Context mContext, ListBookClickListener mOnClickListener,
@@ -129,6 +128,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
     public interface ListBookClickListener {
 
         void onListBookClick (int id);
+        void onListBookClickFromSearch (BookEntry entry);
 
     }
 
@@ -256,7 +256,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
         public void onClick(View v) {
             int clickedPosition = mBookEntry.get(getAdapterPosition()).getId();
             mOnClickListener.onListBookClick(clickedPosition);
-
+            mOnClickListener.onListBookClickFromSearch(mBookEntry.get(getAdapterPosition()));
         }
 
         @Override

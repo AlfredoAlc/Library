@@ -3,7 +3,6 @@ package aar92_22.library.Activities;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -52,7 +51,7 @@ import java.util.Date;
 import java.util.List;
 
 import aar92_22.library.AppExecutors;
-import aar92_22.library.BitmapUtils;
+import aar92_22.library.Utilities.BitmapUtils;
 import aar92_22.library.Database.AppDataBase;
 import aar92_22.library.Database.BookEntry;
 import aar92_22.library.Database.CategoryDataBase;
@@ -116,7 +115,6 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_book);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         //Load ad
         AdView mAdView = findViewById(R.id.adView);
@@ -161,6 +159,7 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
         mDb = AppDataBase.getsInstance(getApplicationContext());
 
         categoryDataBase = CategoryDataBase.getsInstance(getApplicationContext());
+        setUpCategories();
 
 
         if ( savedInstanceState != null && savedInstanceState.containsKey(INSTANCE_BOOK_ID) ){
@@ -170,8 +169,8 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
 
         Intent intent = getIntent();
 
-        if(intent != null && intent.hasExtra(BOOK_ID)){
-            if(bookId == DEFAULT_BOOK_ID){
+        if(intent != null){
+            if(intent.hasExtra(BOOK_ID) && bookId == DEFAULT_BOOK_ID){
 
                 bookId = intent.getIntExtra(BOOK_ID,DEFAULT_BOOK_ID);
                 AddBookFactoryModel factory = new AddBookFactoryModel(mDb, bookId);
@@ -188,14 +187,27 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
 
             }
 
+            if(intent.hasExtra(BookDetailActivity.EXTRA_BOOK_ENTRY) &&
+                    intent.getBooleanExtra(BookDetailActivity.EXTRA_FROM_SEARCH, false)){
+
+                Bundle receivedBundle = intent.getBundleExtra(BookDetailActivity.EXTRA_BOOK_ENTRY);
+                String title = receivedBundle.getString("title");
+                String firstName = receivedBundle.getString("firstName");
+                String lastName = receivedBundle.getString("lastName");
+                String publisher = receivedBundle.getString("publisher");
+                String publishedDate = receivedBundle.getString("publishedDate");
+                String categoryFromBundle = receivedBundle.getString("category");
+                int numberPages = receivedBundle.getInt("numberPages");
+                byte[] bookCover = receivedBundle.getByteArray("bookCover");
+
+                BookEntry bookEntry = new BookEntry(title, lastName, firstName, "",
+                        "", "", "", publisher,
+                        publishedDate, numberPages, "", "",
+                        categoryFromBundle, "", bookCover, null);
+                populateUI(bookEntry);
+            }
+
         }
-
-
-        setUpCategories();
-
-
-
-
     }
 
 
@@ -423,6 +435,9 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
         for(int i = 0; i < categoryList.size(); i++){
             if(categoryList.get(i).equals(bookEntry.getCategory())){
                 category.setSelection(i);
+                break;
+            } else {
+                category.setSelection(0);
             }
         }
 

@@ -14,10 +14,9 @@ import java.util.Scanner;
 public class NetworkUtilities {
 
     private final static String GOOGLE_BOOKS_BASE_URL =
-            "https://www.google.com/search?tbm=bks";
+            "https://www.googleapis.com/books/v1/volumes";
 
     private final static String PARAM_QUERY = "q";
-
 
     public static URL buildUrl(String bookSearchQuery) {
         Uri builtUri = Uri.parse(GOOGLE_BOOKS_BASE_URL).buildUpon()
@@ -33,11 +32,6 @@ public class NetworkUtilities {
 
         return url;
     }
-
-
-
-
-
 
     public static String getResponseFromHttpUrl(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();

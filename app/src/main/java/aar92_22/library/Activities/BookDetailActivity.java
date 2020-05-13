@@ -16,7 +16,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,12 +40,10 @@ import aar92_22.library.ViewModel.AddBookViewModel;
 public class BookDetailActivity extends AppCompatActivity {
 
     public static final String EXTRA_ID = "book_id";
-    public static final String EXTRA_AD = "extra_ad";
-
-    private static final String AD_PAGE = "https://amzn.to/3als0aU";
+    public static final String EXTRA_FROM_SEARCH = "extra_from_search";
+    public static final String EXTRA_BOOK_ENTRY = "extra_book_entry";
 
     Toolbar toolbar;
-
 
     ImageView bookCoverImageView;
 
@@ -65,7 +62,6 @@ public class BookDetailActivity extends AppCompatActivity {
     TextView categoryTv;
     TextView summaryTv;
     TextView summaryText;
-    TextView apologiesText;
 
     LinearLayout authorLayout;
     LinearLayout authorLayout2;
@@ -88,8 +84,17 @@ public class BookDetailActivity extends AppCompatActivity {
     String lastNameShare;
     String firstNameShare;
 
-    boolean adSelected;
+    //Values from search online
 
+    boolean fromSearchOnline;
+    String title;
+    String firstName;
+    String lastName;
+    String publisher;
+    String publishedDate;
+    String category;
+    int numberPages;
+    byte [] bookCover;
 
 
 
@@ -123,7 +128,6 @@ public class BookDetailActivity extends AppCompatActivity {
         categoryTv = findViewById(R.id.category_display);
         summaryTv = findViewById(R.id.summary_display);
         summaryText = findViewById(R.id.summary_tv);
-        apologiesText = findViewById(R.id.apologies_text);
 
 
         authorLayout = findViewById(R.id.author_layout);
@@ -167,21 +171,31 @@ public class BookDetailActivity extends AppCompatActivity {
                 });
             }
 
-            if(intent.hasExtra(EXTRA_AD) && intent.getBooleanExtra(EXTRA_AD, false)){
-                adSelected = true;
-                showAd();
+            if(intent.hasExtra(EXTRA_BOOK_ENTRY) && intent.getBooleanExtra(EXTRA_FROM_SEARCH, false)){
+                fromSearchOnline = true;
+
+                Bundle receivedBundle = intent.getBundleExtra(EXTRA_BOOK_ENTRY);
+                title = receivedBundle.getString("title");
+                firstName = receivedBundle.getString("firstName");
+                lastName = receivedBundle.getString("lastName");
+                publisher = receivedBundle.getString("publisher");
+                publishedDate = receivedBundle.getString("publishedDate");
+                category = receivedBundle.getString("category");
+                numberPages = receivedBundle.getInt("numberPages");
+                bookCover = receivedBundle.getByteArray("bookCover");
+
+                BookEntry bookEntry = new BookEntry(title, lastName, firstName, "",
+                        "", "", "", publisher,
+                        publishedDate, numberPages, "", "",
+                        category, "", bookCover, null);
+                populateUI(bookEntry);
             }
 
 
 
         }
 
-
-
     }
-
-
-
 
 
 
@@ -190,18 +204,18 @@ public class BookDetailActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.book_detail_menu, menu);
 
-        if(adSelected) {
+        if(fromSearchOnline) {
             MenuItem editMenu = menu.findItem(R.id.edit_action);
             MenuItem deleteMenu = menu.findItem(R.id.delete_action);
-            MenuItem shopMenu = menu.findItem(R.id.shop_action);
+            //MenuItem shopMenu = menu.findItem(R.id.shop_action);
+            MenuItem saveToLibrary = menu.findItem(R.id.save_to_library);
             editMenu.setVisible(false);
             deleteMenu.setVisible(false);
-            shopMenu.setVisible(true);
+            saveToLibrary.setVisible(true);
+            //shopMenu.setVisible(true);
         }
 
         return super.onCreateOptionsMenu(menu);
-
-
 
 
     }
@@ -217,9 +231,9 @@ public class BookDetailActivity extends AppCompatActivity {
                 return true;
 
             case R.id.edit_action:
-                Intent intent = new Intent(BookDetailActivity.this, AddBookActivity.class);
-                intent.putExtra(AddBookActivity.BOOK_ID, bookId );
-                startActivity(intent);
+                Intent editIntent = new Intent(BookDetailActivity.this, AddBookActivity.class);
+                editIntent.putExtra(AddBookActivity.BOOK_ID, bookId );
+                startActivity(editIntent);
                 finish();
                 break;
 
@@ -232,13 +246,29 @@ public class BookDetailActivity extends AppCompatActivity {
                 shareAction();
                 break;
 
-            case R.id.shop_action:
+            /*case R.id.shop_action:
                 Uri adPage = Uri.parse(AD_PAGE);
                 Intent shopIntent = new Intent(Intent.ACTION_VIEW, adPage);
                 if(shopIntent.resolveActivity(getPackageManager()) != null){
                     startActivity(shopIntent);
                 }
+                break;*/
 
+            case R.id.save_to_library:
+                Intent saveFromSearchIntent = new Intent(BookDetailActivity.this, AddBookActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("title", title);
+                bundle.putString("firstName", firstName);
+                bundle.putString("lastName", lastName);
+                bundle.putString("publisher", publisher);
+                bundle.putString("publishedDate", publishedDate);
+                bundle.putString("category", category);
+                bundle.putInt("numberPages", numberPages);
+                bundle.putByteArray("bookCover", bookCover);
+                saveFromSearchIntent.putExtra(BookDetailActivity.EXTRA_BOOK_ENTRY, bundle);
+                saveFromSearchIntent.putExtra(BookDetailActivity.EXTRA_FROM_SEARCH, true);
+                startActivity(saveFromSearchIntent);
+                finish();
                 break;
 
 
@@ -380,44 +410,5 @@ public class BookDetailActivity extends AppCompatActivity {
                 .startChooser();
 
     }
-
-
-    private void showAd() {
-
-        apologiesText.setVisibility(View.VISIBLE);
-
-
-        toolbar.setTitle(getString(R.string.best_sellers_string));
-
-        titleShare = "El hombre en busca de sentido";
-        lastNameShare = "Emil Frankl";
-        firstNameShare = "Viktor";
-        String publisher = "Herder";
-        String publishedDate = "01/01/2015";
-        int numberPages = 162;
-        String category = "Psicología clínica";
-        String summary = "Nueva traducción de \"El hombre en busca de sentido\". El doctor Frankl, " +
-                "psiquiatra y escritor, suele preguntar a sus pacientes aquejados de múltiples " +
-                "padecimientos: «¿Por qué no se suicida usted? Y muchas veces, de las respuestas " +
-                "extrae una orientación para la psicoterapia a aplicar: a éste, lo que le ata a la " +
-                "vida son los hijos; al otro, un talento, una habilidad sin explotar; a un tercero, " +
-                "quizás, sólo unos cuantos recuerdos que merece la pena rescatar del olvido. " +
-                "Tejer estas tenues hebras de vidas rotas en una urdimbre firme, coherente, " +
-                "significativa y responsable es el objeto con que se enfrenta la logoterapia.";
-
-
-
-
-         BookEntry bookEntry = new BookEntry(titleShare, lastNameShare, firstNameShare, "", "",
-                "", "", publisher, publishedDate, numberPages, "", "",
-                category, summary, null, null);
-
-         populateUI(bookEntry);
-
-         bookCoverImageView.setImageResource(R.drawable.el_hombre_en_busca_de_sentido);
-
-
-    }
-
 
 }
