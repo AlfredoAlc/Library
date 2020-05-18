@@ -127,6 +127,7 @@
     <string name="series" translatable="false">series</string>
     <string name="date_added" translatable="false">dateAdded</string>
 
+    <string name="No_Connection">Check internet connection.</string>
 
 
 </resources>

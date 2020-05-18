@@ -9,15 +9,19 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -284,8 +288,22 @@ public class SearchOnlineActivity extends AppCompatActivity implements BookListA
     private void searchOnline(String query) {
         searchView.clearFocus();
         searchQuery = query;
-        final URL completeSearchUrl = NetworkUtilities.buildUrl(searchQuery);
-        new QueryTask().execute(completeSearchUrl);
+
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo networkInfo = null;
+        if(connectivityManager != null){
+            networkInfo = connectivityManager.getActiveNetworkInfo();
+        }
+
+        if(networkInfo != null && networkInfo.isConnected()){
+            final URL completeSearchUrl = NetworkUtilities.buildUrl(searchQuery);
+            new QueryTask().execute(completeSearchUrl);
+        } else {
+            Toast.makeText(this, R.string.No_Connection, Toast.LENGTH_LONG).show();
+        }
+
     }
 
     private void setUpRecyclerView(){

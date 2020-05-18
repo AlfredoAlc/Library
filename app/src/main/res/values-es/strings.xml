@@ -102,6 +102,7 @@
     <string name="Series">Serie</string>
     <string name="Date_Added">Fecha agregado</string>
 
+    <string name="No_Connection">Reivsa tu conexión a internet.</string>
 
 
 </resources>
