@@ -128,6 +128,7 @@
     <string name="date_added" translatable="false">dateAdded</string>
 
     <string name="No_Connection">Check internet connection.</string>
+    <string name="error_only_numbers">Insert only numbers into pages.</string>
 
 
 </resources>

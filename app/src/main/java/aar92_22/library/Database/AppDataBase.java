@@ -21,15 +21,13 @@ public abstract class AppDataBase extends RoomDatabase {
         if(sInstance == null){
             synchronized (LOCK){
                 sInstance = Room.databaseBuilder(context.getApplicationContext(),
-                        AppDataBase.class,AppDataBase.DATABASE_NAME).build();
+                        AppDataBase.class, AppDataBase.DATABASE_NAME).build();
             }
         }
         return sInstance;
     }
 
     public abstract BookDao bookDao();
-
-
 
 }
 

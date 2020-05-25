@@ -488,7 +488,6 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
 
         Date date = new Date();
 
-
         final BookEntry bookEntry = new BookEntry(title,lastName, firstName, lastName2, firstName2,
                 lastName3, firstName3, publisher, publishedDate, numberPages, series, volume,
                 mCategory, summary, imageInBytes, date);
@@ -511,6 +510,17 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
 
 
 
+    private boolean checkNumberPages(){
+        if(!(String.valueOf(mNumberPages.getText()).equals("")) ) {
+            try {
+                Integer.parseInt(String.valueOf(mNumberPages.getText()));
+            } catch (Exception e) {
+                Toast.makeText(this, getString(R.string.error_only_numbers), Toast.LENGTH_LONG).show();
+                return false;
+            }
+        }
+        return true;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -532,7 +542,8 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
 
             case R.id.action_done:
 
-                if(!(String.valueOf(mTitle.getText()).equals("") || String.valueOf(mLastName.getText()).equals(""))){
+                if(!(String.valueOf(mTitle.getText()).equals("") || String.valueOf(mLastName.getText()).equals(""))
+                  && checkNumberPages()){
                     saveData();
                 } else if (String.valueOf(mTitle.getText()).equals("")){
                     Toast.makeText(this,R.string.complete_title_warning, Toast.LENGTH_LONG).show();

@@ -154,4 +154,5 @@ public class BookEntry {
     public void setDateAdded(Date dateAdded) {
         this.dateAdded = dateAdded;
     }
+
 }
