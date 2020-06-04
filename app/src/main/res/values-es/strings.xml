@@ -104,6 +104,7 @@
 
     <string name="No_Connection">Reivsa tu conexión a internet.</string>
     <string name="error_only_numbers">Solo números enteros para las páginas.</string>
+    <string name="permission_not_granted">No se tiene acceso.</string>
 
 
 </resources>

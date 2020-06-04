@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity
     private static final int REQUEST_WRITE_EXTERNAL_PERMISSION = 12;
     private static final int SELECT_LIBRARY = 13;
     private static final int REQUEST_READ_EXTERNAL_PERMISSION = 14;
+    private static final int REQUEST_INTERNET_PERMISSION = 15;
     private int bookId;
     private boolean listView;
     private boolean authorFilterActivated;
@@ -114,6 +115,9 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        checkAllPermission();
+
 
         //Load ad
         AdView mAdView = findViewById(R.id.adView);
@@ -310,7 +314,9 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case R.id.export_library:
-                verifyWriteExternalPermission(MainActivity.this);
+                if(verifyWriteExternalPermission(MainActivity.this)){
+                    exportLibrary();
+                }
                 break;
 
             case R.id.import_library:
@@ -323,7 +329,11 @@ public class MainActivity extends AppCompatActivity
                         "Ok",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                verifyReadExternalPermission(MainActivity.this);
+                                if(verifyReadExternalPermission(MainActivity.this)){
+                                    Intent selectLibrary = new Intent(Intent.ACTION_GET_CONTENT);
+                                    selectLibrary.setType("text/*");
+                                    startActivityForResult(selectLibrary, SELECT_LIBRARY);
+                                }
                                 dialog.cancel();
                             }
 
@@ -900,7 +910,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    public void verifyWriteExternalPermission(Activity activity) {
+    public boolean verifyWriteExternalPermission(Activity activity) {
 
         if (ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -915,15 +925,15 @@ public class MainActivity extends AppCompatActivity
                         REQUEST_WRITE_EXTERNAL_PERMISSION);
 
             }
+            return false;
         } else {
-            exportLibrary();
-
+            return true;
         }
 
     }
 
 
-    public void verifyReadExternalPermission(Activity activity) {
+    public boolean verifyReadExternalPermission(Activity activity) {
 
         if (ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -938,12 +948,46 @@ public class MainActivity extends AppCompatActivity
                         REQUEST_READ_EXTERNAL_PERMISSION);
 
             }
+
+            return false;
         } else {
-            Intent selectLibrary = new Intent(Intent.ACTION_GET_CONTENT);
-            selectLibrary.setType("text/*");
-            startActivityForResult(selectLibrary, SELECT_LIBRARY);
+            return true;
         }
 
+    }
+
+    public boolean verifyInternetPermission(Activity activity){
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.INTERNET)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
+                    Manifest.permission.INTERNET)) {
+                Toast.makeText(this, R.string.permission_not_granted, Toast.LENGTH_LONG).show();
+
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.INTERNET}, REQUEST_INTERNET_PERMISSION);
+            }
+
+            return false;
+        } else {
+            return true;
+        }
+
+    }
+
+    private void checkAllPermission(){
+        boolean internetPermission = verifyInternetPermission(this);
+        boolean readPermission = verifyReadExternalPermission(this);
+        boolean writePermission = verifyWriteExternalPermission(this);
+
+        do {
+
+            internetPermission = verifyInternetPermission(this);
+            readPermission = verifyReadExternalPermission(this);
+            writePermission = verifyWriteExternalPermission(this);
+
+        }while(!internetPermission || !readPermission || !writePermission);
     }
 
 

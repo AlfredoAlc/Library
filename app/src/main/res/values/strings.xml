@@ -129,6 +129,7 @@
 
     <string name="No_Connection">Check internet connection.</string>
     <string name="error_only_numbers">Insert only numbers into pages.</string>
+    <string name="permission_not_granted">Permission not granted</string>
 
 
 </resources>
