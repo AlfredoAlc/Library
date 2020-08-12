@@ -56,11 +56,7 @@ public class BitmapUtils {
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = context.getExternalCacheDir();
 
-        return File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
+        return File.createTempFile(imageFileName, ".jpg", storageDir);
     }
 
 }

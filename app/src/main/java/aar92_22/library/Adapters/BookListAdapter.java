@@ -35,8 +35,6 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
     final private ListBookClickListener mOnClickListener ;
     final private BookLongClickListener mOnLongClickListener;
 
-    private Drawable drawable;
-
     private boolean listView;
 
 
@@ -59,15 +57,9 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
     @Override
     @NonNull
     public BookViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-        int layoutIdForBookList = R.layout.individual_book_recycler_view;
-
-        drawable = ContextCompat.getDrawable(mContext,R.drawable.ic_add_book);
-
-
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
-
-        View view = layoutInflater.inflate(layoutIdForBookList,parent,false);
+        View view = layoutInflater.inflate(R.layout.individual_book_recycler_view,
+                parent,false);
 
         return new BookViewHolder(view);
     }
@@ -76,48 +68,31 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
     public void onBindViewHolder(@NonNull BookViewHolder holder, int position) {
         BookEntry book = mBookEntry.get(position);
 
-        String title = "";
-        String lastName = "";
-        String firstName = "";
-        int numberPages;
-        byte[] imageInBytes;
-        Bitmap mResultsBitmap;
-
-        if(!book.getTitle().equals("")){
-            title = book.getTitle();
-        }
-        if(!book.getLastName().equals("")){
-            lastName = book.getLastName();
-        }
-        if(!book.getFirstName().equals("")){
-            firstName = book.getFirstName();
-        }
-
-
-        numberPages = book.getNumberPages();
-        if(numberPages > 0){
-            holder.mNumberPages.setVisibility(View.VISIBLE);
-            String pages_string = mContext.getString(R.string.pages_string);
-            String textDisplayed = numberPages + " " + pages_string;
-            holder.mNumberPages.setText(textDisplayed);
-        } else {
-            holder.mNumberPages.setVisibility(View.INVISIBLE);
-        }
+        String title = book.getTitle();
+        String lastName = book.getLastName();
+        String firstName = book.getFirstName();
+        int numberPages = book.getNumberPages();
+        byte[] imageInBytes = book.getBookCover();
 
 
         holder.mTitle.setText(title);
         holder.mLastName.setText(lastName);
         holder.mFirstName.setText(firstName);
 
+        if(numberPages > 0){
+            holder.mNumberPages.setVisibility(View.VISIBLE);
+            String pages = mContext.getString(R.string.pages_string, numberPages);
+            holder.mNumberPages.setText(pages);
+        }
 
         holder.mTitleModule.setText(title);
 
-        if(book.getBookCover() != null) {
-            imageInBytes = book.getBookCover();
-            mResultsBitmap = BitmapFactory.decodeByteArray(imageInBytes, 0, imageInBytes.length);
+        if(imageInBytes != null) {
+            Bitmap mResultsBitmap = BitmapFactory.decodeByteArray(imageInBytes, 0, imageInBytes.length);
             holder.bookImageList.setImageBitmap(mResultsBitmap);
             holder.bookImageModule.setImageBitmap(mResultsBitmap);
         }else {
+            Drawable drawable = ContextCompat.getDrawable(mContext,R.drawable.ic_add_book);
             holder.bookImageList.setImageDrawable(drawable);
             holder.bookImageModule.setImageDrawable(drawable);
         }
@@ -126,21 +101,17 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
     }
 
     public interface ListBookClickListener {
-
         void onListBookClick (int id);
         void onListBookClickFromSearch (BookEntry entry);
-
     }
 
     public interface BookLongClickListener {
-
         void onLongBookClick (int id);
-
     }
 
     @Override
     public int getItemCount() {
-        if (mBookEntry == null ){
+        if (mBookEntry == null){
             return 0;
         }
         return mBookEntry.size();
@@ -160,8 +131,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
         protected FilterResults performFiltering(CharSequence constraint) {
             List<BookEntry> filteredList = new ArrayList<>();
 
-            if (constraint != null || constraint.length() != 0) {
-
+            if (constraint != null) {
                 String filterPattern = constraint.toString().toLowerCase().trim();
 
                 for (BookEntry item : mBookEntryFull) {
@@ -174,7 +144,6 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
 
             } else {
                 filteredList.addAll(mBookEntryFull);
-
             }
 
 
@@ -192,10 +161,6 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
             notifyDataSetChanged();
         }
     };
-
-
-
-
 
 
 
@@ -235,10 +200,8 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
             if(listView){
                 listViewFrame.setVisibility(View.VISIBLE);
                 moduleViewFrame.setVisibility(View.GONE);
-
             }
             else {
-
                 listViewFrame.setVisibility(View.GONE);
                 moduleViewFrame.setVisibility(View.VISIBLE);
             }
@@ -270,18 +233,10 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.BookVi
 
         @Override
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-
             menu.add(0, 1,0,R.string.edit_string);
             menu.add(0,2,1,R.string.delete_string);
-
         }
 
-
-
-
     }
-
-
-
 
 }

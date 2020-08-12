@@ -29,7 +29,6 @@
 
 
     <style name="detail_tag_display">
-
         <item name="android:layout_marginTop">10dp</item>
         <item name="android:layout_marginStart">@dimen/left_right_margin</item>
         <item name="android:textSize">@dimen/text_size</item>
@@ -40,15 +39,24 @@
 
 
     <style name="detail_info_display">
-
         <item name="android:layout_marginTop">10dp</item>
         <item name="android:layout_marginStart">@dimen/left_right_margin</item>
         <item name="android:textColor">@color/secondary_text</item>
         <item name="android:textSize">@dimen/text_size</item>
-
-
     </style>
 
+    <style name="DialogTitle" parent="TextAppearance.AppCompat.Headline">
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:layout_gravity">bottom</item>
+        <item name="android:textColor">@color/loading_background</item>
+        <item name="android:textSize">28sp</item>
+    </style>
+
+    <style name="DialogStyle" parent="Theme.AppCompat.Dialog.MinWidth">
+        <item name="android:windowBackground">@drawable/dialogs_shape</item>
+        <item name="android:textColor">@color/black_overlay</item>
+    </style>
 
 
 </resources>

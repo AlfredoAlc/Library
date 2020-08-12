@@ -19,8 +19,6 @@ import java.util.List;
 public interface BookDao  {
 
 
-
-
     @RawQuery(observedEntities = BookEntry.class)
     LiveData<List<BookEntry>> loadAllBooks (SupportSQLiteQuery query);
 
@@ -42,5 +40,7 @@ public interface BookDao  {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertNewLibrary(BookEntry bookEntry);
 
+    @Query("SELECT * FROM books")
+    List<BookEntry> loadAllBooksList();
 
 }

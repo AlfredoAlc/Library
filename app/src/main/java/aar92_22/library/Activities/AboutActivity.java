@@ -72,6 +72,11 @@ public class AboutActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onPause() {
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        super.onPause();
+    }
 
     public void shareButtonClick(View view) {
 

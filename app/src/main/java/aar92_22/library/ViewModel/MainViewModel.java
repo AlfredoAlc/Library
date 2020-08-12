@@ -9,7 +9,7 @@ import androidx.sqlite.db.SimpleSQLiteQuery;
 
 import java.util.List;
 
-import aar92_22.library.Database.AppDataBase;
+import aar92_22.library.Database.BookDataBase;
 import aar92_22.library.Database.BookEntry;
 
 public class MainViewModel extends AndroidViewModel {
@@ -22,7 +22,7 @@ public class MainViewModel extends AndroidViewModel {
     public MainViewModel(@NonNull Application application, String sort) {
         super(application);
         SimpleSQLiteQuery query = new SimpleSQLiteQuery("SELECT * FROM books ORDER BY LOWER(" + sort + ")");
-        AppDataBase dataBase = AppDataBase.getsInstance(application);
+        BookDataBase dataBase = BookDataBase.getsInstance(application);
             books = dataBase.bookDao().loadAllBooks(query);
     }
 

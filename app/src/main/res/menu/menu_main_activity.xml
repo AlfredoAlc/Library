@@ -26,5 +26,19 @@
         android:orderInCategory="3"
         app:showAsAction="ifRoom"/>
 
+    <item
+        android:id="@+id/setting_drawer_activity"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/settings_string"
+        android:orderInCategory="4"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/info"
+        android:icon="@drawable/ic_info"
+        android:title="@string/about"
+        android:orderInCategory="5"
+        app:showAsAction="never"/>
+
 
 </menu>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingStart="25dp"
+    android:paddingTop="18dp"
+    android:paddingEnd="25dp"
+    android:paddingBottom="18dp">
+
+
+    <TextView
+        android:id="@+id/select_image"
+        style="@style/TextAppearance.AppCompat.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/left_right_margin"
+        android:drawableStart="@drawable/ic_image"
+        android:fontFamily="sans-serif"
+        android:gravity="center"
+        android:text="@string/select_image" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider" />
+
+    <TextView
+        android:id="@+id/take_photo"
+        style="@style/TextAppearance.AppCompat.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/left_right_margin"
+        android:drawableStart="@drawable/ic_camera"
+        android:fontFamily="sans-serif"
+        android:gravity="center"
+        android:text="@string/take_photo" />
+
+
+</LinearLayout>

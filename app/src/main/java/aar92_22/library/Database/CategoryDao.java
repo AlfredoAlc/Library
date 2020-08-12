@@ -31,5 +31,7 @@ public interface CategoryDao {
     @Query("SELECT * FROM category WHERE id = :id")
     CategoryEntry loadCategoryById(int id);
 
+    @Insert
+    void defaultCategories(List<CategoryEntry> categoryEntries);
 
 }

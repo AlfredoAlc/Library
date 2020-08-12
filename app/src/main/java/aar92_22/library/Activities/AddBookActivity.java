@@ -11,7 +11,6 @@ import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,14 +22,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
-
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -38,7 +34,6 @@ import androidx.core.app.NavUtils;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -50,35 +45,55 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import aar92_22.library.AppExecutors;
+import aar92_22.library.Database.BookDataBase;
+import aar92_22.library.Interfaces.SelectingCoverListener;
+import aar92_22.library.Utilities.AppExecutors;
 import aar92_22.library.Utilities.BitmapUtils;
-import aar92_22.library.Database.AppDataBase;
 import aar92_22.library.Database.BookEntry;
 import aar92_22.library.Database.CategoryDataBase;
 import aar92_22.library.Database.CategoryEntry;
 import aar92_22.library.R;
-import aar92_22.library.ViewModel.AddBookFactoryModel;
+import aar92_22.library.Utilities.Dialogs;
 import aar92_22.library.ViewModel.AddBookViewModel;
+import aar92_22.library.ViewModel.CategoryViewModel;
+
+import static aar92_22.library.Activities.SearchOnlineActivity.BOOK_COVER_SEARCH;
+import static aar92_22.library.Activities.SearchOnlineActivity.CATEGORY_SEARCH;
+import static aar92_22.library.Activities.SearchOnlineActivity.FIRST_NAME_SEARCH;
+import static aar92_22.library.Activities.SearchOnlineActivity.LAST_NAME_SEARCH;
+import static aar92_22.library.Activities.SearchOnlineActivity.NUMBER_PAGES_SEARCH;
+import static aar92_22.library.Activities.SearchOnlineActivity.PUBLISHED_DATE_SEARCH;
+import static aar92_22.library.Activities.SearchOnlineActivity.PUBLISHER_SEARCH;
+import static aar92_22.library.Activities.SearchOnlineActivity.SUMMARY_SEARCH;
+import static aar92_22.library.Activities.SearchOnlineActivity.TITLE_SEARCH;
 
 
-public class AddBookActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
+public class AddBookActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener,
+        SelectingCoverListener {
 
 
     public static final String BOOK_ID = "book_id";
     public static final String INSTANCE_BOOK_ID = "instance_book_id";
     private static final String FILE_PROVIDER_AUTHORITY = "aar92_22.library.fileprovider";
 
+    private static final String WRITE_PERMISSION = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+    private static final String READ_PERMISSION = Manifest.permission.READ_EXTERNAL_STORAGE;
+    private static final String CAMERA_PERMISSION = Manifest.permission.CAMERA;
+
+    private static final String [] PERMISSIONS = new String[]{
+            WRITE_PERMISSION, READ_PERMISSION, CAMERA_PERMISSION };
+
+    private static final int REQUEST_CODE_PERMISSION_CAMERA = 2;
+    private static final int REQUEST_CODE_PERMISSION_SELECT_IMAGE = 4;
+
+
     private static final int DEFAULT_BOOK_ID = -1 ;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
-    private static final int REQUEST_STORAGE_PERMISSION = 2;
     private static final int SELECT_IMAGE = 3;
 
-
     private int bookId = DEFAULT_BOOK_ID;
-
-    String mCategory;
+    private String mCategory;
     private String mTempPhotoPath;
-
     private Bitmap mResultsBitmap;
 
     EditText mTitle;
@@ -94,22 +109,17 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
     EditText mSeries;
     EditText mVolume;
     EditText mSummary;
-
     Spinner category;
-
     Button camera;
     Button rotateImage;
-
     ImageView mBookCover;
-
     LinearLayout author2;
     LinearLayout author3;
 
-    AppDataBase mDb;
-
-    ArrayList <String> categoryList;
+    BookDataBase mDb;
     CategoryDataBase categoryDataBase;
 
+    ArrayList <String> categoryList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +130,12 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
         AdView mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null ) actionBar.setDisplayHomeAsUpEnabled(true);
+
 
         mTitle = findViewById(R.id.title_input);
         mLastName = findViewById(R.id.last_name_input);
@@ -134,33 +150,19 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
         mSeries = findViewById(R.id.series_input);
         mVolume = findViewById(R.id.volume_input);
         mSummary = findViewById(R.id.summary_input);
-
         category = findViewById(R.id.category_spinner);
-
         author2 = findViewById(R.id.author_layout2);
         author3 = findViewById(R.id.author_layout3);
-
         camera = findViewById(R.id.take_photo);
         rotateImage = findViewById(R.id.rotate_image);
-
         mBookCover = findViewById(R.id.book_cover_input);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
 
-        setSupportActionBar(toolbar);
-
-        ActionBar actionBar = getSupportActionBar();
-
-        if(actionBar != null ){
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-
-
-        mDb = AppDataBase.getsInstance(getApplicationContext());
+        mDb = BookDataBase.getsInstance(getApplicationContext());
 
         categoryDataBase = CategoryDataBase.getsInstance(getApplicationContext());
+        category.setOnItemSelectedListener(this);
         setUpCategories();
-
 
         if ( savedInstanceState != null && savedInstanceState.containsKey(INSTANCE_BOOK_ID) ){
             bookId = savedInstanceState.getInt(INSTANCE_BOOK_ID,DEFAULT_BOOK_ID);
@@ -173,10 +175,8 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
             if(intent.hasExtra(BOOK_ID) && bookId == DEFAULT_BOOK_ID){
 
                 bookId = intent.getIntExtra(BOOK_ID,DEFAULT_BOOK_ID);
-                AddBookFactoryModel factory = new AddBookFactoryModel(mDb, bookId);
 
-                final AddBookViewModel viewModel = ViewModelProviders.of(this,factory).get(AddBookViewModel.class);
-
+                final AddBookViewModel viewModel = new AddBookViewModel(getApplication(), mDb, bookId);
                 viewModel.getBooks().observe(this, new Observer<BookEntry>() {
                     @Override
                     public void onChanged(@Nullable BookEntry bookEntry) {
@@ -185,72 +185,173 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
                     }
                 });
 
-            }
-
-            if(intent.hasExtra(BookDetailActivity.EXTRA_BOOK_ENTRY) &&
+            } else if(intent.hasExtra(BookDetailActivity.EXTRA_BOOK_ENTRY) &&
                     intent.getBooleanExtra(BookDetailActivity.EXTRA_FROM_SEARCH, false)){
 
                 Bundle receivedBundle = intent.getBundleExtra(BookDetailActivity.EXTRA_BOOK_ENTRY);
-                String title = receivedBundle.getString("title");
-                String firstName = receivedBundle.getString("firstName");
-                String lastName = receivedBundle.getString("lastName");
-                String publisher = receivedBundle.getString("publisher");
-                String publishedDate = receivedBundle.getString("publishedDate");
-                String categoryFromBundle = receivedBundle.getString("category");
-                int numberPages = receivedBundle.getInt("numberPages");
-                byte[] bookCover = receivedBundle.getByteArray("bookCover");
+                if(receivedBundle != null) {
+                    String title = receivedBundle.getString(TITLE_SEARCH);
+                    String firstName = receivedBundle.getString(FIRST_NAME_SEARCH);
+                    String lastName = receivedBundle.getString(LAST_NAME_SEARCH);
+                    String publisher = receivedBundle.getString(PUBLISHER_SEARCH);
+                    String publishedDate = receivedBundle.getString(PUBLISHED_DATE_SEARCH);
+                    String categoryFromBundle = receivedBundle.getString(CATEGORY_SEARCH);
+                    String summary = receivedBundle.getString(SUMMARY_SEARCH);
+                    int numberPages = receivedBundle.getInt(NUMBER_PAGES_SEARCH);
+                    byte[] bookCover = receivedBundle.getByteArray(BOOK_COVER_SEARCH);
 
-                BookEntry bookEntry = new BookEntry(title, lastName, firstName, "",
-                        "", "", "", publisher,
-                        publishedDate, numberPages, "", "",
-                        categoryFromBundle, "", bookCover, null);
-                populateUI(bookEntry);
+                    BookEntry bookEntry = new BookEntry(title, lastName, firstName, "",
+                            "", "", "", publisher,
+                            publishedDate, numberPages, "", "",
+                            categoryFromBundle, summary, bookCover, null);
+                    populateUI(bookEntry);
+                }
             }
 
+        }
+
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.add_book_activity_menu,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id){
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+
+            case R.id.action_done:
+                if(!(String.valueOf(mTitle.getText()).equals("") || String.valueOf(mLastName.getText()).equals(""))
+                        && checkNumberPages()){
+                    saveData();
+                } else if (String.valueOf(mTitle.getText()).equals("")){
+                    Toast.makeText(this,R.string.complete_title_warning, Toast.LENGTH_LONG).show();
+                } else if(String.valueOf(mLastName.getText()).equals("")){
+                    Toast.makeText(this,R.string.complete_last_name_warning, Toast.LENGTH_LONG).show();
+                }
+                return true;
+
+            default:  return super.onOptionsItemSelected(item);
+        }
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        NavUtils.navigateUpFromSameTask(this);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        mCategory = parent.getItemAtPosition(position).toString();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+
+        if(grantResults.length > 0){
+            for(int result : grantResults){
+                if(result != PackageManager.PERMISSION_GRANTED){
+                    Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+            switch (requestCode){
+                case REQUEST_CODE_PERMISSION_SELECT_IMAGE:
+                    selectImage();
+                    break;
+
+                case REQUEST_CODE_PERMISSION_CAMERA:
+                    launchCamera();
+                    break;
+            }
         }
     }
 
 
-    private void setUpCategories(){
 
-        categoryList = new ArrayList<>();
-
-        AppExecutors.getInstance().otherIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                List<CategoryEntry> categoryEntries = categoryDataBase.categoryDao().loadAllCategoriesList();
-
-                for (int i=0; i< categoryEntries.size(); i++) {
-
-                    CategoryEntry categoryEntry = categoryEntries.get(i);
-
-                    categoryList.add(categoryEntry.getCategory());
-                }
-
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                        AddBookActivity.this, android.R.layout.simple_spinner_item, categoryList);
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-                category.setAdapter(adapter);
-                category.setOnItemSelectedListener(AddBookActivity.this);
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            processAndSetImage();
+        }
+        if(requestCode == SELECT_IMAGE && resultCode == RESULT_OK){
+            Uri selectedImageUri = data.getData();
+            String realPath = getPath(this.getApplicationContext(),selectedImageUri);
+            if(realPath.equals("Not found")){
+                Toast.makeText(this, getString(R.string.error_image_message),Toast.LENGTH_LONG).show();
+            }else{
+                processReceivedImageFromDevice(realPath);
             }
+        }
+    }
 
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(INSTANCE_BOOK_ID, bookId);
+        super.onSaveInstanceState(outState);
+    }
 
+    @Override
+    protected void onPause() {
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        super.onPause();
+    }
 
-        });
+    @Override
+    public void selectImageListener() {
+        if(ContextCompat.checkSelfPermission(this, WRITE_PERMISSION) ==
+                PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, READ_PERMISSION) ==
+                        PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, CAMERA_PERMISSION) ==
+                        PackageManager.PERMISSION_GRANTED){
+            selectImage();
+        } else {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_CODE_PERMISSION_SELECT_IMAGE);
+        }
+
+    }
+
+    @Override
+    public void takePhotoListener() {
+        if(ContextCompat.checkSelfPermission(this, WRITE_PERMISSION) ==
+                PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, READ_PERMISSION) ==
+                        PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, CAMERA_PERMISSION) ==
+                        PackageManager.PERMISSION_GRANTED){
+            launchCamera();
+        } else {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_CODE_PERMISSION_CAMERA);
+        }
     }
 
 
     public void clickAddAuthor(View view) {
-
         if(author2.getVisibility() == View.GONE && author3.getVisibility() == View.GONE){
             author2.setVisibility(View.VISIBLE);
         } else if ( author2.getVisibility() == View.VISIBLE && author3.getVisibility() == View.GONE){
             author3.setVisibility(View.VISIBLE);
         }
-
     }
 
     public void clickRemoveAuthor2(View view) {
@@ -266,72 +367,40 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
     }
 
     public void clickTakePhoto(View view) {
+        Dialogs.selectImageOptions(this, this);
+    }
 
-
-        LayoutInflater inflater = LayoutInflater.from(AddBookActivity.this);
-
-        final AlertDialog.Builder builder = new AlertDialog.Builder(AddBookActivity.this);
-        final AlertDialog dialog = builder.create();
-
-        View dialogView = inflater.inflate(R.layout.image_options_dialog,null,false);
-
-        TextView selectImage = dialogView.findViewById(R.id.select_image);
-        TextView takePhoto = dialogView.findViewById(R.id.take_photo);
-
-        dialog.setCancelable(true);
-        dialog.setView(dialogView);
-
-
-
-        selectImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(ContextCompat.checkSelfPermission(getApplicationContext(),
-                        Manifest.permission.READ_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED){
-
-                    ActivityCompat.requestPermissions(AddBookActivity.this,
-                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                            REQUEST_STORAGE_PERMISSION);
-
-                } else {
-                    selectImage();
-                }
-
-                dialog.dismiss();
-
-            }
-
-
-        });
-
-        takePhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(getApplicationContext(),
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE )
-                        != PackageManager.PERMISSION_GRANTED) {
-
-                    ActivityCompat.requestPermissions(AddBookActivity.this,
-                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            REQUEST_STORAGE_PERMISSION);
-                } else {
-                    launchCamera();
-                }
-
-                dialog.dismiss();
-            }
-
-
-        });
-
-
-
-        dialog.show();
-
+    public void clickRotateImage(View view) {
+        Bitmap rotatedImage;
+        Matrix matrix = new Matrix();
+        matrix.postRotate(90);
+        rotatedImage = Bitmap.createBitmap(mResultsBitmap, 0, 0, mResultsBitmap.getWidth(), mResultsBitmap.getHeight(), matrix, true);
+        mResultsBitmap = rotatedImage;
+        mBookCover.setImageBitmap(mResultsBitmap);
 
     }
 
+    private void setUpCategories(){
+        categoryList = new ArrayList<>();
+        CategoryViewModel categoryViewModel = new CategoryViewModel(getApplication());
+        categoryViewModel.getCategoryEntries().observe(this, new Observer<List<CategoryEntry>>() {
+            @Override
+            public void onChanged(List<CategoryEntry> categoryEntries) {
+                for (CategoryEntry categoryEntry : categoryEntries) {
+                    categoryList.add(categoryEntry.getCategory());
+                }
+                setUpAdapter();
+            }
+        });
+    }
+
+    private void setUpAdapter(){
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this, android.R.layout.simple_spinner_item, categoryList);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        category.setAdapter(adapter);
+        category.setSelection(0);
+    }
 
     private void launchCamera() {
 
@@ -366,11 +435,11 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
 
     public static String getPath(Context context, Uri uri ) {
         String result = null;
-        String[] proj = { MediaStore.Images.Media.DATA };
-        Cursor cursor = context.getContentResolver( ).query( uri, proj, null, null, null );
+        String[] projection = { MediaStore.Images.Media.DATA };
+        Cursor cursor = context.getContentResolver( ).query( uri, projection, null, null, null );
         if(cursor != null){
             if ( cursor.moveToFirst( ) ) {
-                int column_index = cursor.getColumnIndexOrThrow( proj[0] );
+                int column_index = cursor.getColumnIndexOrThrow( projection[0] );
                 result = cursor.getString( column_index );
             }
             cursor.close( );
@@ -381,15 +450,7 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
         return result;
     }
 
-    public void clickRotateImage(View view) {
-        Bitmap rotatedImage;
-        Matrix matrix = new Matrix();
-        matrix.postRotate(90);
-        rotatedImage = Bitmap.createBitmap(mResultsBitmap, 0, 0, mResultsBitmap.getWidth(), mResultsBitmap.getHeight(), matrix, true);
-        mResultsBitmap = rotatedImage;
-        mBookCover.setImageBitmap(mResultsBitmap);
 
-    }
 
     private void processAndSetImage() {
         mResultsBitmap = BitmapUtils.resamplePic(this, mTempPhotoPath);
@@ -441,11 +502,7 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
             }
         }
 
-
-
         mSummary.setText(bookEntry.getSummary());
-
-
 
         if(bookEntry.getBookCover() != null) {
             byte[] imageInBytes = bookEntry.getBookCover();
@@ -508,8 +565,6 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
     }
 
 
-
-
     private boolean checkNumberPages(){
         if(!(String.valueOf(mNumberPages.getText()).equals("")) ) {
             try {
@@ -521,99 +576,6 @@ public class AddBookActivity extends AppCompatActivity implements AdapterView.On
         }
         return true;
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-
-        menuInflater.inflate(R.menu.add_book_activity_menu,menu);
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        switch (id){
-            case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
-
-            case R.id.action_done:
-
-                if(!(String.valueOf(mTitle.getText()).equals("") || String.valueOf(mLastName.getText()).equals(""))
-                  && checkNumberPages()){
-                    saveData();
-                } else if (String.valueOf(mTitle.getText()).equals("")){
-                    Toast.makeText(this,R.string.complete_title_warning, Toast.LENGTH_LONG).show();
-                } else if(String.valueOf(mLastName.getText()).equals("")){
-                    Toast.makeText(this,R.string.complete_last_name_warning, Toast.LENGTH_LONG).show();
-                }
-                return true;
-
-                default:  return super.onOptionsItemSelected(item);
-        }
-
-    }
-
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        mCategory = parent.getItemAtPosition(position).toString();
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-
-        if(requestCode == REQUEST_STORAGE_PERMISSION){
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                launchCamera();
-            } else {
-                Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            processAndSetImage();
-        }
-        if(requestCode == SELECT_IMAGE && resultCode == RESULT_OK){
-            Uri selectedImageUri = data.getData();
-            String realPath = getPath(this.getApplicationContext(),selectedImageUri);
-            if(realPath.equals("Not found")){
-                Toast.makeText(this, getString(R.string.error_image_message),Toast.LENGTH_LONG).show();
-            }else{
-                processReceivedImageFromDevice(realPath);
-            }
-
-        }
-
-
-    }
-
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt(INSTANCE_BOOK_ID, bookId);
-        super.onSaveInstanceState(outState);
-
-
-    }
-
 
 
 }

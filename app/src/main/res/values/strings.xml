@@ -29,7 +29,7 @@
     <string name="category_tag">Category:</string>
     <string name="summary_tag">Summary</string>
     <string name="summary_hint">Book summary here</string>
-    <string name="pages_string"> pages</string>
+    <string name="pages_string" formatted="true">%d pages</string>
 
 
     <string name="sort_by_key" translatable="false">sort_by</string>
@@ -113,7 +113,6 @@
     <string name="travel_category">Travel</string>
 
 
-
     //Array Sort by
 
     <string name="Title">Title</string>
@@ -130,6 +129,28 @@
     <string name="No_Connection">Check internet connection.</string>
     <string name="error_only_numbers">Insert only numbers into pages.</string>
     <string name="permission_not_granted">Permission not granted</string>
-
+    <string name="delete_category_message">Are you sure you want to delete this category?</string>
+    <string name="log_in_title">Sign In</string>
+    <string name="email_example">name@example.com</string>
+    <string name="password">Password</string>
+    <string name="forgot_password"><u>Forgot password, click here!</u></string>
+    <string name="register_here"><u>Not register yet?, click here.</u></string>
+    <string name="register_title">Register</string>
+    <string name="name_example">User name</string>
+    <string name="re_enter_password">Confirm password</string>
+    <string name="log_in_here"><u>Already registered, sign in here.</u></string>
+    <string name="invalid_email">Enter a valid email</string>
+    <string name="invalid_password">Password must be at least 6 digits</string>
+    <string name="error_name">Please enter a user name</string>
+    <string name="wrong_password">Wrong password</string>
+    <string name="error" translatable="false">Error</string>
+    <string name="verification_sent">Verification email sent</string>
+    <string name="enter_email">Please, provide your email to send the code</string>
+    <string name="code_sent">Code sent</string>
+    <string name="verification_missed">You haven\'t verified your email. If you haven\'t received the verification email click here to send a new one.</string>
+    <string name="account_activity">Account</string>
+    <string name="account_welcome" formatted="true">Hello, %s</string>
+    <string name="backup_now">Back up now</string>
+    <string name="recommended">Recommended</string>
 
 </resources>

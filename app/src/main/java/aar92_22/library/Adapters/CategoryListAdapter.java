@@ -13,15 +13,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import aar92_22.library.Database.CategoryEntry;
+import aar92_22.library.Interfaces.CategoryListener;
 import aar92_22.library.R;
 
 public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapter.CategoryViewHolder> {
 
     private List<CategoryEntry> categoryEntries;
     private Context mContext;
-
     private categoryOptionsListener mListener;
-
 
     public CategoryListAdapter(Context mContext, categoryOptionsListener listener) {
         this.mContext = mContext;
@@ -31,42 +30,32 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
     @NonNull
     @Override
     public CategoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-
-        int layoutIdForCategories = R.layout.category_recycler_view_individual;
-
-
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
-
-        View view = layoutInflater.inflate(layoutIdForCategories,parent,false);
+        View view = layoutInflater.inflate(R.layout.category_recycler_view_individual,
+                parent,false);
         return new CategoryViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull CategoryViewHolder holder, final int position) {
+
         final CategoryEntry categoryEntry = categoryEntries.get(position);
 
-        String categoryName;
+        final String categoryName = categoryEntry.getCategory();
 
-        if(!categoryEntry.getCategory().equals("")){
-            categoryName = categoryEntry.getCategory();
-            holder.categoryDisplay.setText(categoryName);
-        }
+        holder.categoryDisplay.setText(categoryName);
 
         holder.editCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int idForCategorySelected = categoryEntries.get(position).getId();
-                mListener.onEditClick(v, idForCategorySelected);
+                mListener.onEditClick(categoryEntry);
             }
         });
-
 
         holder.deleteCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int idForCategorySelected = categoryEntries.get(position).getId();
-                mListener.onDeleteClick(v, idForCategorySelected);
+                mListener.onDeleteClick(categoryEntry.getId());
             }
         });
 
@@ -82,10 +71,7 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
     }
 
 
-
-
-
-    class CategoryViewHolder extends RecyclerView.ViewHolder {
+    public class CategoryViewHolder extends RecyclerView.ViewHolder  {
 
 
         TextView categoryDisplay;
@@ -96,28 +82,24 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
         private CategoryViewHolder(@NonNull View itemView) {
             super(itemView);
 
-
             categoryDisplay = itemView.findViewById(R.id.category_name_display);
             editCategory = itemView.findViewById(R.id.edit_category);
             deleteCategory = itemView.findViewById(R.id.delete_category);
-
-
 
         }
 
     }
 
 
-    public void setCategoryEntries ( List<CategoryEntry> categoryEntries){
+    public void setCategoryEntries (List<CategoryEntry> categoryEntries){
         this.categoryEntries = categoryEntries;
         notifyDataSetChanged();
-
     }
 
 
     public interface categoryOptionsListener {
-        void onEditClick(View view, int id);
-        void onDeleteClick(View view, int id);
+        void onEditClick(CategoryEntry categoryEntry);
+        void onDeleteClick(int id);
     }
 
 
