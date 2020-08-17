@@ -61,6 +61,7 @@ public class RecommendedActivity extends AppCompatActivity{
             }
         });
 
+        MainActivity.fromRecommendedActivity = true;
     }
 
     private void setUpRecommendedView(){

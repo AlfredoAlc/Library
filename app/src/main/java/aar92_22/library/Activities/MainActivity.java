@@ -53,6 +53,9 @@ public class MainActivity extends AppCompatActivity
 
     private static final int REQUEST_CODE_FILTER = 3;
 
+    public static boolean fromRecommendedActivity = false;
+
+
     private int bookId;
     private boolean firstChangeOfViews = true;
 
@@ -120,23 +123,33 @@ public class MainActivity extends AppCompatActivity
 
         toolbar.setTitle(preferenceUtilities.getLibraryName());
 
-        ConnectivityManager connectivityManager = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        NetworkInfo networkInfo = null;
-        if(connectivityManager != null){
-            networkInfo = connectivityManager.getActiveNetworkInfo();
-        }
-
-        final String recommendedTitle = preferenceUtilities.getRecommendedTitle();
-        if(networkInfo != null && networkInfo.isConnected() && !recommendedTitle.equals("")) {
-            Intent recommendedIntent = new Intent(MainActivity.this, RecommendedActivity.class);
-            startActivity(recommendedIntent);
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-        }
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if(fromRecommendedActivity) {
+            fromRecommendedActivity = false;
+        } else{
+            ConnectivityManager connectivityManager = (ConnectivityManager)
+                    getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            NetworkInfo networkInfo = null;
+            if (connectivityManager != null) {
+                networkInfo = connectivityManager.getActiveNetworkInfo();
+            }
+
+            final String recommendedTitle = preferenceUtilities.getRecommendedTitle();
+            if (networkInfo != null && networkInfo.isConnected() && !recommendedTitle.equals("")) {
+                Intent recommendedIntent = new Intent(MainActivity.this, RecommendedActivity.class);
+                startActivity(recommendedIntent);
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+            }
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -394,27 +407,18 @@ public class MainActivity extends AppCompatActivity
                 mAdapter.setBookEntry(bookEntries);
                 listToFilter = bookEntries;
 
-                int recommendedIndexTemp = 0;
+                int recommendedIndex;
 
-                if(bookEntries != null && bookEntries.size() > 1) {
+                if(bookEntries != null && bookEntries.size() >= 1) {
                     do {
-                        recommendedIndexTemp = (int) (Math.random() * 10);
-                    } while (recommendedIndexTemp >= bookEntries.size());
+                        recommendedIndex = (int) (Math.random() * 10);
+                    } while (recommendedIndex >= bookEntries.size());
+
+
+                    String bookReferenceRecommend = bookEntries.get(recommendedIndex).getTitle();
+                    preferenceUtilities.setRecommendedTitle(bookReferenceRecommend);
+
                 }
-
-                final int recommendedIndex = recommendedIndexTemp;
-
-                AppExecutors.getInstance().otherIO().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        List<BookEntry> bookEntryList = mDb.bookDao().loadAllBooksList();
-                        String bookReferenceRecommend = bookEntryList.get(recommendedIndex).getTitle();
-                        preferenceUtilities.setRecommendedTitle(bookReferenceRecommend);
-                    }
-                });
-
-
-
             }
         });
     }
